@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using System.Xml.Linq;
@@ -92,7 +93,12 @@ namespace GeomPad
             listView1.Items.Clear();
             foreach (var item in Items)
             {
-                listView1.Items.Add(new ListViewItem(new string[] { item.GetType().Name, item.Name }) { Tag = item });
+                string sub = string.Empty;
+                if (item is PolygonHelper ph)
+                {
+                    sub = ph.Polygon.Childrens.Count.ToString();
+                }
+                listView1.Items.Add(new ListViewItem(new string[] { item.GetType().Name, item.Name, sub }) { Tag = item });
             }
             UpdateList2();
 
@@ -284,6 +290,14 @@ namespace GeomPad
                     toolStripStatusLabel1.BackColor = Color.Yellow;
                     toolStripStatusLabel1.ForeColor = Color.Blue;
                     break;
+                case StatusMessageType.Error:
+                    toolStripStatusLabel1.BackColor = Color.Red;
+                    toolStripStatusLabel1.ForeColor = Color.White;
+                    break;
+                case StatusMessageType.Info:
+                    toolStripStatusLabel1.BackColor = Color.Blue;
+                    toolStripStatusLabel1.ForeColor = Color.White;
+                    break;
             }
         }
 
@@ -323,14 +337,15 @@ namespace GeomPad
             }
         }
 
-        private void loadXmlFromClipboardToolStripMenuItem_Click(object sender, EventArgs e)
+        HelperItem[] loadXml(string content)
         {
-            var doc = XDocument.Parse(Clipboard.GetText());
+            var doc = XDocument.Parse(content);
 
+            List<NFP> nfps = new List<NFP>();
             foreach (var item in doc.Descendants("region"))
             {
-                PolygonHelper ph = new PolygonHelper();
-                Items.Add(ph);
+                //  PolygonHelper ph = new PolygonHelper();
+                //  Items.Add(ph);
                 List<SvgPoint> pnts = new List<SvgPoint>();
                 foreach (var point in item.Descendants("point"))
                 {
@@ -338,15 +353,86 @@ namespace GeomPad
                     var y = float.Parse(point.Attribute("y").Value.Replace(",", "."), CultureInfo.InvariantCulture);
                     pnts.Add(new SvgPoint(x, y));
                 }
-                ph.Polygon.Points = pnts.ToArray();
+                nfps.Add(new NFP() { Points = pnts.Select(y => new SvgPoint(y.X, y.Y)).ToArray() });
+                //  ph.Polygon.Points = pnts.ToArray();
 
             }
-            UpdateList();
+
+            //UpdateList();
+
+            //var nfps = r.regions.Select(z => new NFP() { Points = z.Select(y => new SvgPoint(y.x, y.y)).ToArray() }).ToArray();
+
+            for (int i = 0; i < nfps.Count; i++)
+            {
+                for (int j = 0; j < nfps.Count; j++)
+                {
+                    if (i != j)
+                    {
+                        var d2 = nfps[i];
+                        var d3 = nfps[j];
+                        var f0 = d3.Points[0];
+                        if (Helpers.pnpoly(d2.Points.ToArray(), f0.X, f0.Y))
+                        {
+                            d3.Parent = d2;
+                            if (!d2.Childrens.Contains(d3))
+                            {
+                                d2.Childrens.Add(d3);
+                            }
+                        }
+                    }
+                }
+            }
+
+            List<HelperItem> ret = new List<HelperItem>();
+            foreach (var item in nfps)
+            {
+                if (item.Parent != null) continue;
+                PolygonHelper phh = new PolygonHelper();
+                ret.Add(phh);
+                Items.Add(phh);
+                phh.Polygon = item;
+            }
+
+            return ret.ToArray();
+        }
+        private void loadXmlFromClipboardToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                loadXml(Clipboard.GetText());
+                UpdateList();
+                StatusMessage("succesfully loaded.", StatusMessageType.Info);
+
+            }
+            catch (Exception ex)
+            {
+                StatusMessage(ex.Message, StatusMessageType.Error);
+            }
+
         }
 
         private void fromFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "xml files|*.xml";
+            if (ofd.ShowDialog() != DialogResult.OK) return;
 
+            try
+            {
+                var ret = loadXml(File.ReadAllText(ofd.FileName));
+                var fin = new FileInfo(ofd.FileName);
+                foreach (var item in ret)
+                {
+                    item.Name = fin.Name;
+                }
+                UpdateList();
+                StatusMessage("succesfully loaded.", StatusMessageType.Info);
+
+            }
+            catch (Exception ex)
+            {
+                StatusMessage(ex.Message, StatusMessageType.Error);
+            }
         }
 
         private void pointToolStripMenuItem_Click(object sender, EventArgs e)
@@ -378,19 +464,32 @@ namespace GeomPad
             double miterLimit = double.Parse(textBox3.Text.Replace(",", "."), CultureInfo.InvariantCulture);
             double curveTolerance = double.Parse(textBox4.Text.Replace(",", "."), CultureInfo.InvariantCulture);
             var offs = ClipperHelper.offset(p, offset, jType, curveTolerance: curveTolerance, miterLimit: miterLimit);
+            //if (offs.Count() > 1) throw new NotImplementedException();
             PolygonHelper ph = new PolygonHelper();
             foreach (var item in ph2.Polygon.Childrens)
             {
                 var offs2 = ClipperHelper.offset(item, -offset, jType, curveTolerance: curveTolerance, miterLimit: miterLimit);
                 var nfp1 = new NFP();
-                nfp1.Points = offs2.First().Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
-                ph.Polygon.Childrens.Add(nfp1);
+                if (offs2.Any())
+                {
+                    if (offs2.Count() > 1) throw new NotImplementedException();
+                    nfp1.Points = offs2.First().Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+                    ph.Polygon.Childrens.Add(nfp1);
+                }
             }
 
-          
             if (offs.Any())
             {
                 ph.Polygon.Points = offs.First().Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+            }
+
+            foreach (var item in offs.Skip(1))
+            {
+                var nfp2 = new NFP();
+
+                nfp2.Points = item.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+                ph.Polygon.Childrens.Add(nfp2);
+
             }
 
             Items.Add(ph);
@@ -480,6 +579,11 @@ namespace GeomPad
             }
             UpdateList();
 
+
+        }
+
+        private void toolStripDropDownButton1_Click(object sender, EventArgs e)
+        {
 
         }
     }
