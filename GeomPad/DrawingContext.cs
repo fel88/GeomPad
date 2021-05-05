@@ -9,13 +9,13 @@ namespace GeomPad
         public Graphics gr;
         public float scale = 1;
 
-        
+
         public float startx, starty;
         public float origsx, origsy;
         public bool isDrag = false;
         public float sx, sy;
         public float zoom = 1;
-        
+
         public Bitmap Bmp;
 
         public void UpdateDrag()
@@ -44,7 +44,7 @@ namespace GeomPad
             pb.MouseWheelAction = PictureBox1_MouseWheel;
             pb.MouseUpAction = PictureBox1_MouseUp;
             pb.MouseDownAction = PictureBox1_MouseDown;
-         
+
             pb.SizeChangedAction = Pb_SizeChanged;
 
             //pb.SizeChanged += Pb_SizeChanged;
@@ -54,7 +54,7 @@ namespace GeomPad
             //pb.MouseMove += PictureBox1_MouseMove;
 
             //Bmp = new Bitmap(pb.Control.Width, pb.Control.Height);
-          //  gr = Graphics.FromImage(Bmp);
+            //  gr = Graphics.FromImage(Bmp);
         }
         public float ZoomFactor = 1.5f;
 
@@ -112,7 +112,11 @@ namespace GeomPad
         {
             return new PointF((p1.X + sx) * zoom, -(p1.Y + sy) * zoom);
         }
-        
+        public virtual PointF Transform(SvgPoint p1)
+        {
+            return new PointF((float)((p1.X + sx) * zoom), (float)(-(p1.Y + sy) * zoom));
+        }
+
         public virtual PointF BackTransform(PointF p1)
         {
             var posx = (p1.X / zoom - sx);
