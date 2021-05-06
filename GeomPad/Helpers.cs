@@ -4,6 +4,7 @@ namespace GeomPad
 {
     public class Helpers
     {
+      
         public static bool pnpoly(PointF[] verts, float testx, float testy)
         {
             int nvert = verts.Length;
@@ -30,5 +31,6 @@ namespace GeomPad
             }
             return c;
         }
+        
     }
 }

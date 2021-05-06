@@ -586,5 +586,40 @@ namespace GeomPad
         {
 
         }
+
+        private void button4_Click_1(object sender, EventArgs e)
+        {
+            if (!(selected is PolygonHelper ph2)) { return; }
+
+            var hull = DeepNest.getHull(ph2.Polygon);
+            PolygonHelper ph = new PolygonHelper();
+            ph.Polygon = hull;
+
+
+            Items.Add(ph);
+            UpdateList();
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            if (!(selected is PolygonHelper ph2)) { return; }
+
+            double clipperScale = 10000000;
+            var hull = DeepNest.simplifyFunction(ph2.Polygon, false, clipperScale);
+            PolygonHelper ph = new PolygonHelper();
+            ph.Polygon = hull;
+
+
+            Items.Add(ph);
+            UpdateList();
+        }
+
+        private void groupBox3_Enter(object sender, EventArgs e)
+        {
+
+        }
     }
+
+
+
 }
