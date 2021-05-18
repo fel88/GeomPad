@@ -2,7 +2,7 @@
 
 namespace GeomPad
 {
-    public class Helpers
+    public class StaticHelpers
     {
       
         public static bool pnpoly(PointF[] verts, float testx, float testy)

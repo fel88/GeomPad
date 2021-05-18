@@ -2,7 +2,7 @@
 using System.Drawing.Drawing2D;
 using System.Linq;
 
-namespace GeomPad
+namespace GeomPad.Helpers
 {
     public class PolygonHelper : HelperItem
     {

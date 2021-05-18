@@ -1,4 +1,5 @@
 ﻿using ClipperLib;
+using GeomPad.Helpers;
 using PolyBoolCS;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,8 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using TriangleNet.Geometry;
+using TriangleNet.Meshing;
 
 namespace GeomPad
 {
@@ -26,16 +29,7 @@ namespace GeomPad
             }
             dc.Init(pictureBox1);
         }
-        public float ZoomFactor = 1.5f;
-        public class ComboBoxItem
-        {
-            public string Name;
-            public object Tag;
-            public override string ToString()
-            {
-                return Name;
-            }
-        }
+
 
 
         private void Form1_SizeChanged(object sender, EventArgs e)
@@ -238,17 +232,17 @@ namespace GeomPad
 
             return plist;
         }
-        public static Polygon GetPolygon(PointF[] pnts)
+        public static PolyBoolCS.Polygon GetPolygon(PointF[] pnts)
         {
-            var p = new Polygon();
+            var p = new PolyBoolCS.Polygon();
             p.regions = new List<PointList>();
             PointList plist = GetPointList(pnts);
             p.regions.Add(plist);
             return p;
         }
-        public static Polygon GetPolygon(SvgPoint[] pnts)
+        public static PolyBoolCS.Polygon GetPolygon(SvgPoint[] pnts)
         {
-            var p = new Polygon();
+            var p = new PolyBoolCS.Polygon();
             p.regions = new List<PointList>();
             PointList plist = GetPointList(pnts);
             p.regions.Add(plist);
@@ -371,7 +365,7 @@ namespace GeomPad
                         var d2 = nfps[i];
                         var d3 = nfps[j];
                         var f0 = d3.Points[0];
-                        if (Helpers.pnpoly(d2.Points.ToArray(), f0.X, f0.Y))
+                        if (StaticHelpers.pnpoly(d2.Points.ToArray(), f0.X, f0.Y))
                         {
                             d3.Parent = d2;
                             if (!d2.Childrens.Contains(d3))
@@ -522,11 +516,21 @@ namespace GeomPad
 
         private void button2_Click_1(object sender, EventArgs e)
         {
-            if (listView1.SelectedItems.Count < 2) { StatusMessage("there are no 2 polygon selected", StatusMessageType.Warning); return; }
             List<PolygonHelper> phhs = new List<PolygonHelper>();
-            foreach (var item in listView1.SelectedItems)
+
+            if (!checkBox1.Checked)
             {
-                phhs.Add((item as ListViewItem).Tag as PolygonHelper);
+                if (listView1.SelectedItems.Count < 2) { StatusMessage("there are no 2 polygon selected", StatusMessageType.Warning); return; }
+
+                foreach (var item in listView1.SelectedItems)
+                {
+                    phhs.Add((item as ListViewItem).Tag as PolygonHelper);
+                }
+            }
+            else
+            {
+                phhs.Add((comboBox2.SelectedItem as ComboBoxItem).Tag as PolygonHelper);
+                phhs.Add((comboBox3.SelectedItem as ComboBoxItem).Tag as PolygonHelper);
             }
 
             var ar1 = phhs.ToArray();
@@ -558,7 +562,7 @@ namespace GeomPad
                         var d2 = nfps[i];
                         var d3 = nfps[j];
                         var f0 = d3.Points[0];
-                        if (Helpers.pnpoly(d2.Points.ToArray(), f0.X, f0.Y))
+                        if (StaticHelpers.pnpoly(d2.Points.ToArray(), f0.X, f0.Y))
                         {
                             d3.Parent = d2;
                             if (!d2.Childrens.Contains(d3))
@@ -618,8 +622,135 @@ namespace GeomPad
         {
 
         }
+
+        private void pointToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            Items.Add(new PointHelper());
+            UpdateList();
+        }
+
+        private void polygonToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            Items.Add(new PolygonHelper());
+            UpdateList();
+        }
+
+        private void segmentToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            Items.Add(new SegmentHelper() { Point2 = new PointF(10, 10) });
+            UpdateList();
+        }
+
+        private void circleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var ph = new CircleGenerator();
+            Items.Add(ph);
+            UpdateList();
+        }
+
+        private void addPointToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (selected is PolygonHelper ph)
+            {
+                var list = ph.Polygon.Points.ToList();
+                list.Add(new SvgPoint(0, 0));
+                ph.Polygon.Points = list.ToArray();
+            }
+            UpdateList();
+        }
+
+        private void addToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+
+        private void button5_Click_1(object sender, EventArgs e)
+        {
+
+            var poly2 = new TriangleNet.Geometry.Polygon();
+            var plh = selected as PolygonHelper;
+
+            //foreach (var item in plh.Polygon.Points)
+            {
+                var a = plh.Polygon.Points.Select(z => new Vertex(z.X, z.Y, 0)).ToArray();
+                poly2.Add(new Contour(a));
+            }
+
+            foreach (var item in plh.Polygon.Childrens)
+            {
+                var a = item.Points.Select(z => new Vertex(z.X, z.Y, 0)).ToArray();
+                PointF test = new PointF((float)item.Points[0].X, (float)item.Points[0].Y);
+                while (true)
+                {
+                    if (StaticHelpers.pnpoly(item.Points.ToArray(), test.X, test.Y))
+                    {
+                        break;
+                    }
+                    var maxx = item.Points.Max(z => z.X);
+                    var minx = item.Points.Min(z => z.X);
+                    var maxy = item.Points.Max(z => z.Y);
+                    var miny = item.Points.Min(z => z.Y);
+                    var tx = rand.Next((int)(minx * 100),
+                        (int)(maxx * 100)) / 100f;
+                    var ty = rand.Next((int)(miny * 100),
+                        (int)(maxy * 100)) / 100f;
+                    test = new PointF(tx, ty);
+                }
+                poly2.Add(new Contour(a), new TriangleNet.Geometry.Point(test.X, test.Y));
+            }
+
+            var trng = (new GenericMesher()).Triangulate(poly2, new ConstraintOptions(), new QualityOptions());
+
+            var tr = trng.Triangles.Select(z => new PointF[] {
+                  new PointF((float)z.GetVertex(0).X, (float)z.GetVertex(0).Y),
+                  new PointF((float)z.GetVertex(1).X, (float)z.GetVertex(1).Y),
+                  new PointF((float)z.GetVertex(2).X, (float)z.GetVertex(2).Y)
+            }).ToArray();
+            Items.Add(new MeshHelper(tr));
+            UpdateList();
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            Items.ForEach(z => z.Selected = false);
+            selected = null;
+        }
+
+        private void rectangleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var ph = new RectangleGenerator();
+            Items.Add(ph);
+            UpdateList();
+        }
+
+        private void comboBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void comboBox2_DropDown(object sender, EventArgs e)
+        {
+            comboBox2.Items.Clear();
+            foreach (var item in Items)
+            {
+                comboBox2.Items.Add(new ComboBoxItem() { Name = item.Name, Tag = item });
+            }
+        }
+
+        private void comboBox3_DropDown(object sender, EventArgs e)
+        {
+            comboBox3.Items.Clear();
+            foreach (var item in Items)
+            {
+                comboBox3.Items.Add(new ComboBoxItem() { Name = item.Name, Tag = item });
+            }
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            comboBox2.Enabled = checkBox1.Checked;
+            comboBox3.Enabled = checkBox1.Checked;
+        }
     }
-
-
-
 }

@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace GeomPad
+namespace GeomPad.Helpers
 {
     public class CircleGenerator : PolygonHelper
     {
+        public static int Index;
         public CircleGenerator()
         {
+            Name = $"circle{Index++}";
             _update();
         }
         double _radius = 100;

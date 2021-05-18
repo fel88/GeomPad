@@ -103,10 +103,7 @@ namespace GeomPad
         public virtual void PictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
             isDrag = false;
-            var p = PictureBox.Control.PointToClient(Cursor.Position);
-
-
-
+            //var p = PictureBox.Control.PointToClient(Cursor.Position);
         }
         public virtual PointF Transform(PointF p1)
         {
