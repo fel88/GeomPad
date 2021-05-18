@@ -673,31 +673,47 @@ namespace GeomPad
 
             //foreach (var item in plh.Polygon.Points)
             {
-                var a = plh.Polygon.Points.Select(z => new Vertex(z.X, z.Y, 0)).ToArray();
+                var pn = plh.Polygon.Points.ToArray();
+                if (StaticHelpers.signed_area(pn) < 0) { pn = pn.Reverse().ToArray(); }
+                var a = pn.Select(z => new Vertex(z.X, z.Y, 0)).ToArray();
+
                 poly2.Add(new Contour(a));
             }
 
-            foreach (var item in plh.Polygon.Childrens)
+            var rev = plh.Polygon.Childrens.ToArray();
+            rev = rev.Reverse().ToArray();
+            foreach (var item in rev)
             {
-                var a = item.Points.Select(z => new Vertex(z.X, z.Y, 0)).ToArray();
+                var pn = item.Points.ToArray();
+                var ar = StaticHelpers.signed_area(pn);
+                /*if (StaticHelpers.signed_area(pn) > 0) 
+                {
+                    pn = pn.Reverse().ToArray(); 
+                }*/
+                var a = pn.Select(z => new Vertex(z.X, z.Y, 0)).ToArray();
                 PointF test = new PointF((float)item.Points[0].X, (float)item.Points[0].Y);
+                var maxx = item.Points.Max(z => z.X);
+                var minx = item.Points.Min(z => z.X);
+                var maxy = item.Points.Max(z => z.Y);
+                var miny = item.Points.Min(z => z.Y);
+                var tx = rand.Next((int)(minx * 100), (int)(maxx * 100)) / 100f;
+                var ty = rand.Next((int)(miny * 100), (int)(maxy * 100)) / 100f;
                 while (true)
                 {
                     if (StaticHelpers.pnpoly(item.Points.ToArray(), test.X, test.Y))
                     {
                         break;
                     }
-                    var maxx = item.Points.Max(z => z.X);
-                    var minx = item.Points.Min(z => z.X);
-                    var maxy = item.Points.Max(z => z.Y);
-                    var miny = item.Points.Min(z => z.Y);
-                    var tx = rand.Next((int)(minx * 100),
-                        (int)(maxx * 100)) / 100f;
-                    var ty = rand.Next((int)(miny * 100),
-                        (int)(maxy * 100)) / 100f;
+
+                    tx = rand.Next((int)(minx * 100),
+                       (int)(maxx * 100)) / 100f;
+                    ty = rand.Next((int)(miny * 100),
+                       (int)(maxy * 100)) / 100f;
                     test = new PointF(tx, ty);
                 }
+
                 poly2.Add(new Contour(a), new TriangleNet.Geometry.Point(test.X, test.Y));
+                //poly2.Add(new Contour(a), true);
             }
 
             var trng = (new GenericMesher()).Triangulate(poly2, new ConstraintOptions(), new QualityOptions());

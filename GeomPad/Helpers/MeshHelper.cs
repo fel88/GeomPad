@@ -12,7 +12,7 @@ namespace GeomPad.Helpers
             _mesh = triangles;
         }
         PointF[][] _mesh;
-        public bool Fill { get; set; } = false;
+        public bool Fill { get; set; } = true;
 
         public int TianglesCount
         {
