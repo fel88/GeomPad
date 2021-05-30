@@ -1,4 +1,5 @@
 # GeomPad
+**Status:** WIP
 
 <img width="70%" src="imgs/1.png"/>
 
