@@ -37,13 +37,11 @@ namespace GeomPad
         {
             var p = ScaleUpPaths(polygon, clipperScale).ToList();
 
-
             var co = new ClipperLib.ClipperOffset(miterLimit, curveTolerance * clipperScale);
             co.AddPath(p.ToList(), jType, ClipperLib.EndType.etClosedPolygon);
 
             var newpaths = new List<List<ClipperLib.IntPoint>>();
             co.Execute(ref newpaths, offset * clipperScale);
-
 
             var result = new List<NFP>();
             for (var i = 0; i < newpaths.Count; i++)

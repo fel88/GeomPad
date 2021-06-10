@@ -1,4 +1,6 @@
-﻿namespace GeomPad
+﻿using System;
+
+namespace GeomPad
 {
     public abstract class HelperItem
     {
@@ -9,5 +11,5 @@
         public abstract void Draw(DrawingContext gr);
     }
 
-    
+
 }

@@ -33,6 +33,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="OpenTK, Version=3.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.3.1.0\lib\net20\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK.GLControl, Version=3.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.GLControl.3.1.0\lib\net20\OpenTK.GLControl.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -46,7 +52,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Camera.cs" />
+    <Compile Include="CameraViewManager.cs" />
     <Compile Include="ComboBoxItem.cs" />
+    <Compile Include="DefaultCameraViewManager.cs" />
+    <Compile Include="DrawHelpers.cs" />
+    <Compile Include="EditFieldAttribute.cs" />
+    <Compile Include="EventWrapperGlControl.cs" />
+    <Compile Include="Form2.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form2.Designer.cs">
+      <DependentUpon>Form2.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Geometry.cs" />
+    <Compile Include="HelperItem3D.cs" />
     <Compile Include="Helpers\CircleGenerator.cs" />
     <Compile Include="ClipperHelper.cs" />
     <Compile Include="DeepNest.cs" />
@@ -64,8 +84,21 @@
     <Compile Include="Helpers.cs" />
     <Compile Include="Helpers\MeshHelper.cs" />
     <Compile Include="Helpers\RectangleGenerator.cs" />
+    <Compile Include="IEditFieldsContainer.cs" />
+    <Compile Include="IName.cs" />
+    <Compile Include="Line3D.cs" />
+    <Compile Include="Line3DHelper.cs" />
+    <Compile Include="mdi.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="mdi.Designer.cs">
+      <DependentUpon>mdi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MouseRay.cs" />
     <Compile Include="NFP.cs" />
     <Compile Include="Helpers\PointHelper.cs" />
+    <Compile Include="PlaneHelper.cs" />
+    <Compile Include="Point3DHelper.cs" />
     <Compile Include="PolyBool.cs" />
     <Compile Include="Helpers\PolygonHelper.cs" />
     <Compile Include="PolygonPointEditorWrapper.cs" />
@@ -80,8 +113,16 @@
     <Compile Include="TextBoxCaption.Designer.cs">
       <DependentUpon>TextBoxCaption.cs</DependentUpon>
     </Compile>
+    <Compile Include="TriangleHelper.cs" />
+    <Compile Include="VectorEditor.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form2.resx">
+      <DependentUpon>Form2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="mdi.resx">
+      <DependentUpon>mdi.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -96,6 +137,7 @@
     <EmbeddedResource Include="TextBoxCaption.resx">
       <DependentUpon>TextBoxCaption.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

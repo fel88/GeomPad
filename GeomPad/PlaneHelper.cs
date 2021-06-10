@@ -1,0 +1,184 @@
+﻿using OpenTK;
+using OpenTK.Graphics.OpenGL;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Xml.Linq;
+
+namespace GeomPad
+{
+    public class PlaneHelper : HelperItem3D, IEditFieldsContainer
+    {
+        [EditField]
+        public Vector3d Position;
+        [EditField]
+        public Vector3d Normal;
+
+
+        public PlaneHelper() { }
+        public PlaneHelper(XElement item)
+        {
+            var pos = item.Attribute("position").Value.Split(new char[] { ';' }, System.StringSplitOptions.RemoveEmptyEntries).Select(z => double.Parse(z.Replace(",", "."))).ToArray();
+            Position = new Vector3d(pos[0], pos[1], pos[2]);
+            var nrm = item.Attribute("normal").Value.Split(new char[] { ';' }, System.StringSplitOptions.RemoveEmptyEntries).Select(z => double.Parse(z.Replace(",", "."))).ToArray();
+            Normal = new Vector3d(nrm[0], nrm[1], nrm[2]);
+            DrawSize = int.Parse(item.Attribute("drawSize").Value);
+        }
+
+        public int DrawSize { get; set; } = 10;
+        public Vector3d[] GetBasis()
+        {
+            Vector3d[] shifts = new[] { Vector3d.UnitX, Vector3d.UnitY, Vector3d.UnitZ };
+            Vector3d axis1 = Vector3d.Zero;
+            for (int i = 0; i < shifts.Length; i++)
+            {
+                var proj = ProjPoint(Position + shifts[i]);
+
+                if (Vector3d.Distance(proj, Position) > 10e-6)
+                {
+                    axis1 = (proj - Position).Normalized();
+                    break;
+                }
+            }
+            var axis2 = Vector3d.Cross(Normal.Normalized(), axis1);
+
+            return new[] { axis1, axis2 };
+        }
+        public override void Draw()
+        {
+            GL.Color3(Color.Blue);
+            if (Selected) GL.Color3(Color.Red);
+            var basis = GetBasis();
+            GL.Begin(PrimitiveType.LineLoop);
+            GL.Vertex3(Position + basis[0] * (-DrawSize) + basis[1] * (-DrawSize));
+            GL.Vertex3(Position + basis[0] * (-DrawSize) + basis[1] * (DrawSize));
+            GL.Vertex3(Position + basis[0] * (DrawSize) + basis[1] * (DrawSize));
+            GL.Vertex3(Position + basis[0] * (DrawSize) + basis[1] * (-DrawSize));
+            GL.End();
+            GL.Color3(Color.Orange);
+            GL.Begin(PrimitiveType.Lines);
+            GL.Vertex3(Position);
+            GL.Vertex3(Position + Normal.Normalized() * 10);
+
+            GL.End();
+        }
+        public double[] GetKoefs()
+        {
+            double[] ret = new double[4];
+            ret[0] = Normal.X;
+            ret[1] = Normal.Y;
+            ret[2] = Normal.Z;
+            ret[3] = -(ret[0] * Position.X + Position.Y * ret[1] + Position.Z * ret[2]);
+
+            return ret;
+        }
+
+        public Line3D Intersect(PlaneHelper ps)
+        {
+            Line3D ret = new Line3D();
+
+            var dir = Vector3d.Cross(ps.Normal, Normal);
+
+
+            var k1 = ps.GetKoefs();
+            var k2 = GetKoefs();
+            var a1 = k1[0];
+            var b1 = k1[1];
+            var c1 = k1[2];
+            var d1 = k1[3];
+
+            var a2 = k2[0];
+            var b2 = k2[1];
+            var c2 = k2[2];
+            var d2 = k2[3];
+
+
+
+            var res1 = det2(new[] { a1, a2 }, new[] { b1, b2 }, new[] { -d1, -d2 });
+            var res2 = det2(new[] { a1, a2 }, new[] { c1, c2 }, new[] { -d1, -d2 });
+            var res3 = det2(new[] { b1, b2 }, new[] { c1, c2 }, new[] { -d1, -d2 });
+
+            List<Vector3d> vvv = new List<Vector3d>();
+
+            if (res1 != null)
+            {
+                Vector3d v1 = new Vector3d((float)res1[0], (float)res1[1], 0);
+                vvv.Add(v1);
+
+            }
+
+            if (res2 != null)
+            {
+                Vector3d v1 = new Vector3d((float)res2[0], 0, (float)res2[1]);
+                vvv.Add(v1);
+            }
+            if (res3 != null)
+            {
+                Vector3d v1 = new Vector3d(0, (float)res3[0], (float)res3[1]);
+                vvv.Add(v1);
+            }
+
+            var pnt = vvv.OrderBy(z => z.Length).First();
+
+            var r1 = ps.IsOnPlane(pnt);
+            var r2 = IsOnPlane(pnt);
+
+            ret.Start = pnt;
+            ret.End = pnt + dir * 100;
+            return ret;
+        }
+        double[] det2(double[] a, double[] b, double[] c)
+        {
+            var d = a[0] * b[1] - a[1] * b[0];
+            if (d == 0) return null;
+            var d1 = c[0] * b[1] - c[1] * b[0];
+            var d2 = a[0] * c[1] - a[1] * c[0];
+            var x = d1 / d;
+            var y = d2 / d;
+            return new[] { x, y };
+
+        }
+        public bool IsOnPlane(Vector3d orig, Vector3d normal, Vector3d check, double tolerance = 10e-6)
+        {
+            return (Math.Abs(Vector3d.Dot(orig - check, normal)) < tolerance);
+        }
+        public bool IsOnPlane(Vector3d v)
+        {
+            return IsOnPlane(Position, Normal, v);
+        }
+        public Vector3d ProjPoint(Vector3d point)
+        {
+            var nrm = Normal.Normalized();
+            var v = point - Position;
+            var dist = Vector3d.Dot(v, nrm);
+            var proj = point - dist * nrm;
+            return proj;
+        }
+
+
+        public IName[] GetObjects()
+        {
+            List<IName> ret = new List<IName>();
+            var fld = GetType().GetFields();
+            for (int i = 0; i < fld.Length; i++)
+            {
+
+                var at = fld[i].GetCustomAttributes(typeof(EditFieldAttribute), true);
+                if (at != null && at.Length > 0)
+                {
+                    if (fld[i].FieldType == typeof(Vector3d))
+                    {
+                        ret.Add(new VectorEditor(fld[i]) { Object = this });
+                    }
+                }
+            }
+            return ret.ToArray();
+        }
+        public override void AppendXml(StringBuilder sb)
+        {
+            sb.AppendLine($"<plane position=\"{Position.X};{Position.Y};{Position.Z}\" normal=\"{Normal.X};{Normal.Y};{Normal.Z}\" drawSize=\"{DrawSize}\"/>");
+        }
+    }
+}
