@@ -1,7 +1,13 @@
 # GeomPad
 **Status:** WIP
 
+2D:
+
 <img width="70%" src="imgs/1.png"/>
+
+3D:
+
+<img width="70%" src="imgs/2.png"/>
 
 # Based on: 
 * polybooljs (https://github.com/velipso/polybooljs)
