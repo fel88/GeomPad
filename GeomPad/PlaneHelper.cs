@@ -3,6 +3,7 @@ using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Xml.Linq;
@@ -20,9 +21,9 @@ namespace GeomPad
         public PlaneHelper() { }
         public PlaneHelper(XElement item)
         {
-            var pos = item.Attribute("position").Value.Split(new char[] { ';' }, System.StringSplitOptions.RemoveEmptyEntries).Select(z => double.Parse(z.Replace(",", "."))).ToArray();
+            var pos = item.Attribute("position").Value.Split(new char[] { ';' }, System.StringSplitOptions.RemoveEmptyEntries).Select(z => double.Parse(z.Replace(",", "."), CultureInfo.InvariantCulture)).ToArray();
             Position = new Vector3d(pos[0], pos[1], pos[2]);
-            var nrm = item.Attribute("normal").Value.Split(new char[] { ';' }, System.StringSplitOptions.RemoveEmptyEntries).Select(z => double.Parse(z.Replace(",", "."))).ToArray();
+            var nrm = item.Attribute("normal").Value.Split(new char[] { ';' }, System.StringSplitOptions.RemoveEmptyEntries).Select(z => double.Parse(z.Replace(",", "."), CultureInfo.InvariantCulture)).ToArray();
             Normal = new Vector3d(nrm[0], nrm[1], nrm[2]);
             DrawSize = int.Parse(item.Attribute("drawSize").Value);
         }
@@ -48,6 +49,7 @@ namespace GeomPad
         }
         public override void Draw()
         {
+            if (!Visible) return;
             GL.Color3(Color.Blue);
             if (Selected) GL.Color3(Color.Red);
             var basis = GetBasis();

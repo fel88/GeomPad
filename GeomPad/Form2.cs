@@ -14,7 +14,7 @@ using System.Xml.Linq;
 
 namespace GeomPad
 {
-    public partial class Form2 : Form
+    public partial class Form2 : Form, I3DPadContainer
     {
         public Form2()
         {
@@ -87,24 +87,27 @@ namespace GeomPad
 
             camera1.Setup(glControl);
 
-            GL.LineWidth(2);
-            GL.Color3(Color.Red);
-            GL.Begin(PrimitiveType.Lines);
-            GL.Vertex3(0, 0, 0);
-            GL.Vertex3(100, 0, 0);
-            GL.End();
+            if (drawAxis)
+            {
+                GL.LineWidth(2);
+                GL.Color3(Color.Red);
+                GL.Begin(PrimitiveType.Lines);
+                GL.Vertex3(0, 0, 0);
+                GL.Vertex3(100, 0, 0);
+                GL.End();
 
-            GL.Color3(Color.Green);
-            GL.Begin(PrimitiveType.Lines);
-            GL.Vertex3(0, 0, 0);
-            GL.Vertex3(0, 100, 0);
-            GL.End();
+                GL.Color3(Color.Green);
+                GL.Begin(PrimitiveType.Lines);
+                GL.Vertex3(0, 0, 0);
+                GL.Vertex3(0, 100, 0);
+                GL.End();
 
-            GL.Color3(Color.Blue);
-            GL.Begin(PrimitiveType.Lines);
-            GL.Vertex3(0, 0, 0);
-            GL.Vertex3(0, 0, 100);
-            GL.End();
+                GL.Color3(Color.Blue);
+                GL.Begin(PrimitiveType.Lines);
+                GL.Vertex3(0, 0, 0);
+                GL.Vertex3(0, 0, 100);
+                GL.End();
+            }
 
 
             foreach (var item in Helpers)
@@ -148,8 +151,12 @@ namespace GeomPad
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (listView1.SelectedItems.Count == 0) return;
-            var h = listView1.SelectedItems[0].Tag as HelperItem3D;
-            Helpers.Remove(h);
+            for (int i = 0; i < listView1.SelectedItems.Count; i++)
+            {
+                var h = listView1.SelectedItems[i].Tag as HelperItem3D;
+                Helpers.Remove(h);
+            }
+
             updateHelpersList();
         }
 
@@ -163,11 +170,31 @@ namespace GeomPad
             if (i0 is Line3DHelper lh0 && i1 is Line3DHelper lh1)
             {
                 var inter = Geometry.Intersect3dCrossedLines(new Line3D() { Start = lh0.Start, End = lh0.End }, new Line3D() { Start = lh1.Start, End = lh1.End });
-                if (inter != null)
+                if (inter != null && !double.IsNaN(inter.Value.X) && !double.IsInfinity(inter.Value.X))
                 {
                     Helpers.Add(new Point3DHelper() { Position = inter.Value });
                     updateHelpersList();
                 }
+                else
+                {
+                    SetStatus("no intersection", StatusTypeEnum.Warning);
+                }
+            }
+            if (objs.Any(z => z is Line3DHelper) && objs.Any(z => z is Point3DHelper))
+            {
+                var pl = objs.First(z => z is Point3DHelper) as Point3DHelper;
+                var th = objs.First(z => z is Line3DHelper) as Line3DHelper;
+
+                var l = new Line3D() { Start = th.Start, End = th.End };
+                if (l.IsPointOnLine(pl.Position))
+                {
+                    SetStatus("point is on line", StatusTypeEnum.Information);
+                }
+                else
+                {
+                    SetStatus("point is not on line", StatusTypeEnum.Warning);
+                }
+
             }
             if (objs.Any(z => z is TriangleHelper) && objs.Any(z => z is PlaneHelper))
             {
@@ -199,6 +226,32 @@ namespace GeomPad
             }
         }
 
+        public enum StatusTypeEnum
+        {
+            Information, Warning, Error
+        }
+        private void SetStatus(string v, StatusTypeEnum type)
+        {
+            switch (type)
+            {
+                case StatusTypeEnum.Information:
+                    toolStripStatusLabel1.BackColor = Color.LightGreen;
+                    toolStripStatusLabel1.ForeColor = Color.Black;
+                    break;
+                case StatusTypeEnum.Warning:
+                    toolStripStatusLabel1.BackColor = Color.Yellow;
+                    toolStripStatusLabel1.ForeColor = Color.Blue;
+                    break;
+                case StatusTypeEnum.Error:
+                    toolStripStatusLabel1.BackColor = Color.Red;
+                    toolStripStatusLabel1.ForeColor = Color.White;
+                    break;
+                default:
+                    break;
+            }
+            toolStripStatusLabel1.Text = v;
+        }
+
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
             foreach (var h in Helpers)
@@ -209,7 +262,12 @@ namespace GeomPad
             var tag = listView1.SelectedItems[0].Tag as HelperItem3D;
             propertyGrid1.SelectedObject = tag;
 
-            tag.Selected = true;
+            for (int i = 0; i < listView1.SelectedItems.Count; i++)
+            {
+                var tag2 = listView1.SelectedItems[i].Tag as HelperItem3D;
+                tag2.Selected = true;
+            }
+
             if (tag is IEditFieldsContainer c)
             {
                 var objs = c.GetObjects();
@@ -245,10 +303,8 @@ namespace GeomPad
             var tag = listView1.SelectedItems[0].Tag;
             if (tag is TriangleHelper th)
             {
-                var n0 = th.V2 - th.V0;
-                var n1 = th.V1 - th.V0;
-                var normal = Vector3d.Cross(n0, n1);
-                Helpers.Add(new PlaneHelper() { Position = th.V0, Normal = normal });
+                var pl = th.GetPlane();
+                Helpers.Add(pl);
                 updateHelpersList();
             }
         }
@@ -285,6 +341,12 @@ namespace GeomPad
                     case "plane":
                         Helpers.Add(new PlaneHelper(item));
                         break;
+                    case "line":
+                        Helpers.Add(new Line3DHelper(item));
+                        break;
+                    case "triangle":
+                        Helpers.Add(new TriangleHelper(item));
+                        break;
                 }
             }
             updateHelpersList();
@@ -317,23 +379,110 @@ namespace GeomPad
             if (listView1.SelectedItems.Count == 0) return;
             var cc = listView1.SelectedItems[0].Tag as ICommandsContainer;
             if (cc == null) return;
+            List<HelperItem3D> all = new List<HelperItem3D>();
+            for (int i = 0; i < listView1.SelectedItems.Count; i++)
+            {
+                all.Add(listView1.SelectedItems[i].Tag as HelperItem3D);
+            }
+
             foreach (var item in cc.Commands)
             {
                 var ccc = new ToolStripMenuItem(item.Name);
                 commandsToolStripMenuItem.DropDownItems.Add(ccc);
-                ccc.Click += (s, ee) => { item.Process(cc as HelperItem3D); };
+                ccc.Click += (s, ee) => { item.Process(cc as HelperItem3D, all.Except(new[] { cc as HelperItem3D }).ToArray(), this); };
             }
         }
-    }
 
-    public interface ICommandsContainer
-    {
-        ICommand[] Commands { get; }
-    }
-    public interface ICommand
-    {
-        string Name { get; }
-        Action<HelperItem3D> Process { get; }
+        private void linesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            var tag = listView1.SelectedItems[0].Tag;
+            if (tag is TriangleHelper th)
+            {
+                var lns = th.GetLines();
+                Helpers.AddRange(lns);
+                updateHelpersList();
+            }
+        }
+
+        bool drawAxis = true;
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            drawAxis = checkBox1.Checked;
+        }
+
+        private void setCameraToPlaneToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void toLineToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count != 2) return;
+            var i0 = listView1.SelectedItems[0].Tag as HelperItem3D;
+            var i1 = listView1.SelectedItems[1].Tag as HelperItem3D;
+
+            if (i0 is Point3DHelper lh0 && i1 is Point3DHelper lh1)
+            {
+                Helpers.Add(new Line3DHelper() { Start = lh0.Position, End = lh1.Position });
+                updateHelpersList();
+            }
+        }
+
+        private void polygonToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var ph = new PolygonleHelper() { };
+            Helpers.Add(ph);
+            ph.Verticies.Add(new Vector3d(0, 0, 0));
+            ph.Verticies.Add(new Vector3d(6, 2, 0));
+            ph.Verticies.Add(new Vector3d(6, 6, 0));
+            ph.Verticies.Add(new Vector3d(0, 8, 0));
+            updateHelpersList();
+        }
+
+        public void AddHelper(HelperItem3D h)
+        {
+            Helpers.Add(h);
+            updateHelpersList();
+        }
+
+        public void AddHelpers(HelperItem3D[] h)
+        {
+            Helpers.AddRange(h);
+            updateHelpersList();
+        }
+
+        private void toolStripButton1_Click(object sender, EventArgs e)
+        {
+            List<Vector3d> pp = new List<Vector3d>();
+            foreach (var item in Helpers)
+            {
+                if (item is Line3DHelper l1)
+                {
+                    pp.Add(l1.Start);
+                    pp.Add(l1.End);
+                }
+                if (item is Point3DHelper l2)
+                {
+                    pp.Add(l2.Position);                    
+                }
+                if (item is TriangleHelper l3)
+                {
+                    pp.Add(l3.V0);
+                    pp.Add(l3.V1);
+                    pp.Add(l3.V2);
+                }
+            }
+            if (pp.Count == 0) return;
+            camera1.FitToPoints(pp.ToArray(), glControl.Width, glControl.Height);
+        }
+
+        private void toolStripButton2_Click(object sender, EventArgs e)
+        {
+            camera1 = new Camera() { IsOrtho = true };
+            ViewManager.Attach(evwrapper, camera1);
+
+        }
     }
 
 }

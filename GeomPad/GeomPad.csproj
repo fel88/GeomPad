@@ -84,6 +84,9 @@
     <Compile Include="Helpers.cs" />
     <Compile Include="Helpers\MeshHelper.cs" />
     <Compile Include="Helpers\RectangleGenerator.cs" />
+    <Compile Include="I3DPadContainer.cs" />
+    <Compile Include="ICommand.cs" />
+    <Compile Include="ICommandsContainer.cs" />
     <Compile Include="IEditFieldsContainer.cs" />
     <Compile Include="IName.cs" />
     <Compile Include="Line3D.cs" />
@@ -101,6 +104,7 @@
     <Compile Include="Point3DHelper.cs" />
     <Compile Include="PolyBool.cs" />
     <Compile Include="Helpers\PolygonHelper.cs" />
+    <Compile Include="PolygonleHelper.cs" />
     <Compile Include="PolygonPointEditorWrapper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
