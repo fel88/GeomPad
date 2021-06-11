@@ -188,7 +188,7 @@ namespace GeomPad
                 var l = new Line3D() { Start = th.Start, End = th.End };
                 if (l.IsPointOnLine(pl.Position))
                 {
-                    SetStatus("point is on line", StatusTypeEnum.Information);
+                    SetStatus($"point is on line ({(l.IsPointInsideSegment(pl.Position)?"inside":"not inside")})", StatusTypeEnum.Information);
                 }
                 else
                 {
@@ -338,6 +338,9 @@ namespace GeomPad
             {
                 switch (item.Name.LocalName)
                 {
+                    case "point":
+                        Helpers.Add(new Point3DHelper(item));
+                        break;
                     case "plane":
                         Helpers.Add(new PlaneHelper(item));
                         break;

@@ -50,15 +50,28 @@ namespace GeomPad
         public override void Draw()
         {
             if (!Visible) return;
+           
+            var basis = GetBasis();
+            if (Fill)
+            {
+                GL.Color3(Color.LightGreen);
+
+                GL.Begin(PrimitiveType.Quads);
+                GL.Vertex3(Position + basis[0] * (-DrawSize) + basis[1] * (-DrawSize));
+                GL.Vertex3(Position + basis[0] * (-DrawSize) + basis[1] * (DrawSize));
+                GL.Vertex3(Position + basis[0] * (DrawSize) + basis[1] * (DrawSize));
+                GL.Vertex3(Position + basis[0] * (DrawSize) + basis[1] * (-DrawSize));
+                GL.End();
+            }
             GL.Color3(Color.Blue);
             if (Selected) GL.Color3(Color.Red);
-            var basis = GetBasis();
             GL.Begin(PrimitiveType.LineLoop);
             GL.Vertex3(Position + basis[0] * (-DrawSize) + basis[1] * (-DrawSize));
             GL.Vertex3(Position + basis[0] * (-DrawSize) + basis[1] * (DrawSize));
             GL.Vertex3(Position + basis[0] * (DrawSize) + basis[1] * (DrawSize));
             GL.Vertex3(Position + basis[0] * (DrawSize) + basis[1] * (-DrawSize));
             GL.End();
+
             GL.Color3(Color.Orange);
             GL.Begin(PrimitiveType.Lines);
             GL.Vertex3(Position);
@@ -66,6 +79,8 @@ namespace GeomPad
 
             GL.End();
         }
+
+        public bool Fill { get; set; }
         public double[] GetKoefs()
         {
             double[] ret = new double[4];

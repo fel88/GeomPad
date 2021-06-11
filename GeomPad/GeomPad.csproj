@@ -118,6 +118,7 @@
       <DependentUpon>TextBoxCaption.cs</DependentUpon>
     </Compile>
     <Compile Include="TriangleHelper.cs" />
+    <Compile Include="TriangleHelperSplitByPlaneCommand.cs" />
     <Compile Include="VectorEditor.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>

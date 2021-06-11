@@ -18,6 +18,10 @@ namespace GeomPad
         public Vector3d End;
 
 
+        public Line3D Get3DLine()
+        {
+            return new Line3D() { Start = Start, End = End }; 
+        }
         public Line3DHelper() { }
         public Line3DHelper(XElement item)
         {
