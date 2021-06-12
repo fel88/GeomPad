@@ -52,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArcDividerHelper.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="CameraViewManager.cs" />
     <Compile Include="ComboBoxItem.cs" />

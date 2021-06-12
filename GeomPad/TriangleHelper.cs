@@ -239,5 +239,4 @@ namespace GeomPad
             return (new PlaneHelper() { Position = V0, Normal = normal });
         }
     }
-
 }

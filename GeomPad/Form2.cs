@@ -188,7 +188,7 @@ namespace GeomPad
                 var l = new Line3D() { Start = th.Start, End = th.End };
                 if (l.IsPointOnLine(pl.Position))
                 {
-                    SetStatus($"point is on line ({(l.IsPointInsideSegment(pl.Position)?"inside":"not inside")})", StatusTypeEnum.Information);
+                    SetStatus($"point is on line ({(l.IsPointInsideSegment(pl.Position) ? "inside" : "not inside")})", StatusTypeEnum.Information);
                 }
                 else
                 {
@@ -467,7 +467,7 @@ namespace GeomPad
                 }
                 if (item is Point3DHelper l2)
                 {
-                    pp.Add(l2.Position);                    
+                    pp.Add(l2.Position);
                 }
                 if (item is TriangleHelper l3)
                 {
@@ -485,6 +485,19 @@ namespace GeomPad
             camera1 = new Camera() { IsOrtho = true };
             ViewManager.Attach(evwrapper, camera1);
 
+        }
+
+        private void arcToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var ph = new ArcDividerHelper()
+            {
+                Center = new Vector3d(),
+                Start = new Vector3d(5, 5, 5),
+                Aux = new Vector3d(-1, -1, 1),
+                SweepAng = 130
+            };
+            Helpers.Add(ph);
+            updateHelpersList();
         }
     }
 

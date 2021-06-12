@@ -1,8 +1,9 @@
-﻿using System.Drawing;
+﻿using OpenTK;
+using System.Drawing;
 
 namespace GeomPad
 {
-    public class StaticHelpers
+    public static class StaticHelpers
     {
 
         
@@ -59,6 +60,14 @@ namespace GeomPad
             }
             return c;
         }
-        
+        public static Vector3d ToVector3d(this Vector3 v)
+        {
+            return new Vector3d(v.X, v.Y, v.Z);
+        }
+        public static Vector3 ToVector3(this Vector3d v)
+        {
+            return new Vector3((float)v.X, (float)v.Y, (float)v.Z);
+        }
+
     }
 }
