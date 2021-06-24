@@ -1,5 +1,6 @@
 ﻿using ClipperLib;
 using GeomPad.Helpers;
+using OpenTK;
 using PolyBoolCS;
 using System;
 using System.Collections.Generic;
@@ -8,6 +9,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using TriangleNet.Geometry;
@@ -20,6 +22,11 @@ namespace GeomPad
         public Form1()
         {
             InitializeComponent();
+            //hack
+            toolStripButton2.BackgroundImageLayout = ImageLayout.None;
+            toolStripButton2.BackgroundImage = new Bitmap(1, 1);
+            toolStripButton2.BackColor = Color.Transparent;
+
             Recreate();
             SizeChanged += Form1_SizeChanged;
             var vls = Enum.GetValues(typeof(JoinType));
@@ -27,6 +34,7 @@ namespace GeomPad
             {
                 comboBox1.Items.Add(new ComboBoxItem() { Tag = item, Name = item.ToString() });
             }
+            comboBox1.SelectedIndex = Array.IndexOf(vls, JoinType.jtRound);
             dc.Init(pictureBox1);
         }
 
@@ -59,6 +67,23 @@ namespace GeomPad
 
             gr.DrawLine(Pens.Red, dc.Transform(new PointF(0, 0)), dc.Transform(new PointF(500, 0)));
             gr.DrawLine(Pens.Green, dc.Transform(new PointF(0, 0)), dc.Transform(new PointF(0, 500)));
+
+            if (dc.MiddleDrag)//measure tool
+            {
+                Pen pen = new Pen(Color.Blue, 2);
+                pen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
+
+                pen.DashPattern = new float[] { 4.0F, 2.0F, 1.0F, 3.0F };
+
+                var curp = dc.Transform(dc.GetCursor());
+                var t = dc.Transform(new PointF(dc.startx, dc.starty));
+                gr.DrawLine(pen, dc.startx, dc.starty, curp.X, curp.Y);
+                var pp = dc.BackTransform(new PointF(dc.startx, dc.starty));
+                Vector2 v1 = new Vector2(pp.X, pp.Y);
+                Vector2 v2 = new Vector2(dc.GetCursor().X, dc.GetCursor().Y);
+                var dist = (v2 - v1).Length;
+                gr.DrawString(dist.ToString("N2"), SystemFonts.DefaultFont, Brushes.Black, curp.X + 10, curp.Y);
+            }
 
             //gr.ResetTransform();
             var pos = pictureBox1.PointToClient(Cursor.Position);
@@ -205,13 +230,13 @@ namespace GeomPad
             if (!(selected is PolygonHelper)) return;
             var hh = listView2.SelectedItems[0].Tag;
             propertyGrid1.SelectedObject = hh;
-
+            //(selected as PolygonHelper).Polygon
 
         }
+
         public static PointList GetPointList(PointF[] pnts)
         {
             PointList plist = new PointList();
-
 
             foreach (var blankPoint in pnts)
             {
@@ -223,8 +248,6 @@ namespace GeomPad
         public static PointList GetPointList(SvgPoint[] pnts)
         {
             PointList plist = new PointList();
-
-
             foreach (var blankPoint in pnts)
             {
                 plist.Add(new PolyBoolCS.Point(blankPoint.X, blankPoint.Y));
@@ -232,6 +255,7 @@ namespace GeomPad
 
             return plist;
         }
+
         public static PolyBoolCS.Polygon GetPolygon(PointF[] pnts)
         {
             var p = new PolyBoolCS.Polygon();
@@ -240,6 +264,7 @@ namespace GeomPad
             p.regions.Add(plist);
             return p;
         }
+
         public static PolyBoolCS.Polygon GetPolygon(SvgPoint[] pnts)
         {
             var p = new PolyBoolCS.Polygon();
@@ -250,14 +275,20 @@ namespace GeomPad
         }
         private void button6_Click(object sender, EventArgs e)
         {
-            var ar0 = Items.Where(z => z is PolygonHelper).Select(z => z as PolygonHelper).ToArray();
-            if (ar0.Length < 2) { StatusMessage("there are no 2 polygon detected", StatusMessageType.Warning); return; }
-            var ar1 = ar0.Take(2).ToArray();
+            List<PolygonHelper> ar1 = new List<PolygonHelper>();
+            for (int i = 0; i < listView1.SelectedItems.Count; i++)
+            {
+                if (listView1.SelectedItems[i].Tag is PolygonHelper ph1)
+                {
+                    ar1.Add(ph1);
+                }
+            }
+            if (ar1.Count != 2) { StatusMessage("there are no 2 polygon selected", StatusMessageType.Warning); return; }
 
             PolyBool pb = new PolyBool();
 
-            var poly1 = GetPolygon(ar1[0].Polygon.Points.ToArray());
-            var poly2 = GetPolygon(ar1[1].Polygon.Points.ToArray());
+            var poly1 = GetPolygon(ar1[0].TransformedPoints().ToArray());
+            var poly2 = GetPolygon(ar1[1].TransformedPoints().ToArray());
             var r = pb.intersect(poly1, poly2);
             if (r.regions.Count == 0)
             {
@@ -307,8 +338,18 @@ namespace GeomPad
 
         private void toolStripButton1_Click(object sender, EventArgs e)
         {
-
+            List<PointF> pp = new List<PointF>();
+            foreach (var item in Items)
+            {
+                var rect = item.BoundingBox();
+                if (rect == null) continue;
+                pp.Add(rect.Value.Location);
+                pp.Add(new PointF(rect.Value.Right, rect.Value.Bottom));
+            }
+            if (pp.Count == 0) return;
+            dc.FitToPoints(pp.ToArray(), 5);
         }
+
         Random rand = new Random();
         private void randomToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -383,50 +424,21 @@ namespace GeomPad
                 if (item.Parent != null) continue;
                 PolygonHelper phh = new PolygonHelper();
                 ret.Add(phh);
-                Items.Add(phh);
                 phh.Polygon = item;
             }
+
 
             return ret.ToArray();
         }
         private void loadXmlFromClipboardToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            try
-            {
-                loadXml(Clipboard.GetText());
-                UpdateList();
-                StatusMessage("succesfully loaded.", StatusMessageType.Info);
 
-            }
-            catch (Exception ex)
-            {
-                StatusMessage(ex.Message, StatusMessageType.Error);
-            }
 
         }
 
         private void fromFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "xml files|*.xml";
-            if (ofd.ShowDialog() != DialogResult.OK) return;
 
-            try
-            {
-                var ret = loadXml(File.ReadAllText(ofd.FileName));
-                var fin = new FileInfo(ofd.FileName);
-                foreach (var item in ret)
-                {
-                    item.Name = fin.Name;
-                }
-                UpdateList();
-                StatusMessage("succesfully loaded.", StatusMessageType.Info);
-
-            }
-            catch (Exception ex)
-            {
-                StatusMessage(ex.Message, StatusMessageType.Error);
-            }
         }
 
         private void pointToolStripMenuItem_Click(object sender, EventArgs e)
@@ -486,6 +498,9 @@ namespace GeomPad
 
             }
 
+            ph.OffsetX = ph2.OffsetX;
+            ph.OffsetY = ph2.OffsetY;
+            ph.Rotation = ph2.Rotation;
             Items.Add(ph);
             UpdateList();
         }
@@ -767,6 +782,101 @@ namespace GeomPad
         {
             comboBox2.Enabled = checkBox1.Checked;
             comboBox3.Enabled = checkBox1.Checked;
+        }
+
+        private void deleteToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            if (listView2.SelectedItems.Count == 0) return;
+            var ppw = listView2.SelectedItems[0].Tag as PolygonPointEditorWrapper;
+
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.Filter = "Xml files (*.xml)|*.xml";
+            if (sfd.ShowDialog() != DialogResult.OK) return;
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("<?xml version=\"1.0\"?>");
+            sb.AppendLine("<root>");
+            foreach (var item in Items)
+            {
+                item.AppendToXml(sb);
+            }
+            sb.AppendLine("</root>");
+            File.WriteAllText(sfd.FileName, sb.ToString());
+        }
+
+        private void fileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "xml files|*.xml";
+            if (ofd.ShowDialog() != DialogResult.OK) return;
+
+            try
+            {
+                var ret = loadXml(File.ReadAllText(ofd.FileName));
+                Items.AddRange(ret);
+                var fin = new FileInfo(ofd.FileName);
+                foreach (var item in ret)
+                {
+                    item.Name = fin.Name;
+                }
+                UpdateList();
+                StatusMessage("succesfully loaded.", StatusMessageType.Info);
+
+            }
+            catch (Exception ex)
+            {
+                StatusMessage(ex.Message, StatusMessageType.Error);
+            }
+        }
+
+        private void clipboardToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var hh = loadXml(Clipboard.GetText());
+                Items.AddRange(hh);
+                UpdateList();
+                StatusMessage("succesfully loaded.", StatusMessageType.Info);
+
+            }
+            catch (Exception ex)
+            {
+                StatusMessage(ex.Message, StatusMessageType.Error);
+            }
+        }
+
+        private void loadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "Xml files (*.xml)|*.xml";
+            if (ofd.ShowDialog() != DialogResult.OK) return;
+            var doc = XDocument.Load(ofd.FileName);
+            var root = doc.Descendants("root").First();
+            Items.Clear();
+            foreach (var item in root.Elements())
+            {
+                if (item.Name == "polygonHelper")
+                {
+                    var ph = new PolygonHelper();
+                    ph.ParseXml(item);
+                    Items.Add(ph);
+                }
+            }
+            UpdateList();
+        }
+        bool snapEnable = false;
+        private void toolStripButton2_Click_1(object sender, EventArgs e)
+        {
+            snapEnable = toolStripButton2.Checked;
+            toolStripButton2.BackColor = snapEnable ? Color.LightGreen : Color.Transparent;
         }
     }
 }
