@@ -3,6 +3,7 @@ using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Text;
 
 namespace GeomPad
@@ -71,13 +72,23 @@ namespace GeomPad
             }
         } 
         public double SweepAng { get; set; }
+
+        public Vector3[] GetPoints()
+        {
+            return RecDividePoint(0, Divider, Start.ToVector3(), Value.ToVector3(), End.ToVector3(), Center.ToVector3()).ToArray();
+        }
+        public Vector3d[] GetPointsD()
+        {
+            return GetPoints().Select(z => z.ToVector3d()).ToArray();
+        }
+
         public override void Draw()
         {
             if (!Visible) return;
             GL.Color3(Color.Blue);
 
             GL.Begin(PrimitiveType.LineStrip);
-            var res = RecDividePoint(0, Divider, Start.ToVector3(), Value.ToVector3(), End.ToVector3(), Center.ToVector3());
+            var res = GetPoints();
             foreach (var item in res)
             {
                 GL.Color3(Color.Blue);

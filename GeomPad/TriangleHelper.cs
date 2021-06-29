@@ -186,13 +186,6 @@ namespace GeomPad
                         });
 
 
-                        ttt.Add(new TriangleHelper()
-                        {
-                            V0 = pnts[0].Position,
-                            V1 = last.Start,
-                            V2 = last.End
-                        });
-
                         if ((pnts[0].Position - last.Start).LengthFast > (pnts[0].Position - last.End).LengthFast)
                         {
                             ttt.Add(new TriangleHelper()
@@ -200,6 +193,12 @@ namespace GeomPad
                                 V0 = pnts[0].Position,
                                 V1 = last.Start,
                                 V2 = pnts[1].Position
+                            });
+                            ttt.Add(new TriangleHelper()
+                            {
+                                V0 = pnts[0].Position,
+                                V1 = last.Start,
+                                V2 = last.End
                             });
                         }
                         else
@@ -209,6 +208,12 @@ namespace GeomPad
                                 V0 = pnts[0].Position,
                                 V1 = last.End,
                                 V2 = pnts[1].Position
+                            });
+                            ttt.Add(new TriangleHelper()
+                            {
+                                V0 = pnts[1].Position,
+                                V1 = last.Start,
+                                V2 = last.End
                             });
                         }
                         ret.AddRange(ttt.Where(z => z.Area > 1e-8));

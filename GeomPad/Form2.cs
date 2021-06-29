@@ -380,7 +380,8 @@ namespace GeomPad
         {
             commandsToolStripMenuItem.DropDownItems.Clear();
             if (listView1.SelectedItems.Count == 0) return;
-            var cc = listView1.SelectedItems[0].Tag as ICommandsContainer;
+            var focusedItem = listView1.FocusedItem;
+            var cc = focusedItem.Tag as ICommandsContainer;
             if (cc == null) return;
             List<HelperItem3D> all = new List<HelperItem3D>();
             for (int i = 0; i < listView1.SelectedItems.Count; i++)
@@ -474,6 +475,10 @@ namespace GeomPad
                     pp.Add(l3.V0);
                     pp.Add(l3.V1);
                     pp.Add(l3.V2);
+                }
+                if (item is ArcDividerHelper arc)
+                {
+                    pp.AddRange(arc.GetPointsD());                    
                 }
             }
             if (pp.Count == 0) return;
