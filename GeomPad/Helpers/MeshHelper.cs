@@ -12,7 +12,8 @@ namespace GeomPad.Helpers
             _mesh = triangles;
         }
         PointF[][] _mesh;
-        public bool Fill { get; set; } = true;
+        bool _fill = true;
+        public bool Fill { get => _fill; set { _fill = value; Changed?.Invoke(); } }
 
         public int TianglesCount
         {
@@ -32,6 +33,7 @@ namespace GeomPad.Helpers
             set
             {
                 FillBrush = new SolidBrush(value);
+                Changed?.Invoke();
             }
         }
         public bool DrawWireframe { get; set; } = true;

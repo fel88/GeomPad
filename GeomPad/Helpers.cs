@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using System;
 using System.Drawing;
 
 namespace GeomPad
@@ -6,7 +7,7 @@ namespace GeomPad
     public static class StaticHelpers
     {
 
-        
+
         public static double signed_area(PointF[] polygon)
         {
             double area = 0.0;
@@ -68,6 +69,13 @@ namespace GeomPad
         {
             return new Vector3((float)v.X, (float)v.Y, (float)v.Z);
         }
-
+        public static double DistTo(this SvgPoint p, SvgPoint p2)
+        {
+            return Math.Sqrt(Math.Pow(p.X - p2.X, 2) + Math.Pow(p.Y - p2.Y, 2));
+        }
+        public static double DistTo(this PointF p, PointF p2)
+        {
+            return Math.Sqrt(Math.Pow(p.X - p2.X, 2) + Math.Pow(p.Y - p2.Y, 2));
+        }
     }
 }

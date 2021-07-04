@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using OpenTK;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace GeomPad
@@ -39,6 +41,10 @@ namespace GeomPad
             ret.Points = pp.ToArray();
             return ret;
         }
+        public void reverse()
+        {
+            Points = Points.Reverse().ToArray();
+        }
         public SvgPoint this[int ind]
         {
             get
@@ -51,6 +57,21 @@ namespace GeomPad
             var list = Points.ToList();
             list.Add(point);
             Points = list.ToArray();
+        }
+
+       
+
+        internal void Translate(Vector2d c)
+        {
+            for (int i = 0; i < Points.Length; i++)
+            {
+                Points[i].X -= c.X;
+                Points[i].Y -= c.Y;
+            }
+            foreach (var item in Childrens)
+            {
+                //item.Translate(-c);
+            }
         }
     }
 }

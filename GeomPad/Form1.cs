@@ -36,9 +36,18 @@ namespace GeomPad
             }
             comboBox1.SelectedIndex = Array.IndexOf(vls, JoinType.jtRound);
             dc.Init(pictureBox1);
+            Load += Form1_Load;
+
+
         }
 
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            mf = new MessageFilter();
+            Application.AddMessageFilter(mf);
+        }
 
+        MessageFilter mf = null;
 
         private void Form1_SizeChanged(object sender, EventArgs e)
         {
@@ -86,16 +95,26 @@ namespace GeomPad
             }
 
             //gr.ResetTransform();
-            var pos = pictureBox1.PointToClient(Cursor.Position);
-            var back = dc.BackTransform(pos);
-            gr.DrawString(dc.scale + "", SystemFonts.DefaultFont, Brushes.Black, 0, 0);
-            gr.DrawString(back.X + "; " + back.Y, SystemFonts.DefaultFont, Brushes.Black, 0, 15);
+
             //gr.TranslateTransform(pictureBox1.Width / 2, pictureBox1.Height / 2);
             //gr.ScaleTransform(dc.scale, dc.scale);
 
             foreach (var item in Items.OrderBy(z => z.Selected))
             {
                 item.Draw(dc);
+            }
+            var pos = pictureBox1.PointToClient(Cursor.Position);
+            var back = dc.BackTransform(pos);
+            gr.FillRectangle(new SolidBrush(Color.FromArgb(128, Color.LightBlue)), 0, 0, 120, 45);
+            gr.DrawString(dc.scale + "", SystemFonts.DefaultFont, Brushes.Black, 0, 0);
+            gr.DrawString(back.X + "; " + back.Y, SystemFonts.DefaultFont, Brushes.Black, 0, 15);
+            if (selected is PolygonHelper ph)
+            {
+                gr.DrawString($"{ph.Polygon.Points.Length} points", SystemFonts.DefaultFont, Brushes.Black, 0, 30);
+            }
+            if (selected is MeshHelper mh)
+            {
+                gr.DrawString($"{mh.TianglesCount} triangles", SystemFonts.DefaultFont, Brushes.Black, 0, 30);
             }
             pictureBox1.Image = bmp;
         }
@@ -106,18 +125,34 @@ namespace GeomPad
             UpdateList();
         }
 
-
         public void UpdateList()
         {
             listView1.Items.Clear();
             foreach (var item in Items)
             {
                 string sub = string.Empty;
+                item.Changed = changed;
+
                 if (item is PolygonHelper ph)
                 {
                     sub = ph.Polygon.Childrens.Count.ToString();
                 }
-                listView1.Items.Add(new ListViewItem(new string[] { item.GetType().Name, item.Name, sub }) { Tag = item });
+                var lvi = new ListViewItem(new string[] { string.Empty, item.Name, item.GetType().Name, sub }) { Tag = item, UseItemStyleForSubItems = false };
+                if (item is PolygonHelper ph2)
+                {
+                    if (ph2.Fill)
+                    {
+                        lvi.BackColor = ph2.FillColor;
+                    }
+                }
+                if (item is MeshHelper mh)
+                {
+                    if (mh.Fill)
+                    {
+                        lvi.BackColor = mh.FillColor;
+                    }
+                }
+                listView1.Items.Add(lvi);
             }
             UpdateList2();
 
@@ -140,24 +175,17 @@ namespace GeomPad
             Items.ForEach(z => z.Selected = false);
 
             if (listView1.SelectedItems.Count == 0) return;
-            propertyGrid1.SelectedObject = listView1.SelectedItems[0].Tag;
-            (propertyGrid1.SelectedObject as HelperItem).Selected = true;
-            selected = listView1.SelectedItems[0].Tag as HelperItem;
+            for (int i = 0; i < listView1.SelectedItems.Count; i++)
+            {
+                (listView1.SelectedItems[i].Tag as HelperItem).Selected = true;
+            }
 
+            propertyGrid1.SelectedObject = listView1.SelectedItems[0].Tag;
+            selected = listView1.SelectedItems[0].Tag as HelperItem;
             UpdateList2();
         }
 
         HelperItem selected;
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
-        {
-            pictureBox1.Focus();
-        }
 
         private void button3_Click(object sender, EventArgs e)
         {
@@ -181,19 +209,10 @@ namespace GeomPad
         }
 
 
-        private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
-        {
-
-        }
-
         public float zoom = 1;
 
         public Bitmap Bmp;
-
-        private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
-        {
-
-        }
+        
 
         private void cloneToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -208,11 +227,7 @@ namespace GeomPad
 
         }
 
-        private void button4_Click(object sender, EventArgs e)
-        {
-
-        }
-
+        
         private void button5_Click(object sender, EventArgs e)
         {
             if (selected is PolygonHelper ph)
@@ -558,7 +573,6 @@ namespace GeomPad
                 poly1 = pb.difference(poly1, GetPolygon(item.Polygon.Points.ToArray()));
             }
 
-
             if (poly1.regions.Count == 0)
             {
                 StatusMessage("no intersections", StatusMessageType.Warning);
@@ -597,24 +611,17 @@ namespace GeomPad
                 phh.Polygon = item;
             }
             UpdateList();
-
-
         }
 
-        private void toolStripDropDownButton1_Click(object sender, EventArgs e)
-        {
-
-        }
 
         private void button4_Click_1(object sender, EventArgs e)
         {
             if (!(selected is PolygonHelper ph2)) { return; }
 
-            var hull = DeepNest.getHull(ph2.Polygon);
+            var hull = DeepNest.getHull(new NFP() { Points = ph2.TransformedPoints() });
             PolygonHelper ph = new PolygonHelper();
             ph.Polygon = hull;
-
-
+            ph.Name = "hull";
             Items.Add(ph);
             UpdateList();
         }
@@ -624,18 +631,13 @@ namespace GeomPad
             if (!(selected is PolygonHelper ph2)) { return; }
 
             double clipperScale = 10000000;
-            var hull = DeepNest.simplifyFunction(ph2.Polygon, false, clipperScale);
+            var hull = DeepNest.simplifyFunction(new NFP() { Points = ph2.TransformedPoints() }, false, clipperScale);
             PolygonHelper ph = new PolygonHelper();
             ph.Polygon = hull;
-
+            ph.Name = "simplify";
 
             Items.Add(ph);
             UpdateList();
-        }
-
-        private void groupBox3_Enter(object sender, EventArgs e)
-        {
-
         }
 
         private void pointToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -646,7 +648,7 @@ namespace GeomPad
 
         private void polygonToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            Items.Add(new PolygonHelper());
+            Items.Add(new PolygonHelper() { Changed = changed });
             UpdateList();
         }
 
@@ -658,7 +660,7 @@ namespace GeomPad
 
         private void circleToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var ph = new CircleGenerator();
+            var ph = new CircleGenerator() { Changed = changed };
             Items.Add(ph);
             UpdateList();
         }
@@ -674,11 +676,6 @@ namespace GeomPad
             UpdateList();
         }
 
-        private void addToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
 
         private void button5_Click_1(object sender, EventArgs e)
         {
@@ -688,7 +685,7 @@ namespace GeomPad
 
             //foreach (var item in plh.Polygon.Points)
             {
-                var pn = plh.Polygon.Points.ToArray();
+                var pn = plh.TransformedPoints();
                 if (StaticHelpers.signed_area(pn) < 0) { pn = pn.Reverse().ToArray(); }
                 var a = pn.Select(z => new Vertex(z.X, z.Y, 0)).ToArray();
 
@@ -699,23 +696,25 @@ namespace GeomPad
             rev = rev.Reverse().ToArray();
             foreach (var item in rev)
             {
-                var pn = item.Points.ToArray();
+                var pn = item.Points.Select(z => plh.Transform(z)).ToArray();
                 var ar = StaticHelpers.signed_area(pn);
                 /*if (StaticHelpers.signed_area(pn) > 0) 
                 {
                     pn = pn.Reverse().ToArray(); 
                 }*/
                 var a = pn.Select(z => new Vertex(z.X, z.Y, 0)).ToArray();
-                PointF test = new PointF((float)item.Points[0].X, (float)item.Points[0].Y);
-                var maxx = item.Points.Max(z => z.X);
-                var minx = item.Points.Min(z => z.X);
-                var maxy = item.Points.Max(z => z.Y);
-                var miny = item.Points.Min(z => z.Y);
+                var p0 = plh.Transform(item.Points[0]);
+                PointF test = new PointF((float)p0.X, (float)p0.Y);
+                var maxx = pn.Max(z => z.X);
+                var minx = pn.Min(z => z.X);
+                var maxy = pn.Max(z => z.Y);
+                var miny = pn.Min(z => z.Y);
+
                 var tx = rand.Next((int)(minx * 100), (int)(maxx * 100)) / 100f;
                 var ty = rand.Next((int)(miny * 100), (int)(maxy * 100)) / 100f;
                 while (true)
                 {
-                    if (StaticHelpers.pnpoly(item.Points.ToArray(), test.X, test.Y))
+                    if (StaticHelpers.pnpoly(pn, test.X, test.Y))
                     {
                         break;
                     }
@@ -738,19 +737,27 @@ namespace GeomPad
                   new PointF((float)z.GetVertex(1).X, (float)z.GetVertex(1).Y),
                   new PointF((float)z.GetVertex(2).X, (float)z.GetVertex(2).Y)
             }).ToArray();
-            Items.Add(new MeshHelper(tr));
+            Items.Add(new MeshHelper(tr) { Name = "triangulate", Changed = () => { UpdateList(); } });
             UpdateList();
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-            Items.ForEach(z => z.Selected = false);
-            selected = null;
+            var em = e as MouseEventArgs;
+            if (em.Button != MouseButtons.Right)
+            {
+                Items.ForEach(z => z.Selected = false);
+                selected = null;
+            }
         }
 
+        void changed()
+        {
+            UpdateList();
+        }
         private void rectangleToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var ph = new RectangleGenerator();
+            var ph = new RectangleGenerator() { Changed = changed };
             Items.Add(ph);
             UpdateList();
         }
@@ -765,7 +772,7 @@ namespace GeomPad
             comboBox2.Items.Clear();
             foreach (var item in Items)
             {
-                comboBox2.Items.Add(new ComboBoxItem() { Name = item.Name, Tag = item });
+                comboBox2.Items.Add(new ComboBoxItem() { Name = $"{item.Name ?? string.Empty} ({item.GetType().Name})", Tag = item });
             }
         }
 
@@ -774,7 +781,7 @@ namespace GeomPad
             comboBox3.Items.Clear();
             foreach (var item in Items)
             {
-                comboBox3.Items.Add(new ComboBoxItem() { Name = item.Name, Tag = item });
+                comboBox3.Items.Add(new ComboBoxItem() { Name = $"{item.Name ?? string.Empty} ({item.GetType().Name})", Tag = item });
             }
         }
 
@@ -877,6 +884,175 @@ namespace GeomPad
         {
             snapEnable = toolStripButton2.Checked;
             toolStripButton2.BackColor = snapEnable ? Color.LightGreen : Color.Transparent;
+        }
+
+        private void dxfFromFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "dxf files (*.dxf)|*.dxf";
+            if (ofd.ShowDialog() != DialogResult.OK) return;
+            var r = DxfParser.LoadDxf(ofd.FileName);
+
+            List<NFP> nfps = new List<NFP>();
+            foreach (var rr in r)
+            {
+                nfps.Add(new NFP() { Points = rr.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray() });
+            }
+
+            for (int i = 0; i < nfps.Count; i++)
+            {
+                for (int j = 0; j < nfps.Count; j++)
+                {
+                    if (i != j)
+                    {
+                        var d2 = nfps[i];
+                        var d3 = nfps[j];
+                        var f0 = d3.Points[0];
+                        if (StaticHelpers.pnpoly(d2.Points.ToArray(), f0.X, f0.Y))
+                        {
+                            d3.Parent = d2;
+                            if (!d2.Childrens.Contains(d3))
+                            {
+                                d2.Childrens.Add(d3);
+                            }
+                        }
+                    }
+                }
+            }
+
+            List<HelperItem> ret = new List<HelperItem>();
+            foreach (var item in nfps)
+            {
+                if (item.Parent != null) continue;
+                PolygonHelper phh = new PolygonHelper();
+                phh.Name = new FileInfo(ofd.FileName).Name;
+                ret.Add(phh);
+                phh.Polygon = item;
+            }
+
+            Items.AddRange(ret);
+            foreach (var item in ret)
+            {
+                item.Changed = () => { UpdateList(); };
+            }
+            UpdateList();
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            List<PolygonHelper> phhs = new List<PolygonHelper>();
+
+            if (!checkBox1.Checked)
+            {
+                if (listView1.SelectedItems.Count < 2) { StatusMessage("there are no 2 polygon selected", StatusMessageType.Warning); return; }
+
+                foreach (var item in listView1.SelectedItems)
+                {
+                    phhs.Add((item as ListViewItem).Tag as PolygonHelper);
+                }
+            }
+            else
+            {
+                phhs.Add((comboBox2.SelectedItem as ComboBoxItem).Tag as PolygonHelper);
+                phhs.Add((comboBox3.SelectedItem as ComboBoxItem).Tag as PolygonHelper);
+            }
+
+            var ar1 = phhs.ToArray();
+
+
+            NFP p = new NFP();
+            NFP p2 = new NFP();
+
+
+            var jType = (JoinType)comboBox1.SelectedIndex;
+            double offset = double.Parse(textBox2.Text.Replace(",", "."), CultureInfo.InvariantCulture);
+            double miterLimit = double.Parse(textBox3.Text.Replace(",", "."), CultureInfo.InvariantCulture);
+            double curveTolerance = double.Parse(textBox4.Text.Replace(",", "."), CultureInfo.InvariantCulture);
+
+            p.Points = ar1[0].Polygon.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+            p2.Points = ar1[1].Polygon.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+            var offs = ClipperHelper.intersection(p, p2, offset, jType, curveTolerance: curveTolerance, miterLimit: miterLimit);
+            PolygonHelper ph = new PolygonHelper();
+
+
+            if (offs.Any())
+            {
+                ph.Polygon.Points = offs.First().Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+            }
+
+            foreach (var item in offs.Skip(1))
+            {
+                var nfp2 = new NFP();
+
+                nfp2.Points = item.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+                ph.Polygon.Childrens.Add(nfp2);
+            }
+
+
+            Items.Add(ph);
+            UpdateList();
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            if (!(selected is PolygonHelper ph2)) { return; }
+
+            var hull = DeepNest.getHull(ph2.TransformedNfp());
+            PolygonHelper ph = new PolygonHelper();
+            ph.Polygon = hull;
+            var box = ph.BoundingBox().Value;
+            PolygonHelper ph3 = new PolygonHelper();
+            ph3.Polygon = new NFP()
+            {
+                Points = new SvgPoint[] {
+                    new SvgPoint (box.Left,box.Top),
+                    new SvgPoint (box.Left,box.Bottom),
+                    new SvgPoint (box.Right,box.Bottom),
+                    new SvgPoint (box.Right,box.Top),
+            }
+            };
+
+            ph3.Name = "AABB";
+            Items.Add(ph3);
+            UpdateList();
+        }
+
+
+
+        private void button10_Click(object sender, EventArgs e)
+        {
+            if (!(selected is PolygonHelper ph2)) { return; }
+
+            var hull = DeepNest.getHull(new NFP() { Points = ph2.TransformedPoints().ToArray() });
+            PolygonHelper ph = new PolygonHelper();
+            ph.Polygon = hull;
+
+            var mar = GeometryUtil.GetMinimumBox(hull.Points.Select(z => new Vector2d(z.X, z.Y)).ToArray());
+            PolygonHelper ph3 = new PolygonHelper();
+
+            ph3.Polygon = new NFP()
+            {
+                Points = mar.Select(z => new SvgPoint(z.X, z.Y)).ToArray()
+            };
+
+            ph3.Name = "minRect";
+            Items.Add(ph3);
+            UpdateList();
+        }
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+
+            if (!(selected is PolygonHelper ph2)) { return; }
+            var c = ph2.CenterOfMass();
+            //ph2.OffsetX = -c.X;
+            //ph2.OffsetY = -c.Y;
+            ph2.Translate(-c);
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenTK;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -12,7 +13,15 @@ namespace GeomPad.Helpers
     {
         public NFP Polygon = new NFP();
 
-        public bool Fill { get; set; } = false;
+        bool _fill = false;
+        public bool Fill { get => _fill; set { _fill = value; Changed?.Invoke(); } }
+        internal Vector2d CenterOfMass()
+        {
+            var b = BoundingBox().Value;
+            return new Vector2d(b.X + OffsetX + b.Width / 2, b.Y + OffsetY + b.Height / 2);
+        }
+
+        
 
         public Color FillColor
         {
@@ -23,6 +32,7 @@ namespace GeomPad.Helpers
             set
             {
                 FillBrush = new SolidBrush(value);
+                Changed?.Invoke();
             }
         }
         public Brush FillBrush = SystemBrushes.Highlight;
@@ -154,12 +164,12 @@ namespace GeomPad.Helpers
             List<SvgPoint> ret = new List<SvgPoint>();
             foreach (var item in Polygon.Points)
             {
-                ret.Add(transform(item));
+                ret.Add(Transform(item));
             }
             return ret.ToArray();
         }
 
-        SvgPoint transform(SvgPoint p)
+        public SvgPoint Transform(SvgPoint p)
         {
             Matrix mtr = new Matrix();
             mtr.RotateAt((float)Rotation, new PointF(0, 0));
@@ -182,6 +192,16 @@ namespace GeomPad.Helpers
             var miny = pnt.Min(z => z.Y);
 
             return new RectangleF((float)(minx + OffsetX), (float)(miny + OffsetY), maxx - minx, maxy - miny);
+        }
+
+        internal void Translate(Vector2d c)
+        {
+            Polygon.Translate(-c);
+        }
+
+        internal NFP TransformedNfp()
+        {
+            return new NFP() { Points = TransformedPoints() };
         }
     }
 }

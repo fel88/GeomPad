@@ -12,7 +12,7 @@ namespace GeomPad
         public string Name { get; set; }
         public bool Selected;
         public abstract void Draw(DrawingContext gr);
-
+        public Action Changed;
         public virtual void AppendToXml(StringBuilder sb)
         {
 
