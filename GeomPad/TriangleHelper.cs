@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Text;
 using System.Xml.Linq;
 using System.Globalization;
+using System;
 
 namespace GeomPad
 {
@@ -66,6 +67,7 @@ namespace GeomPad
             sb.AppendLine($"</triangle>");
         }
 
+        public Color Color = Color.Orange;
         public override void Draw()
         {
             if (!Visible) return;
@@ -77,7 +79,7 @@ namespace GeomPad
                 GL.Vertex3(item);
             }
             GL.End();
-            GL.Color3(Color.Orange);
+            GL.Color3(Color);
             if (Selected)
             {
                 GL.Color3(Color.Red);
@@ -88,6 +90,16 @@ namespace GeomPad
                 GL.Vertex3(item);
             }
             GL.End();
+        }
+
+        internal Vector3d Center()
+        {
+            var s = Vector3d.Zero;
+            foreach (var item in Verticies)
+            {
+                s += item;
+            }
+            return s / 3;
         }
 
         public IName[] GetObjects()
@@ -240,7 +252,7 @@ namespace GeomPad
         {
             var n0 = V2 - V0;
             var n1 = V1 - V0;
-            var normal = Vector3d.Cross(n0, n1);
+            var normal = Vector3d.Cross(n0, n1).Normalized();
             return (new PlaneHelper() { Position = V0, Normal = normal });
         }
     }

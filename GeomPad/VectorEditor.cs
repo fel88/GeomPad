@@ -5,6 +5,11 @@ namespace GeomPad
 {
     public class VectorEditor : IName
     {
+        public VectorEditor(PropertyInfo f)
+        {
+            Property = f;
+            Name = f.Name;
+        }
         public VectorEditor(FieldInfo f)
         {
             Field = f;
@@ -13,17 +18,31 @@ namespace GeomPad
         public string Name { get; set; }
         public object Object;
         public FieldInfo Field;
+        public PropertyInfo Property;
         public double X
         {
             get
             {
-                return ((Vector3d)Field.GetValue(Object)).X;
+                if (Field != null)
+                {
+                    return ((Vector3d)Field.GetValue(Object)).X;
+                }
+                return ((Vector3d)Property.GetValue(Object)).X;
             }
             set
             {
-                var v = ((Vector3d)Field.GetValue(Object));
-                v.X = value;
-                Field.SetValue(Object, v);
+                if (Field != null)
+                {
+                    var v = ((Vector3d)Field.GetValue(Object));
+                    v.X = value;
+                    Field.SetValue(Object, v);
+                }
+                else
+                {
+                    var v = ((Vector3d)Property.GetValue(Object));
+                    v.X = value;
+                    Property.SetValue(Object, v);
+                }
             }
         }
 
@@ -31,13 +50,26 @@ namespace GeomPad
         {
             get
             {
-                return ((Vector3d)Field.GetValue(Object)).Y;
+                if (Field != null)
+                {
+                    return ((Vector3d)Field.GetValue(Object)).Y;
+                }
+                return ((Vector3d)Property.GetValue(Object)).Y;
             }
             set
             {
-                var v = ((Vector3d)Field.GetValue(Object));
-                v.Y = value;
-                Field.SetValue(Object, v);
+                if (Field != null)
+                {
+                    var v = ((Vector3d)Field.GetValue(Object));
+                    v.Y = value;
+                    Field.SetValue(Object, v);
+                }
+                else
+                {
+                    var v = ((Vector3d)Property.GetValue(Object));
+                    v.Y = value;
+                    Property.SetValue(Object, v);
+                }
             }
         }
 
@@ -45,60 +77,27 @@ namespace GeomPad
         {
             get
             {
-                return ((Vector3d)Field.GetValue(Object)).Z;
+                if (Field != null)
+                {
+                    return ((Vector3d)Field.GetValue(Object)).Z;
+                }
+                return ((Vector3d)Property.GetValue(Object)).Z;
             }
             set
             {
-                var v = ((Vector3d)Field.GetValue(Object));
-                v.Z = value;
-                Field.SetValue(Object, v);
+                if (Field != null)
+                {
+                    var v = ((Vector3d)Field.GetValue(Object));
+                    v.Z = value;
+                    Field.SetValue(Object, v);
+                }
+                else
+                {
+                    var v = ((Vector3d)Property.GetValue(Object));
+                    v.Z = value;
+                    Property.SetValue(Object, v);
+                }
             }
         }
-    }
-    public class StringFieldEditor : IName
-    {
-        public StringFieldEditor(FieldInfo f)
-        {
-            Field = f;
-            Name = f.Name;
-        }
-        public string Name { get; set; }
-        public object Object;
-        public FieldInfo Field;
-        public string Value
-        {
-            get
-            {
-                return ((string)Field.GetValue(Object));
-            }
-            set        
-            {
-                Field.SetValue(Object, value);
-            }
-        }
-
-    }
-    public class IntFieldEditor : IName
-    {
-        public IntFieldEditor(FieldInfo f)
-        {
-            Field = f;
-            Name = f.Name;
-        }
-        public string Name { get; set; }
-        public object Object;
-        public FieldInfo Field;
-        public int Value
-        {
-            get
-            {
-                return ((int)Field.GetValue(Object));
-            }
-            set
-            {
-                Field.SetValue(Object, value);
-            }
-        }
-
     }
 }

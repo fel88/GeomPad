@@ -15,5 +15,4 @@ namespace GeomPad
              cc.AddHelpers(res);
          };
     }
-
 }

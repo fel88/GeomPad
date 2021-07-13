@@ -45,6 +45,7 @@
             this.deleteToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1 = new System.Windows.Forms.Panel();
             this.listView1 = new System.Windows.Forms.ListView();
+            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -67,6 +68,7 @@
             this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.button11 = new System.Windows.Forms.Button();
             this.button10 = new System.Windows.Forms.Button();
             this.button9 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
@@ -100,8 +102,6 @@
             this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.button11 = new System.Windows.Forms.Button();
-            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -127,7 +127,7 @@
             this.pictureBox1.Size = new System.Drawing.Size(494, 529);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
-            this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);            
+            this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
             // 
             // tableLayoutPanel1
             // 
@@ -212,6 +212,10 @@
             this.listView2.View = System.Windows.Forms.View.Details;
             this.listView2.SelectedIndexChanged += new System.EventHandler(this.listView2_SelectedIndexChanged);
             // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Width = 120;
+            // 
             // contextMenuStrip2
             // 
             this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -270,6 +274,11 @@
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
             this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
+            // 
+            // columnHeader6
+            // 
+            this.columnHeader6.Text = "";
+            this.columnHeader6.Width = 30;
             // 
             // columnHeader1
             // 
@@ -443,6 +452,16 @@
             this.groupBox3.TabIndex = 3;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "other";
+            // 
+            // button11
+            // 
+            this.button11.Location = new System.Drawing.Point(98, 48);
+            this.button11.Name = "button11";
+            this.button11.Size = new System.Drawing.Size(85, 52);
+            this.button11.TabIndex = 10;
+            this.button11.Text = "reset center of mass";
+            this.button11.UseVisualStyleBackColor = true;
+            this.button11.Click += new System.EventHandler(this.button11_Click);
             // 
             // button10
             // 
@@ -767,21 +786,6 @@
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(16, 17);
             this.toolStripStatusLabel1.Text = "...";
-            // 
-            // button11
-            // 
-            this.button11.Location = new System.Drawing.Point(98, 48);
-            this.button11.Name = "button11";
-            this.button11.Size = new System.Drawing.Size(85, 52);
-            this.button11.TabIndex = 10;
-            this.button11.Text = "reset center of mass";
-            this.button11.UseVisualStyleBackColor = true;
-            this.button11.Click += new System.EventHandler(this.button11_Click);
-            // 
-            // columnHeader6
-            // 
-            this.columnHeader6.Text = "";
-            this.columnHeader6.Width = 30;
             // 
             // Form1
             // 

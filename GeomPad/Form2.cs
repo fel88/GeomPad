@@ -21,6 +21,8 @@ namespace GeomPad
             InitializeComponent();
             glControl = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(32, 24, 0, 8));
 
+            DebugHelper.Error = (x) => { infoPanel.AddError(x); };
+
 
             if (glControl.Context.GraphicsMode.Samples == 0)
             {
@@ -32,9 +34,12 @@ namespace GeomPad
             ViewManager = new DefaultCameraViewManager();
             ViewManager.Attach(evwrapper, camera1);
 
-            tableLayoutPanel1.Controls.Add(glControl, 0, 0);
+            panel1.Controls.Add(glControl);
             glControl.Dock = DockStyle.Fill;
+            infoPanel.Dock = DockStyle.Bottom;
+            panel1.Controls.Add(infoPanel);
         }
+        InfoPanel infoPanel = new InfoPanel();
         public CameraViewManager ViewManager;
         Camera camera1 = new Camera() { IsOrtho = true };
         private EventWrapperGlControl evwrapper;
@@ -294,7 +299,8 @@ namespace GeomPad
         private void listView2_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listView2.SelectedItems.Count == 0) return;
-            propertyGrid1.SelectedObject = listView2.SelectedItems[0].Tag;
+            var obj = listView2.SelectedItems[0].Tag;
+            propertyGrid1.SelectedObject = obj;
         }
 
         private void planeToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -478,7 +484,14 @@ namespace GeomPad
                 }
                 if (item is ArcDividerHelper arc)
                 {
-                    pp.AddRange(arc.GetPointsD());                    
+                    pp.AddRange(arc.GetPointsD());
+                }
+                if (item is HingeHelper hinge)
+                {
+                    pp.Add(hinge.EdgePoint0);
+                    pp.Add(hinge.EdgePoint1);
+                    pp.Add(hinge.AuxPoint0);
+                    pp.Add(hinge.AuxPoint1);                    
                 }
             }
             if (pp.Count == 0) return;
@@ -504,6 +517,17 @@ namespace GeomPad
             Helpers.Add(ph);
             updateHelpersList();
         }
-    }
 
+        private void hingeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var ph = new HingeHelper() { };
+            Helpers.Add(ph);
+            ph.EdgePoint0 = new Vector3d(0, 0, 0);
+            ph.EdgePoint1 = new Vector3d(0, 10, 0);
+            ph.AuxPoint0 = new Vector3d(10, 10, 0);
+            ph.AuxPoint1 = new Vector3d(0, 5, 5);
+
+            updateHelpersList();
+        }
+    }
 }

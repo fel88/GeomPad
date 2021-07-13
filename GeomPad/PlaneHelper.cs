@@ -1,6 +1,5 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
@@ -13,9 +12,10 @@ namespace GeomPad
     public class PlaneHelper : HelperItem3D, IEditFieldsContainer
     {
         [EditField]
-        public Vector3d Position;
+        public Vector3d Position { get { return plane.Position; } set { plane.Position = value; } }
         [EditField]
-        public Vector3d Normal;
+        public Vector3d Normal { get { return plane.Normal; } set { plane.Normal = value; } }
+        PlaneSurface plane=new PlaneSurface ();
 
 
         public PlaneHelper() { }
@@ -29,29 +29,12 @@ namespace GeomPad
         }
 
         public int DrawSize { get; set; } = 10;
-        public Vector3d[] GetBasis()
-        {
-            Vector3d[] shifts = new[] { Vector3d.UnitX, Vector3d.UnitY, Vector3d.UnitZ };
-            Vector3d axis1 = Vector3d.Zero;
-            for (int i = 0; i < shifts.Length; i++)
-            {
-                var proj = ProjPoint(Position + shifts[i]);
 
-                if (Vector3d.Distance(proj, Position) > 10e-6)
-                {
-                    axis1 = (proj - Position).Normalized();
-                    break;
-                }
-            }
-            var axis2 = Vector3d.Cross(Normal.Normalized(), axis1);
-
-            return new[] { axis1, axis2 };
-        }
         public override void Draw()
         {
             if (!Visible) return;
-           
-            var basis = GetBasis();
+
+            var basis = plane.GetBasis();
             if (Fill)
             {
                 GL.Color3(Color.LightGreen);
@@ -139,8 +122,9 @@ namespace GeomPad
 
             var pnt = vvv.OrderBy(z => z.Length).First();
 
-            var r1 = ps.IsOnPlane(pnt);
-            var r2 = IsOnPlane(pnt);
+            
+            var r1 = plane.IsOnPlane(pnt);
+            var r2 = plane.IsOnPlane(pnt);
 
             ret.Start = pnt;
             ret.End = pnt + dir * 100;
@@ -156,22 +140,6 @@ namespace GeomPad
             var y = d2 / d;
             return new[] { x, y };
 
-        }
-        public bool IsOnPlane(Vector3d orig, Vector3d normal, Vector3d check, double tolerance = 10e-6)
-        {
-            return (Math.Abs(Vector3d.Dot(orig - check, normal)) < tolerance);
-        }
-        public bool IsOnPlane(Vector3d v)
-        {
-            return IsOnPlane(Position, Normal, v);
-        }
-        public Vector3d ProjPoint(Vector3d point)
-        {
-            var nrm = Normal.Normalized();
-            var v = point - Position;
-            var dist = Vector3d.Dot(v, nrm);
-            var proj = point - dist * nrm;
-            return proj;
         }
 
 

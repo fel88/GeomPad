@@ -4,7 +4,4 @@
     {
         string Name { get; set; }
     }
-
-    
-
 }

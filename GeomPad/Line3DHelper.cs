@@ -56,6 +56,9 @@ namespace GeomPad
             }
         }
 
+        [EditField]
+        public bool ShowCrosses { get; set; } = true;
+
         public override void Draw()
         {
             if (!Visible) return;
@@ -67,8 +70,11 @@ namespace GeomPad
             GL.Vertex3(End);
             GL.End();
 
-            DrawHelpers.DrawCross(Start, DrawSize);
-            DrawHelpers.DrawCross(End, DrawSize);
+            if (ShowCrosses)
+            {
+                DrawHelpers.DrawCross(Start, DrawSize);
+                DrawHelpers.DrawCross(End, DrawSize);
+            }
 
         }
 
