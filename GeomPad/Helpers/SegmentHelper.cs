@@ -27,8 +27,9 @@ namespace GeomPad.Helpers
             get => Point.Y + "";
             set => Point.Y = value.ParseFloat();
         }
-        public override void Draw(DrawingContext dc)
+        public override void Draw(IDrawingContext idc)
         {
+            var dc = idc as DrawingContext;
             if (!Visible) return;
 
             float r = 3 / dc.scale;

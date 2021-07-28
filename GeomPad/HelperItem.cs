@@ -3,24 +3,21 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 
-namespace GeomPad
+namespace GeomPad.Helpers
 {
-    public abstract class HelperItem
+    public abstract class HelperItem: AbstractHelperItem
     {
         public int Z { get; set; }
-        public bool Visible { get; set; } = true;
-        public string Name { get; set; }
-        public bool Selected;
-        public abstract void Draw(DrawingContext gr);
+        
+        
         public Action Changed;
-        public virtual void AppendToXml(StringBuilder sb)
-        {
-
-        }
+       
 
         public virtual RectangleF? BoundingBox()
         {
             return null;
         }
     }    
+
+    
 }

@@ -61,7 +61,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArcDividerHelper.cs" />
+    <Compile Include="AbstractHelperItem.cs" />
+    <Compile Include="Helpers3D\ArcDividerHelper.cs" />
     <Compile Include="BoolFieldEditor.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="CameraViewManager.cs" />
@@ -70,7 +71,9 @@
     <Compile Include="DrawHelpers.cs" />
     <Compile Include="DxfParser.cs" />
     <Compile Include="EditFieldAttribute.cs" />
+    <Compile Include="Helpers3D\EllipseHelper.cs" />
     <Compile Include="EventWrapperGlControl.cs" />
+    <Compile Include="FieldEditor.cs" />
     <Compile Include="FloatFieldEditor.cs" />
     <Compile Include="Form2.cs">
       <SubType>Form</SubType>
@@ -78,8 +81,8 @@
     <Compile Include="Form2.Designer.cs">
       <DependentUpon>Form2.cs</DependentUpon>
     </Compile>
-    <Compile Include="Geometry.cs" />
-    <Compile Include="HelperItem3D.cs" />
+    <Compile Include="Helpers3D\Geometry.cs" />
+    <Compile Include="Helpers3D\HelperItem.cs" />
     <Compile Include="Helpers\CircleGenerator.cs" />
     <Compile Include="ClipperHelper.cs" />
     <Compile Include="DeepNest.cs" />
@@ -97,9 +100,10 @@
     <Compile Include="Helpers.cs" />
     <Compile Include="Helpers\MeshHelper.cs" />
     <Compile Include="Helpers\RectangleGenerator.cs" />
-    <Compile Include="HingeHelper.cs" />
-    <Compile Include="HingeHelperCalcOutterNormal.cs" />
-    <Compile Include="I3DPadContainer.cs" />
+    <Compile Include="Helpers3D\HingeHelper.cs" />
+    <Compile Include="DebugHelper.cs" />
+    <Compile Include="IDrawingContext.cs" />
+    <Compile Include="IPadContainer.cs" />
     <Compile Include="ICommand.cs" />
     <Compile Include="ICommandsContainer.cs" />
     <Compile Include="IEditFieldsContainer.cs" />
@@ -111,8 +115,8 @@
       <DependentUpon>InfoPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="IntFieldEditor.cs" />
-    <Compile Include="Line3D.cs" />
-    <Compile Include="Line3DHelper.cs" />
+    <Compile Include="Helpers3D\Line3D.cs" />
+    <Compile Include="Helpers3D\LineHelper.cs" />
     <Compile Include="LineElement.cs" />
     <Compile Include="LocalContour.cs" />
     <Compile Include="mdi.cs">
@@ -126,11 +130,11 @@
     <Compile Include="NFP.cs" />
     <Compile Include="Helpers\PointHelper.cs" />
     <Compile Include="Plane.cs" />
-    <Compile Include="PlaneHelper.cs" />
-    <Compile Include="Point3DHelper.cs" />
+    <Compile Include="Helpers3D\PlaneHelper.cs" />
+    <Compile Include="Helpers3D\Point3DHelper.cs" />
     <Compile Include="PolyBool.cs" />
     <Compile Include="Helpers\PolygonHelper.cs" />
-    <Compile Include="PolygonleHelper.cs" />
+    <Compile Include="Helpers3D\PolygonHelper.cs" />
     <Compile Include="PolygonPointEditorWrapper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -144,8 +148,7 @@
     <Compile Include="TextBoxCaption.Designer.cs">
       <DependentUpon>TextBoxCaption.cs</DependentUpon>
     </Compile>
-    <Compile Include="TriangleHelper.cs" />
-    <Compile Include="TriangleHelperSplitByPlaneCommand.cs" />
+    <Compile Include="Helpers3D\TriangleHelper.cs" />
     <Compile Include="VectorEditor.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>

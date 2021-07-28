@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace GeomPad
 {
-    public class DrawingContext
+    public class DrawingContext : IDrawingContext
     {
         public Graphics gr;
         public float scale = 1;

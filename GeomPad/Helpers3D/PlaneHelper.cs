@@ -7,15 +7,15 @@ using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 
-namespace GeomPad
+namespace GeomPad.Helpers3D
 {
-    public class PlaneHelper : HelperItem3D, IEditFieldsContainer
+    public class PlaneHelper : HelperItem
     {
         [EditField]
         public Vector3d Position { get { return plane.Position; } set { plane.Position = value; } }
         [EditField]
         public Vector3d Normal { get { return plane.Normal; } set { plane.Normal = value; } }
-        PlaneSurface plane=new PlaneSurface ();
+        PlaneSurface plane = new PlaneSurface();
 
 
         public PlaneHelper() { }
@@ -30,7 +30,7 @@ namespace GeomPad
 
         public int DrawSize { get; set; } = 10;
 
-        public override void Draw()
+        public override void Draw(IDrawingContext ctx)
         {
             if (!Visible) return;
 
@@ -122,7 +122,7 @@ namespace GeomPad
 
             var pnt = vvv.OrderBy(z => z.Length).First();
 
-            
+
             var r1 = plane.IsOnPlane(pnt);
             var r2 = plane.IsOnPlane(pnt);
 
@@ -139,29 +139,10 @@ namespace GeomPad
             var x = d1 / d;
             var y = d2 / d;
             return new[] { x, y };
-
         }
 
-
-        public IName[] GetObjects()
-        {
-            List<IName> ret = new List<IName>();
-            var fld = GetType().GetFields();
-            for (int i = 0; i < fld.Length; i++)
-            {
-
-                var at = fld[i].GetCustomAttributes(typeof(EditFieldAttribute), true);
-                if (at != null && at.Length > 0)
-                {
-                    if (fld[i].FieldType == typeof(Vector3d))
-                    {
-                        ret.Add(new VectorEditor(fld[i]) { Object = this });
-                    }
-                }
-            }
-            return ret.ToArray();
-        }
-        public override void AppendXml(StringBuilder sb)
+               
+        public override void AppendToXml(StringBuilder sb)
         {
             sb.AppendLine($"<plane position=\"{Position.X};{Position.Y};{Position.Z}\" normal=\"{Normal.X};{Normal.Y};{Normal.Z}\" drawSize=\"{DrawSize}\"/>");
         }

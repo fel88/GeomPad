@@ -1,13 +1,15 @@
-﻿using OpenTK;
+﻿using GeomPad.Helpers3D;
+using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 using System.Xml.Linq;
 
-namespace GeomPad
+namespace GeomPad.Helpers3D
 {
-    public class HingeHelper : HelperItem3D, IEditFieldsContainer, ICommandsContainer
+    public class HingeHelper : HelperItem, ICommandsContainer
     {
         Line3D edge = new Line3D();
         public ICommand[] Commands => new[] { new HingeHelperCalcOutterNormal() };
@@ -42,9 +44,9 @@ namespace GeomPad
         public float DrawSize { get; set; } = 1;
 
 
-        Line3DHelper lineHelper = new Line3DHelper();
-        Line3DHelper normalHelper1 = new Line3DHelper();
-        Line3DHelper normalHelper2 = new Line3DHelper();
+        LineHelper lineHelper = new LineHelper();
+        LineHelper normalHelper1 = new LineHelper();
+        LineHelper normalHelper2 = new LineHelper();
         TriangleHelper tring1 = new TriangleHelper();
         TriangleHelper tring2 = new TriangleHelper();
 
@@ -58,7 +60,7 @@ namespace GeomPad
 
         public Color Color { get; set; } = Color.LightGreen;
         Vector3d normal1;
-        public override void Draw()
+        public override void Draw(IDrawingContext ctx)
         {
             if (!Visible) return;
             var cface = GL.GetBoolean(GetPName.CullFace);
@@ -74,17 +76,17 @@ namespace GeomPad
             tring1.V0 = edge.Start;
             tring1.V1 = edge.End;
             tring1.V2 = AuxPoint0;
-            tring1.Draw();
+            tring1.Draw(ctx);
 
             tring2.V0 = edge.Start;
             tring2.V1 = edge.End;
             tring2.V2 = AuxPoint1;
-            tring2.Draw();
+            tring2.Draw(ctx);
 
             lineHelper.Start = edge.Start;
             lineHelper.End = edge.End;
             lineHelper.ShowCrosses = ShowCrosses;
-            lineHelper.Draw();
+            lineHelper.Draw(ctx);
 
             var cnt = tring1.Center();
             var cnt2 = tring2.Center();
@@ -99,8 +101,8 @@ namespace GeomPad
             normalHelper2.End = cnt2 + normal1;
             if (ShowNormals)
             {
-                normalHelper2.Draw();
-                normalHelper1.Draw();
+                normalHelper2.Draw(ctx);
+                normalHelper1.Draw(ctx);
             }
             if (ShowCrosses)
             {
@@ -120,35 +122,7 @@ namespace GeomPad
 
         public bool Fill { get; set; }
 
-        public IName[] GetObjects()
-        {
-            List<IName> ret = new List<IName>();
-            var fld = GetType().GetProperties();
-            for (int i = 0; i < fld.Length; i++)
-            {
-                var at = fld[i].GetCustomAttributes(typeof(EditFieldAttribute), true);
-                if (at != null && at.Length > 0)
-                {
-                    if (fld[i].PropertyType == typeof(Vector3d))
-                    {
-                        ret.Add(new VectorEditor(fld[i]) { Object = this });
-                    }
-                    if (fld[i].PropertyType == typeof(bool))
-                    {
-                        ret.Add(new BoolFieldEditor(fld[i]) { Object = this });
-                    }
-                    if (fld[i].PropertyType == typeof(int))
-                    {
-                        ret.Add(new IntFieldEditor(fld[i]) { Object = this });
-                    }
-                    if (fld[i].PropertyType == typeof(float))
-                    {
-                        ret.Add(new FloatFieldEditor(fld[i]) { Object = this });
-                    }
-                }
-            }
-            return ret.ToArray();
-        }
+        
         internal Vector3d CalcConjugateNormal()
         {
             var nm = tring1.GetPlane().Normal.Normalized();
@@ -181,9 +155,15 @@ namespace GeomPad
             normal1 = trans;
             return trans;
         }
-        public override void AppendXml(StringBuilder sb)
+        public class HingeHelperCalcOutterNormal : ICommand
         {
+            public string Name => "calc outter normal";
 
+            public Action<AbstractHelperItem, AbstractHelperItem[], IPadContainer> Process => (z, arr, cc) =>
+            {
+                var tr = z as HingeHelper;
+                tr.CalcConjugateNormal();
+            };
         }
-    }
+    }  
 }

@@ -6,14 +6,11 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 
-namespace GeomPad
+namespace GeomPad.Helpers3D
 {
-    public class ArcDividerHelper : HelperItem3D, IEditFieldsContainer
+    public class ArcDividerHelper : HelperItem
     {
-        public override void AppendXml(StringBuilder sb)
-        {
-
-        }
+       
 
         [EditField]
         public Vector3d Start;
@@ -82,7 +79,7 @@ namespace GeomPad
             return GetPoints().Select(z => z.ToVector3d()).ToArray();
         }
 
-        public override void Draw()
+        public override void Draw(IDrawingContext ctx)
         {
             if (!Visible) return;
             GL.Color3(Color.Blue);
@@ -153,20 +150,7 @@ namespace GeomPad
 
         public int DrawSize { get; set; } = 2;
 
-        public IName[] GetObjects()
-        {
-            List<VectorEditor> ret = new List<VectorEditor>();
-            var fld = GetType().GetFields();
-            for (int i = 0; i < fld.Length; i++)
-            {
-                var at = fld[i].GetCustomAttributes(typeof(EditFieldAttribute), true);
-                if (at != null && at.Length > 0)
-                {
-                    ret.Add(new VectorEditor(fld[i]) { Object = this });
-                }
-            }
-            return ret.ToArray();
-        }
+        
     }
 
 

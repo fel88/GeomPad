@@ -1,4 +1,5 @@
-﻿using OpenTK;
+﻿using GeomPad.Helpers3D;
+using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ using System.Xml.Linq;
 
 namespace GeomPad
 {
-    public partial class Form2 : Form, I3DPadContainer
+    public partial class Form2 : Form, IPadContainer
     {
         public Form2()
         {
@@ -117,7 +118,7 @@ namespace GeomPad
 
             foreach (var item in Helpers)
             {
-                item.Draw();
+                item.Draw(null);
             }
 
             glControl.SwapBuffers();
@@ -128,12 +129,12 @@ namespace GeomPad
             glControl.Invalidate();
         }
 
-        List<HelperItem3D> Helpers = new List<HelperItem3D>();
+        List<AbstractHelperItem> Helpers = new List<AbstractHelperItem>();
 
 
         private void lineToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Helpers.Add(new Line3DHelper() { Start = new Vector3d(), End = new Vector3d(10, 10, 10) });
+            Helpers.Add(new LineHelper() { Start = new Vector3d(), End = new Vector3d(10, 10, 10) });
             updateHelpersList();
 
         }
@@ -158,7 +159,7 @@ namespace GeomPad
             if (listView1.SelectedItems.Count == 0) return;
             for (int i = 0; i < listView1.SelectedItems.Count; i++)
             {
-                var h = listView1.SelectedItems[i].Tag as HelperItem3D;
+                var h = listView1.SelectedItems[i].Tag as HelperItem;
                 Helpers.Remove(h);
             }
 
@@ -168,16 +169,16 @@ namespace GeomPad
         private void intersectToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (listView1.SelectedItems.Count != 2) return;
-            var i0 = listView1.SelectedItems[0].Tag as HelperItem3D;
-            var i1 = listView1.SelectedItems[1].Tag as HelperItem3D;
+            var i0 = listView1.SelectedItems[0].Tag as HelperItem;
+            var i1 = listView1.SelectedItems[1].Tag as HelperItem;
 
             var objs = new[] { i0, i1 };
-            if (i0 is Line3DHelper lh0 && i1 is Line3DHelper lh1)
+            if (i0 is LineHelper lh0 && i1 is LineHelper lh1)
             {
                 var inter = Geometry.Intersect3dCrossedLines(new Line3D() { Start = lh0.Start, End = lh0.End }, new Line3D() { Start = lh1.Start, End = lh1.End });
                 if (inter != null && !double.IsNaN(inter.Value.X) && !double.IsInfinity(inter.Value.X))
                 {
-                    Helpers.Add(new Point3DHelper() { Position = inter.Value });
+                    Helpers.Add(new PointHelper() { Position = inter.Value });
                     updateHelpersList();
                 }
                 else
@@ -185,10 +186,10 @@ namespace GeomPad
                     SetStatus("no intersection", StatusTypeEnum.Warning);
                 }
             }
-            if (objs.Any(z => z is Line3DHelper) && objs.Any(z => z is Point3DHelper))
+            if (objs.Any(z => z is LineHelper) && objs.Any(z => z is PointHelper))
             {
-                var pl = objs.First(z => z is Point3DHelper) as Point3DHelper;
-                var th = objs.First(z => z is Line3DHelper) as Line3DHelper;
+                var pl = objs.First(z => z is PointHelper) as PointHelper;
+                var th = objs.First(z => z is LineHelper) as LineHelper;
 
                 var l = new Line3D() { Start = th.Start, End = th.End };
                 if (l.IsPointOnLine(pl.Position))
@@ -213,7 +214,7 @@ namespace GeomPad
                 var ln = pln.Intersect(pl);
                 if (ln != null)
                 {
-                    Helpers.Add(new Line3DHelper() { Start = ln.Start, End = ln.End });
+                    Helpers.Add(new LineHelper() { Start = ln.Start, End = ln.End });
                     updateHelpersList();
                 }
             }
@@ -225,7 +226,7 @@ namespace GeomPad
                 var ln = pl2.Intersect(pl);
                 if (ln != null)
                 {
-                    Helpers.Add(new Line3DHelper() { Start = ln.Start, End = ln.End });
+                    Helpers.Add(new LineHelper() { Start = ln.Start, End = ln.End });
                     updateHelpersList();
                 }
             }
@@ -264,12 +265,12 @@ namespace GeomPad
                 h.Selected = false;
             }
             if (listView1.SelectedItems.Count == 0) return;
-            var tag = listView1.SelectedItems[0].Tag as HelperItem3D;
+            var tag = listView1.SelectedItems[0].Tag as HelperItem;
             propertyGrid1.SelectedObject = tag;
 
             for (int i = 0; i < listView1.SelectedItems.Count; i++)
             {
-                var tag2 = listView1.SelectedItems[i].Tag as HelperItem3D;
+                var tag2 = listView1.SelectedItems[i].Tag as HelperItem;
                 tag2.Selected = true;
             }
 
@@ -286,7 +287,7 @@ namespace GeomPad
 
         private void pointToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Helpers.Add(new Point3DHelper() { Position = new Vector3d() });
+            Helpers.Add(new PointHelper() { Position = new Vector3d() });
             updateHelpersList();
         }
 
@@ -325,7 +326,7 @@ namespace GeomPad
             sb.AppendLine("<root>");
             foreach (var item in Helpers)
             {
-                item.AppendXml(sb);
+                item.AppendToXml(sb);
             }
             sb.AppendLine("</root>");
             File.WriteAllText(sfd.FileName, sb.ToString());
@@ -345,16 +346,22 @@ namespace GeomPad
                 switch (item.Name.LocalName)
                 {
                     case "point":
-                        Helpers.Add(new Point3DHelper(item));
+                        Helpers.Add(new PointHelper(item));
                         break;
                     case "plane":
                         Helpers.Add(new PlaneHelper(item));
                         break;
                     case "line":
-                        Helpers.Add(new Line3DHelper(item));
+                        Helpers.Add(new LineHelper(item));
                         break;
                     case "triangle":
                         Helpers.Add(new TriangleHelper(item));
+                        break;
+                    case "polygon":
+                        Helpers.Add(new PolygonHelper(item));
+                        break;
+                    case "ellipse":
+                        Helpers.Add(new EllipseHelper(item));
                         break;
                 }
             }
@@ -389,17 +396,17 @@ namespace GeomPad
             var focusedItem = listView1.FocusedItem;
             var cc = focusedItem.Tag as ICommandsContainer;
             if (cc == null) return;
-            List<HelperItem3D> all = new List<HelperItem3D>();
+            List<HelperItem> all = new List<HelperItem>();
             for (int i = 0; i < listView1.SelectedItems.Count; i++)
             {
-                all.Add(listView1.SelectedItems[i].Tag as HelperItem3D);
+                all.Add(listView1.SelectedItems[i].Tag as HelperItem);
             }
 
             foreach (var item in cc.Commands)
             {
                 var ccc = new ToolStripMenuItem(item.Name);
                 commandsToolStripMenuItem.DropDownItems.Add(ccc);
-                ccc.Click += (s, ee) => { item.Process(cc as HelperItem3D, all.Except(new[] { cc as HelperItem3D }).ToArray(), this); };
+                ccc.Click += (s, ee) => { item.Process(cc as HelperItem, all.Except(new[] { cc as HelperItem }).ToArray(), this); };
             }
         }
 
@@ -429,19 +436,19 @@ namespace GeomPad
         private void toLineToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (listView1.SelectedItems.Count != 2) return;
-            var i0 = listView1.SelectedItems[0].Tag as HelperItem3D;
-            var i1 = listView1.SelectedItems[1].Tag as HelperItem3D;
+            var i0 = listView1.SelectedItems[0].Tag as HelperItem;
+            var i1 = listView1.SelectedItems[1].Tag as HelperItem;
 
-            if (i0 is Point3DHelper lh0 && i1 is Point3DHelper lh1)
+            if (i0 is PointHelper lh0 && i1 is PointHelper lh1)
             {
-                Helpers.Add(new Line3DHelper() { Start = lh0.Position, End = lh1.Position });
+                Helpers.Add(new LineHelper() { Start = lh0.Position, End = lh1.Position });
                 updateHelpersList();
             }
         }
 
         private void polygonToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var ph = new PolygonleHelper() { };
+            var ph = new PolygonHelper() { };
             Helpers.Add(ph);
             ph.Verticies.Add(new Vector3d(0, 0, 0));
             ph.Verticies.Add(new Vector3d(6, 2, 0));
@@ -450,13 +457,13 @@ namespace GeomPad
             updateHelpersList();
         }
 
-        public void AddHelper(HelperItem3D h)
+        public void AddHelper(AbstractHelperItem h)
         {
             Helpers.Add(h);
             updateHelpersList();
         }
 
-        public void AddHelpers(HelperItem3D[] h)
+        public void AddHelpers(AbstractHelperItem[] h)
         {
             Helpers.AddRange(h);
             updateHelpersList();
@@ -467,12 +474,12 @@ namespace GeomPad
             List<Vector3d> pp = new List<Vector3d>();
             foreach (var item in Helpers)
             {
-                if (item is Line3DHelper l1)
+                if (item is LineHelper l1)
                 {
                     pp.Add(l1.Start);
                     pp.Add(l1.End);
                 }
-                if (item is Point3DHelper l2)
+                if (item is PointHelper l2)
                 {
                     pp.Add(l2.Position);
                 }
@@ -485,6 +492,10 @@ namespace GeomPad
                 if (item is ArcDividerHelper arc)
                 {
                     pp.AddRange(arc.GetPointsD());
+                }
+                if (item is EllipseHelper elp)
+                {
+                    pp.AddRange(elp.GetPointsD());
                 }
                 if (item is HingeHelper hinge)
                 {
@@ -527,6 +538,17 @@ namespace GeomPad
             ph.AuxPoint0 = new Vector3d(10, 10, 0);
             ph.AuxPoint1 = new Vector3d(0, 5, 5);
 
+            updateHelpersList();
+        }
+
+        private void ellipseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var ph = new EllipseHelper()
+            {
+                Normal = new Vector3d(0, 1, 0),
+                AuxPoint = new Vector3d(10, 0, 0)
+            };
+            Helpers.Add(ph);
             updateHelpersList();
         }
     }

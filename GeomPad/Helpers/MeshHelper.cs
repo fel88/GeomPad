@@ -38,8 +38,9 @@ namespace GeomPad.Helpers
         }
         public bool DrawWireframe { get; set; } = true;
         public Brush FillBrush = SystemBrushes.Highlight;
-        public override void Draw(DrawingContext dc)
+        public override void Draw(IDrawingContext idc)
         {
+            var dc = idc as DrawingContext;
             if (!Visible) return;
 
             float r = 3 / dc.scale;

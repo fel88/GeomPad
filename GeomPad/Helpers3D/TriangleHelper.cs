@@ -8,9 +8,9 @@ using System.Xml.Linq;
 using System.Globalization;
 using System;
 
-namespace GeomPad
+namespace GeomPad.Helpers3D
 {
-    public class TriangleHelper : HelperItem3D, IEditFieldsContainer, ICommandsContainer
+    public class TriangleHelper : HelperItem, IEditFieldsContainer, ICommandsContainer
     {
         [EditField]
         public Vector3d V0;
@@ -57,7 +57,7 @@ namespace GeomPad
 
         public ICommand[] Commands => new[] { new TriangleHelperSplitByPlaneCommand() };
 
-        public override void AppendXml(StringBuilder sb)
+        public override void AppendToXml(StringBuilder sb)
         {
             sb.AppendLine($"<triangle>");
             foreach (var item in Verticies)
@@ -68,7 +68,7 @@ namespace GeomPad
         }
 
         public Color Color = Color.Orange;
-        public override void Draw()
+        public override void Draw(IDrawingContext ctx)
         {
             if (!Visible) return;
             GL.Color3(Color.Blue);
@@ -102,27 +102,14 @@ namespace GeomPad
             return s / 3;
         }
 
-        public IName[] GetObjects()
-        {
-            List<VectorEditor> ret = new List<VectorEditor>();
-            var fld = GetType().GetFields();
-            for (int i = 0; i < fld.Length; i++)
-            {
-                var at = fld[i].GetCustomAttributes(typeof(EditFieldAttribute), true);
-                if (at != null && at.Length > 0)
-                {
-                    ret.Add(new VectorEditor(fld[i]) { Object = this });
-                }
-            }
-            return ret.ToArray();
-        }
+        
 
-        internal HelperItem3D[] SplitByPlane(PlaneHelper pl)
+        internal HelperItem[] SplitByPlane(PlaneHelper pl)
         {
             var pl0 = GetPlane();
             var ln = pl0.Intersect(pl);
             if (ln == null) return null;
-            var lns = GetLines().Cast<Line3DHelper>();
+            var lns = GetLines().Cast<LineHelper>();
             List<Vector3d> pp = new List<Vector3d>();
             foreach (var item in lns)
             {
@@ -130,9 +117,9 @@ namespace GeomPad
                 var inter = Geometry.Intersect3dCrossedLines(ln, l3);
                 if (inter != null && l3.IsPointInsideSegment(inter.Value)) pp.Add(inter.Value);
             }
-            List<HelperItem3D> ret = new List<HelperItem3D>();
-            var pnts = pp.Select(z => new Point3DHelper() { Position = z }).ToArray();
-            List<Point3DHelper> pnts3 = new List<Point3DHelper>();
+            List<HelperItem> ret = new List<HelperItem>();
+            var pnts = pp.Select(z => new PointHelper() { Position = z }).ToArray();
+            List<PointHelper> pnts3 = new List<PointHelper>();
             foreach (var item in pnts)
             {
                 bool good = true;
@@ -149,7 +136,7 @@ namespace GeomPad
             pnts = pnts3.ToArray();
             if (pnts.Length == 2)
             {
-                ret.Add(new Line3DHelper() { Start = pnts[0].Position, End = pnts[1].Position });
+                ret.Add(new LineHelper() { Start = pnts[0].Position, End = pnts[1].Position });
                 var segs = lns.Where(z => z.Get3DLine().IsPointInsideSegment(pnts[0].Position) || z.Get3DLine().IsPointInsideSegment(pnts[1].Position)).ToArray();
                 bool b1 = false;
                 if (segs.Length == 3)
@@ -239,12 +226,12 @@ namespace GeomPad
             return ret.ToArray();
         }
 
-        internal HelperItem3D[] GetLines()
+        internal HelperItem[] GetLines()
         {
-            List<HelperItem3D> ret = new List<HelperItem3D>();
-            ret.Add(new Line3DHelper() { Start = V0, End = V1 });
-            ret.Add(new Line3DHelper() { Start = V1, End = V2 });
-            ret.Add(new Line3DHelper() { Start = V2, End = V0 });
+            List<HelperItem> ret = new List<HelperItem>();
+            ret.Add(new LineHelper() { Start = V0, End = V1 });
+            ret.Add(new LineHelper() { Start = V1, End = V2 });
+            ret.Add(new LineHelper() { Start = V2, End = V0 });
             return ret.ToArray();
         }
 
@@ -254,6 +241,18 @@ namespace GeomPad
             var n1 = V1 - V0;
             var normal = Vector3d.Cross(n0, n1).Normalized();
             return (new PlaneHelper() { Position = V0, Normal = normal });
+        }
+        public class TriangleHelperSplitByPlaneCommand : ICommand
+        {
+            public string Name => "split by plane";
+
+            public Action<AbstractHelperItem, AbstractHelperItem[], IPadContainer> Process => (z, arr, cc) =>
+            {
+                var tr = z as TriangleHelper;
+                var pl = arr.First(t => t is PlaneHelper) as PlaneHelper;
+                var res = tr.SplitByPlane(pl);
+                cc.AddHelpers(res);
+            };
         }
     }
 }

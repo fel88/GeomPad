@@ -6,14 +6,14 @@ using System.Xml.Linq;
 using System.Linq;
 using System.Globalization;
 
-namespace GeomPad
+namespace GeomPad.Helpers3D
 {
-    public class Point3DHelper : HelperItem3D
+    public class PointHelper : HelperItem
     {
         public Vector3d Position;        
 
-        public Point3DHelper() { }
-        public Point3DHelper(XElement item)
+        public PointHelper() { }
+        public PointHelper(XElement item)
         {
             var pos = item.Attribute("position").Value.Split(new char[] { ';' }, System.StringSplitOptions.RemoveEmptyEntries).Select(z => double.Parse(z.Replace(",", "."), CultureInfo.InvariantCulture)).ToArray();
             Position = new Vector3d(pos[0], pos[1], pos[2]);
@@ -24,12 +24,12 @@ namespace GeomPad
         public double Y { get => Position.Y; set => Position.Y = value; }
         public double Z { get => Position.Z; set => Position.Z = value; }
 
-        public override void AppendXml(StringBuilder sb)
+        public override void AppendToXml(StringBuilder sb)
         {
             sb.AppendLine($"<point position=\"{Position.X};{Position.Y};{Position.Z}\" drawSize=\"{DrawSize}\"/>");
         }
                 
-        public override void Draw()
+        public override void Draw(IDrawingContext ctx)
         {
             if (!Visible) return;
             GL.Color3(Color.Blue);

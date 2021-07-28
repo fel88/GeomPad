@@ -1,7 +1,7 @@
 ﻿using OpenTK;
 using System;
 
-namespace GeomPad
+namespace GeomPad.Helpers3D
 {
     public class Line3D
     {
