@@ -10,10 +10,9 @@ namespace GeomPad.Helpers3D
 {
     public class ArcDividerHelper : HelperItem
     {
-       
 
         [EditField]
-        public Vector3d Start;
+        public Vector3d Start { get; set; }
 
         [EditField]
         public Vector3d Center;
@@ -67,7 +66,7 @@ namespace GeomPad.Helpers3D
             {
                 _divider = value;
             }
-        } 
+        }
         public double SweepAng { get; set; }
 
         public Vector3[] GetPoints()
@@ -78,6 +77,7 @@ namespace GeomPad.Helpers3D
         {
             return GetPoints().Select(z => z.ToVector3d()).ToArray();
         }
+        public bool ShowIntermediateCrosses { get; set; } = false;
 
         public override void Draw(IDrawingContext ctx)
         {
@@ -94,10 +94,13 @@ namespace GeomPad.Helpers3D
 
             GL.End();
 
-            GL.Color3(Color.Yellow);
-            foreach (var item in res)
+            if (ShowIntermediateCrosses)
             {
-                DrawHelpers.DrawCross(item.ToVector3d(), DrawSize / 2);
+                GL.Color3(Color.Yellow);
+                foreach (var item in res)
+                {
+                    DrawHelpers.DrawCross(item.ToVector3d(), DrawSize / 2);
+                }
             }
             GL.Color3(Color.Blue);
 
@@ -150,7 +153,7 @@ namespace GeomPad.Helpers3D
 
         public int DrawSize { get; set; } = 2;
 
-        
+
     }
 
 

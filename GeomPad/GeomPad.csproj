@@ -61,7 +61,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbstractFieldEditor.cs" />
     <Compile Include="AbstractHelperItem.cs" />
+    <Compile Include="GeomPadException.cs" />
     <Compile Include="Helpers3D\ArcDividerHelper.cs" />
     <Compile Include="BoolFieldEditor.cs" />
     <Compile Include="Camera.cs" />
@@ -83,6 +85,7 @@
     </Compile>
     <Compile Include="Helpers3D\Geometry.cs" />
     <Compile Include="Helpers3D\HelperItem.cs" />
+    <Compile Include="Helpers3D\PointCloudHelper.cs" />
     <Compile Include="Helpers\CircleGenerator.cs" />
     <Compile Include="ClipperHelper.cs" />
     <Compile Include="DeepNest.cs" />
@@ -132,6 +135,7 @@
     <Compile Include="Plane.cs" />
     <Compile Include="Helpers3D\PlaneHelper.cs" />
     <Compile Include="Helpers3D\Point3DHelper.cs" />
+    <Compile Include="PlyLoader.cs" />
     <Compile Include="PolyBool.cs" />
     <Compile Include="Helpers\PolygonHelper.cs" />
     <Compile Include="Helpers3D\PolygonHelper.cs" />
@@ -149,7 +153,13 @@
       <DependentUpon>TextBoxCaption.cs</DependentUpon>
     </Compile>
     <Compile Include="Helpers3D\TriangleHelper.cs" />
-    <Compile Include="VectorEditor.cs" />
+    <Compile Include="VectorFieldEditor.cs" />
+    <Compile Include="VectorSetValuesDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="VectorSetValuesDialog.Designer.cs">
+      <DependentUpon>VectorSetValuesDialog.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -174,6 +184,9 @@
     </Compile>
     <EmbeddedResource Include="TextBoxCaption.resx">
       <DependentUpon>TextBoxCaption.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="VectorSetValuesDialog.resx">
+      <DependentUpon>VectorSetValuesDialog.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />

@@ -1,13 +1,21 @@
 ﻿using OpenTK;
 using System;
 using System.Drawing;
+using System.Globalization;
+using System.Windows.Forms;
 
 namespace GeomPad
 {
     public static class StaticHelpers
     {
-
-
+        public static double ParseDouble(string z)
+        {
+            return double.Parse(z.Replace(",", "."), CultureInfo.InvariantCulture);
+        }
+        public static float ParseFloat(string z)
+        {
+            return float.Parse(z.Replace(",", "."), CultureInfo.InvariantCulture);
+        }
         public static double signed_area(PointF[] polygon)
         {
             double area = 0.0;
@@ -76,6 +84,11 @@ namespace GeomPad
         public static double DistTo(this PointF p, PointF p2)
         {
             return Math.Sqrt(Math.Pow(p.X - p2.X, 2) + Math.Pow(p.Y - p2.Y, 2));
+        }
+
+        internal static bool ShowQuestion(string v, string title)
+        {
+            return MessageBox.Show(v, title, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
         }
     }
 }

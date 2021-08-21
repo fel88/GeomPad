@@ -2,7 +2,7 @@
 
 namespace GeomPad
 {
-    public class FieldEditor<T> : IName
+    public class FieldEditor<T> : AbstractFieldEditor
     {
         public FieldEditor(FieldInfo f)
         {
@@ -14,10 +14,7 @@ namespace GeomPad
             Property = f;
             Name = f.Name;
         }
-        public string Name { get; set; }
-        public object Object;
-        public FieldInfo Field;
-        public PropertyInfo Property;
+        
         public T Value
         {
             get

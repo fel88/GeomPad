@@ -26,8 +26,6 @@ namespace GeomPad.Helpers3D
             }
         }
 
-        
-
         public override void AppendToXml(StringBuilder sb)
         {
             sb.AppendLine($"<polygon>");

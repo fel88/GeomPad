@@ -1,11 +1,57 @@
 ﻿using OpenTK;
+using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Text;
+using System.Xml.Linq;
 
 namespace GeomPad.Helpers3D
 {
     public abstract class HelperItem : AbstractHelperItem, IEditFieldsContainer
-    {        
+    {
+        public HelperItem() { }
+        public HelperItem(XElement item)
+        {
+            if (item.Attribute("name") != null)
+                Name = item.Attribute("name").Value;
+        }
+        protected Vector3d parseVector(Vector3d defValue, XElement parent, string key, bool required = false)
+        {
+            var nrm = parent.Element(key);
+            if (nrm == null)
+            {
+                if (required)
+                    throw new GeomPadException();
+                return defValue;
+            }
+            var pos = nrm.Attribute("pos").Value.Split(new char[] { ';' },
+                StringSplitOptions.RemoveEmptyEntries).Select(z => double.Parse(z.Replace(",", "."),
+                CultureInfo.InvariantCulture)).ToArray();
+            return new Vector3d(pos[0], pos[1], pos[2]);
+        }
+        protected bool parseBool(bool defValue, XElement parent, string key, bool required = false)
+        {
+            var nrm = parent.Attribute(key);
+            if (nrm == null)
+            {
+                if (required)
+                    throw new GeomPadException();
+                return defValue;
+            }
+            return bool.Parse(nrm.Value);
+        }
+        protected double parseDouble(double defValue, XElement parent, string key, bool required = false)
+        {
+            var nrm = parent.Attribute(key);
+            if (nrm == null)
+            {
+                if (required)
+                    throw new GeomPadException();
+                return defValue;
+            }
+            return StaticHelpers.ParseDouble(nrm.Value);
+        }
 
         public virtual IName[] GetObjects()
         {
@@ -16,7 +62,7 @@ namespace GeomPad.Helpers3D
                 var at = fld[i].GetCustomAttributes(typeof(EditFieldAttribute), true);
                 if (at != null && at.Length > 0)
                 {
-                    ret.Add(new VectorEditor(fld[i]) { Object = this });
+                    ret.Add(new VectorFieldEditor(fld[i]) { Object = this });
                 }
             }
             var props = GetType().GetProperties();
@@ -27,7 +73,7 @@ namespace GeomPad.Helpers3D
                 {
                     if (props[i].PropertyType == typeof(Vector3d))
                     {
-                        ret.Add(new VectorEditor(props[i]) { Object = this });
+                        ret.Add(new VectorFieldEditor(props[i]) { Object = this });
                     }
                     if (props[i].PropertyType == typeof(bool))
                     {
@@ -45,9 +91,20 @@ namespace GeomPad.Helpers3D
                     {
                         ret.Add(new FieldEditor<double>(props[i]) { Object = this });
                     }
+                    if (props[i].PropertyType == typeof(string))
+                    {
+                        ret.Add(new StringFieldEditor(props[i]) { Object = this });
+                    }
                 }
             }
             return ret.ToArray();
         }
+
+        public virtual void MoveTo(Vector3d vector)
+        {
+
+        }
     }
+
+
 }

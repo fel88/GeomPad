@@ -3,22 +3,38 @@ using System.Reflection;
 
 namespace GeomPad
 {
-    public class VectorEditor : IName
+    public class VectorFieldEditor : AbstractFieldEditor
     {
-        public VectorEditor(PropertyInfo f)
+        public VectorFieldEditor(PropertyInfo f)
         {
             Property = f;
             Name = f.Name;
         }
-        public VectorEditor(FieldInfo f)
+        public VectorFieldEditor(FieldInfo f)
         {
             Field = f;
             Name = f.Name;
         }
-        public string Name { get; set; }
-        public object Object;
-        public FieldInfo Field;
-        public PropertyInfo Property;
+
+        public void SetVector(Vector3d v)
+        {
+            if (Field != null)
+                Field.SetValue(Object, v);
+            else
+                Property.SetValue(Object, v);
+        }
+
+        public Vector3d Vector
+        {
+            get
+            {
+                if (Field != null)
+                {
+                    return ((Vector3d)Field.GetValue(Object));
+                }
+                return ((Vector3d)Property.GetValue(Object));
+            }
+        }
         public double X
         {
             get

@@ -2,27 +2,38 @@
 
 namespace GeomPad
 {
-    public class StringFieldEditor : IName
+    public class StringFieldEditor : AbstractFieldEditor
     {
         public StringFieldEditor(FieldInfo f)
         {
             Field = f;
             Name = f.Name;
         }
-        public string Name { get; set; }
-        public object Object;
-        public FieldInfo Field;
+        public StringFieldEditor(PropertyInfo f)
+        {
+            Property = f;
+            Name = f.Name;
+        }
+
         public string Value
         {
             get
             {
-                return ((string)Field.GetValue(Object));
+                if (Field != null)
+                {
+                    return ((string)Field.GetValue(Object));
+                }
+                return ((string)Property.GetValue(Object));
             }
             set        
             {
-                Field.SetValue(Object, value);
+                if (Field != null)
+                {
+                    Field.SetValue(Object, value);
+                    return;
+                }
+                Property.SetValue(Object, value);
             }
         }
-
     }
 }

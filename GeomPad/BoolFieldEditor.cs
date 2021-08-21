@@ -2,25 +2,37 @@
 
 namespace GeomPad
 {
-    public class BoolFieldEditor : IName
+    public class BoolFieldEditor : AbstractFieldEditor
     {
-        public BoolFieldEditor(PropertyInfo  f)
+        public BoolFieldEditor(PropertyInfo f)
+        {
+            Property = f;
+            Name = f.Name;
+        }
+        public BoolFieldEditor(FieldInfo f)
         {
             Field = f;
             Name = f.Name;
         }
-        public string Name { get; set; }
-        public object Object;
-        public PropertyInfo Field;
+
         public bool Value
         {
             get
             {
-                return ((bool)Field.GetValue(Object));
+                if (Field != null)
+                {
+                    return ((bool)Field.GetValue(Object));
+                }
+                return ((bool)Property.GetValue(Object));                
             }
             set
             {
-                Field.SetValue(Object, value);
+                if (Field != null)
+                {
+                    Field.SetValue(Object, value);
+                    return;
+                }
+                Property.SetValue(Object, value);                
             }
         }
 

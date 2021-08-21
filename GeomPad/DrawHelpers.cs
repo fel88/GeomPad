@@ -5,7 +5,7 @@ namespace GeomPad
 {
     public static class DrawHelpers
     {
-        public static void DrawCross(Vector3d pos, float g, bool beginEnd = true, bool is3d = true)
+        public static void DrawCross(Vector3d pos, double g, bool beginEnd = true, bool is3d = true)
         {
             if (beginEnd)
             {

@@ -1,7 +1,6 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -17,22 +16,37 @@ namespace GeomPad.Helpers3D
         [EditField]
         public Vector3d End;
 
+        public Vector3d Diff
+        {
+            get
+            {
+                return End - Start;
+            }
+        }
+
 
         public Line3D Get3DLine()
         {
-            return new Line3D() { Start = Start, End = End }; 
+            return new Line3D() { Start = Start, End = End };
         }
         public LineHelper() { }
-        public LineHelper(XElement item)
+        public LineHelper(XElement item) : base(item)
         {
-            var pos = item.Attribute("start").Value.Split(new char[] { ';' }, System.StringSplitOptions.RemoveEmptyEntries).Select(z => double.Parse(z.Replace(",", "."), CultureInfo.InvariantCulture)).ToArray();
+            if (item.Attribute("showCrosses") != null)
+                ShowCrosses = bool.Parse(item.Attribute("showCrosses").Value);
+
+            var pos = item.Attribute("start").Value.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(z => double.Parse(z.Replace(",", "."), CultureInfo.InvariantCulture)).ToArray();
             Start = new Vector3d(pos[0], pos[1], pos[2]);
-            var nrm = item.Attribute("end").Value.Split(new char[] { ';' }, System.StringSplitOptions.RemoveEmptyEntries).Select(z => double.Parse(z.Replace(",", "."), CultureInfo.InvariantCulture)).ToArray();
+            var nrm = item.Attribute("end").Value.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(z => double.Parse(z.Replace(",", "."), CultureInfo.InvariantCulture)).ToArray();
             End = new Vector3d(nrm[0], nrm[1], nrm[2]);
             if (item.Attribute("drawSize") != null)
-                DrawSize = float.Parse(item.Attribute("drawSize").Value.Replace(",", "."));
+                DrawSize = StaticHelpers.ParseFloat(item.Attribute("drawSize").Value);
         }
-
+        public override void MoveTo(Vector3d vector)
+        {
+            Start += vector;
+            End += vector;
+        }
         public float DrawSize { get; set; } = 2;
 
         public ICommand[] Commands => new ICommand[] { new Line3DExpandAlongCommand(), new Line3DSwitchStartEndCommand() };
@@ -80,7 +94,7 @@ namespace GeomPad.Helpers3D
 
         public override void AppendToXml(StringBuilder sb)
         {
-            sb.AppendLine($"<line start=\"{Start.X};{Start.Y};{Start.Z}\" end=\"{End.X};{End.Y};{End.Z}\" drawSize=\"{DrawSize}\"/>");
+            sb.AppendLine($"<line name=\"{Name}\" start=\"{Start.X};{Start.Y};{Start.Z}\" end=\"{End.X};{End.Y};{End.Z}\" drawSize=\"{DrawSize}\" showCrosses=\"{ShowCrosses}\"/>");
         }
         public class Line3DExpandAlongCommand : ICommand
         {
@@ -108,5 +122,5 @@ namespace GeomPad.Helpers3D
         }
     }
 
-    
+
 }

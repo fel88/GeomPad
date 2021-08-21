@@ -10,6 +10,7 @@ namespace GeomPad.Helpers3D
 {
     public class PointHelper : HelperItem
     {
+        [EditField]
         public Vector3d Position;        
 
         public PointHelper() { }

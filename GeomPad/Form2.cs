@@ -90,7 +90,33 @@ namespace GeomPad
             GL.Vertex3(glControl.Width / 2, glControl.Height / 2, zz);
             GL.Vertex3(-glControl.Width / 2, glControl.Height, zz);
             GL.End();
+            GL.PushMatrix();
+            GL.Translate(camera1.viewport[2] / 2 - 50, -camera1.viewport[3] / 2 + 50, 0);
+            GL.Scale(0.5, 0.5, 0.5);
 
+            var mtr = camera1.ViewMatrix;
+            var q = mtr.ExtractRotation();
+            var mtr3 = Matrix4.CreateFromQuaternion(q);
+            GL.MultMatrix(ref mtr3);
+            GL.LineWidth(2);
+            GL.Color3(Color.Red);
+            GL.Begin(PrimitiveType.Lines);
+            GL.Vertex3(0, 0, 0);
+            GL.Vertex3(100, 0, 0);
+            GL.End();
+
+            GL.Color3(Color.Green);
+            GL.Begin(PrimitiveType.Lines);
+            GL.Vertex3(0, 0, 0);
+            GL.Vertex3(0, 100, 0);
+            GL.End();
+
+            GL.Color3(Color.Blue);
+            GL.Begin(PrimitiveType.Lines);
+            GL.Vertex3(0, 0, 0);
+            GL.Vertex3(0, 0, 100);
+            GL.End();
+            GL.PopMatrix();
             camera1.Setup(glControl);
 
             if (drawAxis)
@@ -150,13 +176,14 @@ namespace GeomPad
             listView1.Items.Clear();
             foreach (var item in Helpers)
             {
-                listView1.Items.Add(new ListViewItem(new string[] { item.GetType().Name }) { Tag = item });
+                listView1.Items.Add(new ListViewItem(new string[] { item.Name, item.GetType().Name }) { Tag = item });
             }
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (listView1.SelectedItems.Count == 0) return;
+            if (!StaticHelpers.ShowQuestion("Are you sure to delete selected item?", Text)) return;
             for (int i = 0; i < listView1.SelectedItems.Count; i++)
             {
                 var h = listView1.SelectedItems[i].Tag as HelperItem;
@@ -430,7 +457,17 @@ namespace GeomPad
 
         private void setCameraToPlaneToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (listView1.SelectedItems.Count == 0) return;
 
+            var h = listView1.SelectedItems[0].Tag as HelperItem;
+            if (h is LineHelper lh)
+            {
+                camera1.CamTo = lh.Start.ToVector3();
+            }
+            if (h is PlaneHelper ph)
+            {
+                camera1.CamTo = ph.Position.ToVector3();
+            }
         }
 
         private void toLineToolStripMenuItem_Click(object sender, EventArgs e)
@@ -502,7 +539,11 @@ namespace GeomPad
                     pp.Add(hinge.EdgePoint0);
                     pp.Add(hinge.EdgePoint1);
                     pp.Add(hinge.AuxPoint0);
-                    pp.Add(hinge.AuxPoint1);                    
+                    pp.Add(hinge.AuxPoint1);
+                }
+                if (item is PointCloudHelper phc)
+                {
+                    pp.AddRange(phc.Cloud.Points);                    
                 }
             }
             if (pp.Count == 0) return;
@@ -549,6 +590,54 @@ namespace GeomPad
                 AuxPoint = new Vector3d(10, 0, 0)
             };
             Helpers.Add(ph);
+            updateHelpersList();
+        }
+
+        private void setDialogToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView2.SelectedItems.Count == 0) return;
+            if (!(listView2.SelectedItems[0].Tag is VectorFieldEditor tag)) return;
+            VectorSetValuesDialog d = new VectorSetValuesDialog();
+            d.Init(tag.Vector);
+            d.ShowDialog();
+            tag.SetVector(d.Vector);
+        }
+
+        private void toolStripButton3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            var hi = propertyGrid1.SelectedObject as HelperItem;
+            for (int i = 0; i < listView1.Items.Count; i++)
+            {
+                if (listView1.Items[i].Tag == hi)
+                {
+                    listView1.Items[i].Text = hi.Name;
+                }
+            }
+        }
+
+        private void moveToToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+
+            var h = listView1.SelectedItems[0].Tag as HelperItem;
+            VectorSetValuesDialog d = new VectorSetValuesDialog();
+            d.ShowDialog();
+            h.MoveTo(d.Vector);
+        }
+
+        private void fromFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "PLY files (*.ply)|*.ply";
+            if (ofd.ShowDialog() != DialogResult.OK) return;
+            var res = PlyLoader.LoadPly(ofd.FileName);
+
+            Helpers.Add(new PointCloudHelper() { Cloud = res, Name = Path.GetFileName(ofd.FileName) });
             updateHelpersList();
         }
     }
