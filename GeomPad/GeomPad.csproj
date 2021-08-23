@@ -63,7 +63,9 @@
   <ItemGroup>
     <Compile Include="AbstractFieldEditor.cs" />
     <Compile Include="AbstractHelperItem.cs" />
+    <Compile Include="GeometryUtils.cs" />
     <Compile Include="GeomPadException.cs" />
+    <Compile Include="Helpers3D\BRep\AbstractBRepFaceHelper.cs" />
     <Compile Include="Helpers3D\ArcDividerHelper.cs" />
     <Compile Include="BoolFieldEditor.cs" />
     <Compile Include="Camera.cs" />
@@ -73,10 +75,17 @@
     <Compile Include="DrawHelpers.cs" />
     <Compile Include="DxfParser.cs" />
     <Compile Include="EditFieldAttribute.cs" />
+    <Compile Include="Helpers3D\BRep\ProjectMapEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Helpers3D\BRep\ProjectMapEditor.Designer.cs">
+      <DependentUpon>ProjectMapEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers3D\BRep\CylinderBRepFaceHelper.cs" />
+    <Compile Include="Helpers3D\BRep\ProjectPolygon.cs" />
     <Compile Include="Helpers3D\EllipseHelper.cs" />
     <Compile Include="EventWrapperGlControl.cs" />
     <Compile Include="FieldEditor.cs" />
-    <Compile Include="FloatFieldEditor.cs" />
     <Compile Include="Form2.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -85,7 +94,10 @@
     </Compile>
     <Compile Include="Helpers3D\Geometry.cs" />
     <Compile Include="Helpers3D\HelperItem.cs" />
+    <Compile Include="Helpers3D\Mesh.cs" />
     <Compile Include="Helpers3D\PointCloudHelper.cs" />
+    <Compile Include="Helpers3D\TriangleInfo.cs" />
+    <Compile Include="Helpers3D\VertexInfo.cs" />
     <Compile Include="Helpers\CircleGenerator.cs" />
     <Compile Include="ClipperHelper.cs" />
     <Compile Include="DeepNest.cs" />
@@ -165,6 +177,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Form2.resx">
       <DependentUpon>Form2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Helpers3D\BRep\ProjectMapEditor.resx">
+      <DependentUpon>ProjectMapEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="InfoPanel.resx">
       <DependentUpon>InfoPanel.cs</DependentUpon>

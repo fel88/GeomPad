@@ -62,7 +62,15 @@ namespace GeomPad.Helpers3D
                 var at = fld[i].GetCustomAttributes(typeof(EditFieldAttribute), true);
                 if (at != null && at.Length > 0)
                 {
-                    ret.Add(new VectorFieldEditor(fld[i]) { Object = this });
+                    if (fld[i].FieldType == typeof(Vector3d))
+                    {
+                        ret.Add(new VectorFieldEditor(fld[i]) { Object = this });
+                    }
+                    else
+                    if (fld[i].FieldType == typeof(double))
+                    {
+                        ret.Add(new FieldEditor<double>(fld[i]) { Object = this });
+                    }
                 }
             }
             var props = GetType().GetProperties();

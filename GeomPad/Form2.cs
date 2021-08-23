@@ -1,4 +1,5 @@
 ﻿using GeomPad.Helpers3D;
+using GeomPad.Helpers3D.BRep;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System;
@@ -141,7 +142,9 @@ namespace GeomPad
                 GL.End();
             }
 
+            GL.Enable(EnableCap.Light0);
 
+            GL.ShadeModel(ShadingModel.Smooth);
             foreach (var item in Helpers)
             {
                 item.Draw(null);
@@ -390,6 +393,9 @@ namespace GeomPad
                     case "ellipse":
                         Helpers.Add(new EllipseHelper(item));
                         break;
+                    case "cloud":
+                        Helpers.Add(new PointCloudHelper(item));
+                        break;
                 }
             }
             updateHelpersList();
@@ -543,7 +549,12 @@ namespace GeomPad
                 }
                 if (item is PointCloudHelper phc)
                 {
-                    pp.AddRange(phc.Cloud.Points);                    
+                    pp.AddRange(phc.Cloud.Points);
+                }
+                if (item is AbstractBRepFaceHelper bh)
+                {
+                    if (bh.Mesh != null)
+                        pp.AddRange(bh.Mesh.Triangles.SelectMany(z => z.Vertices.Select(u => u.Position)));
                 }
             }
             if (pp.Count == 0) return;
@@ -639,6 +650,18 @@ namespace GeomPad
 
             Helpers.Add(new PointCloudHelper() { Cloud = res, Name = Path.GetFileName(ofd.FileName) });
             updateHelpersList();
+        }
+
+        private void cylinderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Helpers.Add(new CylinderBRepFaceHelper() { });
+            updateHelpersList();
+        }
+
+        public void OpenChildWindow(Form f)
+        {
+            f.MdiParent = MdiParent;
+            f.Show();
         }
     }
 }

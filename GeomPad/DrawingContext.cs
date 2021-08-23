@@ -107,6 +107,13 @@ namespace GeomPad
             }
         }
 
+        internal void ResetView()
+        {
+            zoom = 1;
+            sx = 0;
+            sy = 0;
+        }
+
         public virtual void Pb_SizeChanged(object sender, EventArgs e)
         {
             Bmp = new Bitmap(PictureBox.Control.Width, PictureBox.Control.Height);
@@ -116,10 +123,23 @@ namespace GeomPad
         {
             isDrag = false;
             isMiddleDrag = false;
+
+            var tt = BackTransform(e.X, e.Y);
+            MouseUp?.Invoke(tt.X, tt.Y, e.Button);
         }
+
+        public event Action<float, float, MouseButtons> MouseUp;
         public virtual PointF Transform(PointF p1)
         {
             return new PointF((p1.X + sx) * zoom, -(p1.Y + sy) * zoom);
+        }
+        public virtual PointF Transform(float x, float y)
+        {
+            return new PointF((x + sx) * zoom, -(y + sy) * zoom);
+        }
+        public virtual PointF Transform(double x, double y)
+        {
+            return new PointF((float)((x + sx) * zoom), (float)(-(y + sy) * zoom));
         }
         public virtual PointF Transform(SvgPoint p1)
         {
@@ -130,6 +150,12 @@ namespace GeomPad
         {
             var posx = (p1.X / zoom - sx);
             var posy = (-p1.Y / zoom - sy);
+            return new PointF(posx, posy);
+        }
+        public virtual PointF BackTransform(float x,float y)
+        {
+            var posx = (x / zoom - sx);
+            var posy = (-y / zoom - sy);
             return new PointF(posx, posy);
         }
         public EventWrapperPictureBox PictureBox;
