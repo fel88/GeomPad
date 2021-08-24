@@ -13,6 +13,15 @@ namespace GeomPad.Helpers
     {
         public NFP Polygon = new NFP();
 
+        public override void Shift(Vector2d vector)
+        {
+            Polygon.Shift(vector);
+            foreach (var item in Polygon.Childrens)
+            {
+                item.Shift(vector);
+            }
+        }
+
         bool _fill = false;
         public bool Fill { get => _fill; set { _fill = value; Changed?.Invoke(); } }
         internal Vector2d CenterOfMass()
@@ -21,7 +30,15 @@ namespace GeomPad.Helpers
             return new Vector2d(b.X + OffsetX + b.Width / 2, b.Y + OffsetY + b.Height / 2);
         }
 
-        
+        public int PointsCount
+        {
+            get
+            {
+                return Polygon.Points.Length;
+            }
+        }
+
+
 
         public Color FillColor
         {
@@ -51,6 +68,7 @@ namespace GeomPad.Helpers
             return dc.Transform(new SvgPoint(p.X + OffsetX, p.Y + OffsetY));
         }
 
+        public bool DrawPoints { get; set; } = false;
         public override void Draw(IDrawingContext idc)
         {
             var dc = idc as DrawingContext;
@@ -78,11 +96,12 @@ namespace GeomPad.Helpers
                 dc.gr.FillPath(FillBrush, gp);
 
             }
-            foreach (var item in Polygon.Points)
-            {
-                var tr1 = transform(dc, item);
-                dc.gr.FillEllipse(br, tr1.X - r, tr1.Y - r, 2 * r, 2 * r);
-            }
+            if (DrawPoints)
+                foreach (var item in Polygon.Points)
+                {
+                    var tr1 = transform(dc, item);
+                    dc.gr.FillEllipse(br, tr1.X - r, tr1.Y - r, 2 * r, 2 * r);
+                }
 
             for (int i = 0; i < Polygon.Points.Length; i++)
             {
@@ -93,11 +112,12 @@ namespace GeomPad.Helpers
             }
             foreach (var ch in Polygon.Childrens)
             {
-                foreach (var item in ch.Points)
-                {
-                    var tr1 = transform(dc, item);
-                    dc.gr.FillEllipse(br, tr1.X - r, tr1.Y - r, 2 * r, 2 * r);
-                }
+                if (DrawPoints)
+                    foreach (var item in ch.Points)
+                    {
+                        var tr1 = transform(dc, item);
+                        dc.gr.FillEllipse(br, tr1.X - r, tr1.Y - r, 2 * r, 2 * r);
+                    }
                 for (int i = 0; i < ch.Points.Length; i++)
                 {
                     var j = (i + 1) % ch.Points.Length;
@@ -125,7 +145,7 @@ namespace GeomPad.Helpers
         }
         public override void AppendToXml(StringBuilder sb)
         {
-            sb.AppendLine($"<polygonHelper offsetX=\"{OffsetX}\" offsetY=\"{OffsetY}\" rotation=\"{Rotation}\">");
+            sb.AppendLine($"<polygonHelper name=\"{Name}\" offsetX=\"{OffsetX}\" offsetY=\"{OffsetY}\" rotation=\"{Rotation}\">");
             appendPolygon(sb, Polygon);
             sb.AppendLine("</polygonHelper>");
         }
@@ -153,6 +173,8 @@ namespace GeomPad.Helpers
 
         internal void ParseXml(XElement item)
         {
+            if (item.Attribute("name") != null)
+                Name = item.Attribute("name").Value;
             OffsetX = double.Parse(item.Attribute("offsetX").Value);
             OffsetY = double.Parse(item.Attribute("offsetY").Value);
             Rotation = double.Parse(item.Attribute("rotation").Value);

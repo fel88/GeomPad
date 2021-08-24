@@ -4327,19 +4327,20 @@ namespace ClipperLib
           }
         return quads;
       }
-      //------------------------------------------------------------------------------
+        //------------------------------------------------------------------------------
 
-      public static Paths MinkowskiSum(Path pattern, Path path, bool pathIsClosed)
-      {
-        Paths paths = Minkowski(pattern, path, true, pathIsClosed);
-        Clipper c = new Clipper();
-        c.AddPaths(paths, PolyType.ptSubject, true);
-        c.Execute(ClipType.ctUnion, paths, PolyFillType.pftNonZero, PolyFillType.pftNonZero);
-        return paths;
-      }
-      //------------------------------------------------------------------------------
+        public static Paths MinkowskiSum(Path pattern, Path path, bool pathIsClosed)
+        {
+            Paths paths = Minkowski(pattern, path, true, pathIsClosed);
+            Clipper c = new Clipper();
+            c.AddPaths(paths, PolyType.ptSubject, true);
+            c.Execute(ClipType.ctUnion, paths, PolyFillType.pftNonZero, PolyFillType.pftNonZero);
+            return paths;
+        }
+        
+        //------------------------------------------------------------------------------
 
-      private static Path TranslatePath(Path path, IntPoint delta) 
+        private static Path TranslatePath(Path path, IntPoint delta) 
       {
         Path outPath = new Path(path.Count);
         for (int i = 0; i < path.Count; i++)

@@ -1,10 +1,11 @@
-﻿using System.Drawing;
+﻿using OpenTK;
+using System.Drawing;
 
 namespace GeomPad.Helpers
 {
     public class PointHelper : HelperItem
     {
-        public PointF Point;
+        public Vector2d Point;
 
         public string X
         {
@@ -28,7 +29,7 @@ namespace GeomPad.Helpers
             {
                 br = Brushes.Red;
             }
-            var tr = dc.Transform(Point);
+            var tr = dc.Transform(Point.ToPointF());
             dc.gr.FillEllipse(br, tr.X - r, tr.Y - r, 2 * r, 2 * r);
 
         }

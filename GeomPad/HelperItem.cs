@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenTK;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
@@ -17,7 +18,10 @@ namespace GeomPad.Helpers
         {
             return null;
         }
-    }    
 
-    
+        public virtual void Shift(Vector2d vector)
+        {
+            
+        }
+    }      
 }

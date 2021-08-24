@@ -1,6 +1,7 @@
 ﻿using ClipperLib;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 
 namespace GeomPad
@@ -153,7 +154,313 @@ namespace GeomPad
 
             return target;
         }
+        public static NFP getFrame(NFP A)
+        {
+            var bounds = GeometryUtil.GetPolygonBounds(A);
 
+            // expand bounds by 10%
+            bounds.Width *= 1.1;
+            bounds.Height *= 1.1;
+            bounds.X -= 0.5 * (bounds.Width - (bounds.Width / 1.1));
+            bounds.Y -= 0.5 * (bounds.Height - (bounds.Height / 1.1));
+
+            var frame = new NFP();
+            frame.push(new SvgPoint(bounds.X, bounds.Y));
+            frame.push(new SvgPoint(bounds.X + bounds.Width, bounds.Y));
+            frame.push(new SvgPoint(bounds.X + bounds.Width, bounds.Y + bounds.Height));
+            frame.push(new SvgPoint(bounds.X, bounds.Y + bounds.Height));
+
+
+            frame.Childrens = new List<NFP>() { (NFP)A };
+
+
+
+            return frame;
+        }
+        public static NFP[] Convolve(NFP A, NFP B)
+        {
+            return new[] { ClipperHelper.MinkowskiSum(A, B, true, false) };
+        }
+
+        //public static NFP[] Convolve(NFP A, NFP B)
+        //{
+        //    Dictionary<string, List<PointF>> dic1 = new Dictionary<string, List<PointF>>();
+        //    Dictionary<string, List<double>> dic2 = new Dictionary<string, List<double>>();
+        //    dic2.Add("A", new List<double>());
+        //    foreach (var item in A.Points)
+        //    {
+        //        var target = dic2["A"];
+        //        target.Add(item.X);
+        //        target.Add(item.Y);
+        //    }
+        //    dic2.Add("B", new List<double>());
+        //    foreach (var item in B.Points)
+        //    {
+        //        var target = dic2["B"];
+        //        target.Add(item.X);
+        //        target.Add(item.Y);
+        //    }
+
+
+        //    List<double> hdat = new List<double>();
+
+        //    foreach (var item in A.Childrens)
+        //    {
+        //        foreach (var pitem in item.Points)
+        //        {
+        //            hdat.Add(pitem.X);
+        //            hdat.Add(pitem.Y);
+        //        }
+        //    }
+
+        //    var aa = dic2["A"];
+        //    var bb = dic2["B"];
+        //    var arr1 = A.Childrens.Select(z => z.Points.Count() * 2).ToArray();
+
+        //    MinkowskiWrapper.setData(aa.Count, aa.ToArray(), A.Childrens.Count, arr1, hdat.ToArray(), bb.Count, bb.ToArray());
+        //    MinkowskiWrapper.calculateNFP();
+
+
+
+        //    int[] sizes = new int[2];
+        //    MinkowskiWrapper.getSizes1(sizes);
+        //    int[] sizes1 = new int[sizes[0]];
+        //    int[] sizes2 = new int[sizes[1]];
+        //    MinkowskiWrapper.getSizes2(sizes1, sizes2);
+        //    double[] dat1 = new double[sizes1.Sum()];
+        //    double[] hdat1 = new double[sizes2.Sum()];
+
+        //    MinkowskiWrapper.getResults(dat1, hdat1);
+
+        //    if (sizes1.Count() > 1)
+        //    {
+        //        throw new ArgumentException("sizes1 cnt >1");
+        //    }
+
+
+        //    //convert back to answer here
+        //    bool isa = true;
+        //    List<PointF> Apts = new List<PointF>();
+
+
+
+        //    List<List<double>> holesval = new List<List<double>>();
+        //    bool holes = false;
+
+        //    for (int i = 0; i < dat1.Length; i += 2)
+        //    {
+        //        var x1 = (float)dat1[i];
+        //        var y1 = (float)dat1[i + 1];
+        //        Apts.Add(new PointF(x1, y1));
+        //    }
+
+        //    int index = 0;
+        //    for (int i = 0; i < sizes2.Length; i++)
+        //    {
+        //        holesval.Add(new List<double>());
+        //        for (int j = 0; j < sizes2[i]; j++)
+        //        {
+        //            holesval.Last().Add(hdat1[index]);
+        //            index++;
+        //        }
+        //    }
+
+        //    List<List<PointF>> holesout = new List<List<PointF>>();
+        //    foreach (var item in holesval)
+        //    {
+        //        holesout.Add(new List<PointF>());
+        //        for (int i = 0; i < item.Count; i += 2)
+        //        {
+        //            var x = (float)item[i];
+        //            var y = (float)item[i + 1];
+        //            holesout.Last().Add(new PointF(x, y));
+        //        }
+        //    }
+
+        //    NFP ret = new NFP();
+        //    ret.Points = new SvgPoint[] { };
+        //    foreach (var item in Apts)
+        //    {
+        //        ret.AddPoint(new SvgPoint(item.X, item.Y));
+        //    }
+
+
+        //    foreach (var item in holesout)
+        //    {
+        //        if (ret.Childrens == null)
+        //            ret.Childrens = new List<NFP>();
+
+        //        ret.Childrens.Add(new NFP());
+        //        ret.Childrens.Last().Points = new SvgPoint[] { };
+        //        foreach (var hitem in item)
+        //        {
+        //            ret.Childrens.Last().AddPoint(new SvgPoint(hitem.X, hitem.Y));
+        //        }
+        //    }
+
+        //    var res = new NFP[] { ret };
+        //    return res;
+        //}
+
+        public static NFP getOuterNfp(NFP A, NFP B, bool inside = false)
+        {
+            NFP[] nfp = null;
+
+
+            if (inside || (A.Childrens != null && A.Childrens.Count > 0))
+            {
+                nfp = DeepNest.Convolve(A, B);
+            }
+            else
+            {
+                var Ac = ClipperHelper.ScaleUpPaths(A, 10000000);
+
+                var Bc = ClipperHelper.ScaleUpPaths(B, 10000000);
+                for (var i = 0; i < Bc.Length; i++)
+                {
+                    Bc[i].X *= -1;
+                    Bc[i].Y *= -1;
+                }
+                var solution = ClipperLib.Clipper.MinkowskiSum(new List<IntPoint>(Ac), new List<IntPoint>(Bc), true);
+                NFP clipperNfp = null;
+
+                double? largestArea = null;
+                for (int i = 0; i < solution.Count(); i++)
+                {
+                    var n = toNestCoordinates(solution[i].ToArray(), 10000000);
+                    var sarea = GeometryUtil.polygonArea(n);
+                    if (largestArea == null || largestArea > sarea)
+                    {
+                        clipperNfp = n;
+                        largestArea = sarea;
+                    }
+                }
+
+                for (var i = 0; i < clipperNfp.Length; i++)
+                {
+                    clipperNfp[i].X += B[0].X;
+                    clipperNfp[i].Y += B[0].Y;
+                }
+                nfp = new NFP[] { new NFP() { Points = clipperNfp.Points } };
+
+
+            }
+
+            if (nfp == null || nfp.Length == 0)
+            {
+                //console.log('holy shit', nfp, A, B, JSON.stringify(A), JSON.stringify(B));
+                return null;
+            }
+
+            NFP nfps = nfp.First();
+
+            if (nfps == null || nfps.Length == 0)
+            {
+                return null;
+            }
+
+            return nfps;
+
+
+
+        }
+        public static IntPoint[][] nfpToClipperCoordinates(NFP nfp, double clipperScale = 10000000)
+        {
+            List<IntPoint[]> clipperNfp = new List<IntPoint[]>();
+
+            // children first
+            if (nfp.Childrens != null && nfp.Childrens.Count > 0)
+            {
+                for (var j = 0; j < nfp.Childrens.Count; j++)
+                {
+                    if (GeometryUtil.polygonArea(nfp.Childrens[j]) < 0)
+                    {
+                        nfp.Childrens[j].reverse();
+                    }
+
+                    var childNfp = ClipperHelper.ScaleUpPaths(nfp.Childrens[j], clipperScale);
+                    clipperNfp.Add(childNfp);
+                }
+            }
+
+            if (GeometryUtil.polygonArea(nfp) > 0)
+            {
+                nfp.reverse();
+            }
+            var outerNfp = ClipperHelper.ScaleUpPaths(nfp, clipperScale);
+
+            clipperNfp.Add(outerNfp);
+            return clipperNfp.ToArray();
+        }
+        private static IntPoint[][] innerNfpToClipperCoordinates(NFP[] nfp, double clipperScale = 10000000)
+        {
+            List<IntPoint[]> clipperNfp = new List<IntPoint[]>();
+            for (var i = 0; i < nfp.Count(); i++)
+            {
+                var clip = nfpToClipperCoordinates(nfp[i], clipperScale);
+                clipperNfp.AddRange(clip);
+            }
+
+            return clipperNfp.ToArray();
+        }
+        public static NFP[] getInnerNfp(NFP A, NFP B, double clipperScale = 10000000)
+        {
+
+            var frame = getFrame(A);
+
+            var nfp = getOuterNfp(frame, B, true);
+
+            if (nfp == null || nfp.Childrens == null || nfp.Childrens.Count == 0)
+            {
+                return null;
+            }
+            List<NFP> holes = new List<NFP>();
+            if (A.Childrens != null && A.Childrens.Count > 0)
+            {
+                for (var i = 0; i < A.Childrens.Count; i++)
+                {
+                    var hnfp = getOuterNfp(A.Childrens[i], B);
+                    if (hnfp != null)
+                    {
+                        holes.Add(hnfp);
+                    }
+                }
+            }
+
+            if (holes.Count == 0)
+            {
+                return nfp.Childrens.ToArray();
+            }
+            var clipperNfp = innerNfpToClipperCoordinates(nfp.Childrens.ToArray(), clipperScale);
+            var clipperHoles = innerNfpToClipperCoordinates(holes.ToArray(), clipperScale);
+
+            List<List<IntPoint>> finalNfp = new List<List<IntPoint>>();
+            var clipper = new Clipper();
+
+            clipper.AddPaths(clipperHoles.Select(z => z.ToList()).ToList(), PolyType.ptClip, true);
+            clipper.AddPaths(clipperNfp.Select(z => z.ToList()).ToList(), PolyType.ptSubject, true);
+
+            if (!clipper.Execute(ClipType.ctDifference, finalNfp, PolyFillType.pftNonZero, PolyFillType.pftNonZero))
+            {
+                return nfp.Childrens.ToArray();
+            }
+
+            if (finalNfp.Count == 0)
+            {
+                return null;
+            }
+
+            List<NFP> f = new List<NFP>();
+            for (var i = 0; i < finalNfp.Count; i++)
+            {
+                f.Add(toNestCoordinates(finalNfp[i].ToArray(), clipperScale));
+            }
+
+
+
+            return f.ToArray();
+
+        }
 
         // use the clipper library to return an offset to the given polygon. Positive offset expands the polygon, negative contracts
         // note that this returns an array of polygons
@@ -195,12 +502,12 @@ namespace GeomPad
             return new NFP() { Points = ret.ToArray() };
         }
         // converts a polygon from normal float coordinates to integer coordinates used by clipper, as well as x/y -> X/Y
-        public static IntPoint[] svgToClipper(NFP polygon, double clipperScale)
+        private static IntPoint[] svgToClipper(NFP polygon, double clipperScale)
         {
             var d = ClipperHelper.ScaleUpPaths(polygon, clipperScale);
             return d.ToArray();
         }
-        public static NFP toNestCoordinates(IntPoint[] polygon, double scale)
+        private static NFP toNestCoordinates(IntPoint[] polygon, double scale)
         {
             var clone = new List<SvgPoint>();
 
@@ -212,6 +519,32 @@ namespace GeomPad
                         ));
             }
             return new NFP() { Points = clone.ToArray() };
+        }
+        public static NFP clone2(NFP nfp)
+        {
+            NFP newnfp = new NFP();
+
+            for (var i = 0; i < nfp.Length; i++)
+            {
+                newnfp.AddPoint(new SvgPoint(nfp[i].X, nfp[i].Y));
+            }
+
+            if (nfp.Childrens != null && nfp.Childrens.Count > 0)
+            {
+                newnfp.Childrens = new List<NFP>();
+                for (int i = 0; i < nfp.Childrens.Count; i++)
+                {
+                    var child = nfp.Childrens[i];
+                    NFP newchild = new NFP();
+                    for (var j = 0; j < child.Length; j++)
+                    {
+                        newchild.AddPoint(new SvgPoint(child[j].X, child[j].Y));
+                    }
+                    newnfp.Childrens.Add(newchild);
+                }
+            }
+
+            return newnfp;
         }
         public static NFP clone(NFP p)
         {

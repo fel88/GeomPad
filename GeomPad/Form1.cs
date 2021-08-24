@@ -27,6 +27,10 @@ namespace GeomPad
             toolStripButton2.BackgroundImage = new Bitmap(1, 1);
             toolStripButton2.BackColor = Color.Transparent;
 
+            toolStripButton3.BackgroundImageLayout = ImageLayout.None;
+            toolStripButton3.BackgroundImage = new Bitmap(1, 1);
+            toolStripButton3.BackColor = Color.Transparent;
+
             Recreate();
             SizeChanged += Form1_SizeChanged;
             var vls = Enum.GetValues(typeof(JoinType));
@@ -66,17 +70,38 @@ namespace GeomPad
         Graphics gr;
         List<HelperItem> Items = new List<HelperItem>();
 
-
+        bool drawAxis = true;
 
         DrawingContext dc = new DrawingContext();
+
+        bool bubbleUpSelected = false;
         private void timer1_Tick(object sender, EventArgs e)
         {
             dc.UpdateDrag();
             gr.Clear(Color.White);
 
-            gr.DrawLine(Pens.Red, dc.Transform(new PointF(0, 0)), dc.Transform(new PointF(500, 0)));
-            gr.DrawLine(Pens.Green, dc.Transform(new PointF(0, 0)), dc.Transform(new PointF(0, 500)));
+            if (drawAxis)
+            {
+                gr.DrawLine(Pens.Red, dc.Transform(new PointF(0, 0)), dc.Transform(new PointF(500, 0)));
+                gr.DrawLine(Pens.Green, dc.Transform(new PointF(0, 0)), dc.Transform(new PointF(0, 500)));
+            }
 
+
+
+            //gr.ResetTransform();
+
+            //gr.TranslateTransform(pictureBox1.Width / 2, pictureBox1.Height / 2);
+            //gr.ScaleTransform(dc.scale, dc.scale);
+
+            var ord = Items.OrderBy(z => z.Z);
+            if (bubbleUpSelected)
+            {
+                ord = ord.ThenBy(z => z.Selected);
+            }
+            foreach (var item in ord)
+            {
+                item.Draw(dc);
+            }
             if (dc.MiddleDrag)//measure tool
             {
                 Pen pen = new Pen(Color.Blue, 2);
@@ -93,28 +118,25 @@ namespace GeomPad
                 var dist = (v2 - v1).Length;
                 gr.DrawString(dist.ToString("N2"), SystemFonts.DefaultFont, Brushes.Black, curp.X + 10, curp.Y);
             }
-
-            //gr.ResetTransform();
-
-            //gr.TranslateTransform(pictureBox1.Width / 2, pictureBox1.Height / 2);
-            //gr.ScaleTransform(dc.scale, dc.scale);
-
-            foreach (var item in Items.OrderBy(z => z.Selected))
-            {
-                item.Draw(dc);
-            }
             var pos = pictureBox1.PointToClient(Cursor.Position);
             var back = dc.BackTransform(pos);
-            gr.FillRectangle(new SolidBrush(Color.FromArgb(128, Color.LightBlue)), 0, 0, 120, 45);
-            gr.DrawString(dc.scale + "", SystemFonts.DefaultFont, Brushes.Black, 0, 0);
-            gr.DrawString(back.X + "; " + back.Y, SystemFonts.DefaultFont, Brushes.Black, 0, 15);
+            var str = $"X: {back.X,8:N2}";
+            var str3 = $"Y: {back.Y,8:N2}";
+            var str2 = $"X: 99999.999 ; Y: 99999.999";
+            var msr = gr.MeasureString(str2, SystemFonts.DefaultFont);
+            gr.FillRectangle(new SolidBrush(Color.FromArgb(128, Color.LightBlue)), 3, 3, msr.Width, 35);
+            gr.DrawString(dc.scale + "", SystemFonts.DefaultFont, Brushes.Black, 5, 5);
+
+
+            gr.DrawString(str, SystemFonts.DefaultFont, Brushes.Black, 5, 20);
+            gr.DrawString(str3, SystemFonts.DefaultFont, Brushes.Black, 70, 20);
             if (selected is PolygonHelper ph)
             {
-                gr.DrawString($"{ph.Polygon.Points.Length} points", SystemFonts.DefaultFont, Brushes.Black, 0, 30);
+                gr.DrawString($"{ph.Polygon.Points.Length} points", SystemFonts.DefaultFont, Brushes.Black, 5, 40);
             }
             if (selected is MeshHelper mh)
             {
-                gr.DrawString($"{mh.TianglesCount} triangles", SystemFonts.DefaultFont, Brushes.Black, 0, 30);
+                gr.DrawString($"{mh.TianglesCount} triangles", SystemFonts.DefaultFont, Brushes.Black, 5, 40);
             }
             pictureBox1.Image = bmp;
         }
@@ -191,16 +213,30 @@ namespace GeomPad
         {
             dc.scale = float.Parse(textBox1.Text.Replace(",", "."), CultureInfo.InvariantCulture);
         }
+        public void ShowMessage(string text, MessageBoxIcon type)
+        {
+            MessageBox.Show(text, Text, MessageBoxButtons.OK, type);
+        }
 
-        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        public DialogResult ShowQuestion(string text)
+        {
+            return MessageBox.Show(text, Text, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+        }
+        void deleteItems()
         {
             if (listView1.SelectedItems.Count == 0) return;
+            if (ShowQuestion($"Are you to sure to delete {listView1.SelectedItems.Count} items?") == DialogResult.No) return;
+
             for (int i = 0; i < listView1.SelectedItems.Count; i++)
             {
                 Items.Remove(listView1.SelectedItems[i].Tag as HelperItem);
             }
 
             UpdateList();
+        }
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            deleteItems();
         }
 
         private void updateToolStripMenuItem_Click(object sender, EventArgs e)
@@ -212,22 +248,15 @@ namespace GeomPad
         public float zoom = 1;
 
         public Bitmap Bmp;
-        
+
 
         private void cloneToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (listView1.SelectedItems.Count == 0) return;
-            var hh = listView1.SelectedItems[0].Tag as HelperItem;
-            if (hh is SegmentHelper sh)
-            {
-                Items.Add(new SegmentHelper() { X = sh.X, Y = sh.Y, X2 = sh.X2, Y2 = sh.Y2 });
-            }
 
-            UpdateList();
 
         }
 
-        
+
         private void button5_Click(object sender, EventArgs e)
         {
             if (selected is PolygonHelper ph)
@@ -288,6 +317,22 @@ namespace GeomPad
             p.regions.Add(plist);
             return p;
         }
+        public static PolyBoolCS.Polygon GetPolygon(PolygonHelper ph)
+        {
+            var p = new PolyBoolCS.Polygon();
+            p.regions = new List<PointList>();
+            var pnts = ph.Polygon.Points.Select(z => ph.Transform(z)).ToArray();
+            PointList plist = GetPointList(pnts);
+            p.regions.Add(plist);
+            foreach (var item in ph.Polygon.Childrens)
+            {
+
+                pnts = item.Points.Select(z => ph.Transform(z)).ToArray();
+                plist = GetPointList(pnts);
+                p.regions.Add(plist);
+            }
+            return p;
+        }
         private void button6_Click(object sender, EventArgs e)
         {
             List<PolygonHelper> ar1 = new List<PolygonHelper>();
@@ -302,8 +347,10 @@ namespace GeomPad
 
             PolyBool pb = new PolyBool();
 
-            var poly1 = GetPolygon(ar1[0].TransformedPoints().ToArray());
-            var poly2 = GetPolygon(ar1[1].TransformedPoints().ToArray());
+            //var poly1 = GetPolygon(ar1[0].TransformedPoints().ToArray());
+            //var poly2 = GetPolygon(ar1[1].TransformedPoints().ToArray());
+            var poly1 = GetPolygon(ar1[0]);
+            var poly2 = GetPolygon(ar1[1]);
             var r = pb.intersect(poly1, poly2);
             if (r.regions.Count == 0)
             {
@@ -376,15 +423,7 @@ namespace GeomPad
 
         private void randomToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            if (listView1.SelectedItems.Count == 0) return;
-            var hh = listView1.SelectedItems[0].Tag as HelperItem;
-            if (hh is PolygonHelper ph)
-            {
-                for (int i = 0; i < ph.Polygon.Points.Length; i++)
-                {
-                    ph.Polygon.Points[i] = new SvgPoint(rand.Next(-100, 100), rand.Next(-100, 100));
-                }
-            }
+
         }
 
         HelperItem[] loadXml(string content)
@@ -464,7 +503,7 @@ namespace GeomPad
 
         private void segmentToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Items.Add(new SegmentHelper() { Point2 = new PointF(10, 10) });
+            Items.Add(new SegmentHelper() { Point2 = new Vector2d(10, 10) });
             UpdateList();
         }
 
@@ -493,9 +532,13 @@ namespace GeomPad
                 var nfp1 = new NFP();
                 if (offs2.Any())
                 {
-                    if (offs2.Count() > 1) throw new NotImplementedException();
-                    nfp1.Points = offs2.First().Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
-                    ph.Polygon.Childrens.Add(nfp1);
+                    //if (offs2.Count() > 1) throw new NotImplementedException();
+                    foreach (var zitem in offs2)
+                    {
+                        nfp1.Points = zitem.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+                        ph.Polygon.Childrens.Add(nfp1);
+                    }
+
                 }
             }
 
@@ -567,10 +610,10 @@ namespace GeomPad
 
             PolyBool pb = new PolyBool();
 
-            var poly1 = GetPolygon(ar1[0].Polygon.Points.ToArray());
+            var poly1 = GetPolygon(ar1[0]);
             foreach (var item in ar1.Skip(1))
             {
-                poly1 = pb.difference(poly1, GetPolygon(item.Polygon.Points.ToArray()));
+                poly1 = pb.difference(poly1, GetPolygon(item));
             }
 
             if (poly1.regions.Count == 0)
@@ -654,7 +697,7 @@ namespace GeomPad
 
         private void segmentToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            Items.Add(new SegmentHelper() { Point2 = new PointF(10, 10) });
+            Items.Add(new SegmentHelper() { Point2 = new Vector2d(10, 10) });
             UpdateList();
         }
 
@@ -1053,6 +1096,294 @@ namespace GeomPad
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button12_Click(object sender, EventArgs e)
+        {
+            var res = getPairOfSelectedNfps();
+            if (res == null) return;
+            NFP offs = null;
+            offs = ClipperHelper.MinkowskiSum(res[0], res[1], checkBox2.Checked, checkBox3.Checked);
+            if (offs != null)
+            {
+                PolygonHelper ph = new PolygonHelper();
+                //ph.Polygon.Points = offs.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+                ph.Polygon = DeepNest.clone2(offs);
+
+                Items.Add(ph);
+                UpdateList();
+            }
+        }
+
+        private void bringToFrontToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            for (int i = 0; i < listView1.SelectedItems.Count; i++)
+            {
+                var maxz = Items.Max(z => z.Z);
+                (listView1.SelectedItems[i].Tag as HelperItem).Z = maxz + 1;
+            }
+
+            UpdateList();
+        }
+
+        private void sendToBackToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            for (int i = 0; i < listView1.SelectedItems.Count; i++)
+            {
+                var minz = Items.Min(z => z.Z);
+                (listView1.SelectedItems[i].Tag as HelperItem).Z = minz - 1;
+            }
+
+            UpdateList();
+        }
+
+        private void listView1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                deleteItems();
+            }
+        }
+
+
+        NFP[] getPairOfSelectedNfps()
+        {
+            List<PolygonHelper> phhs = new List<PolygonHelper>();
+
+            if (!checkBox1.Checked)
+            {
+                if (listView1.SelectedItems.Count < 2) { StatusMessage("there are no 2 polygon selected", StatusMessageType.Warning); return null; }
+
+                foreach (var item in listView1.SelectedItems)
+                {
+                    phhs.Add((item as ListViewItem).Tag as PolygonHelper);
+                }
+            }
+            else
+            {
+                phhs.Add((comboBox2.SelectedItem as ComboBoxItem).Tag as PolygonHelper);
+                phhs.Add((comboBox3.SelectedItem as ComboBoxItem).Tag as PolygonHelper);
+            }
+
+            var ar1 = phhs.ToArray();
+
+
+            NFP p = new NFP();
+            NFP p2 = new NFP();
+
+
+            p.Points = ar1[0].Polygon.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+            foreach (var item in ar1[0].Polygon.Childrens)
+            {
+                if (p.Childrens == null)
+                    p.Childrens = new List<NFP>();
+                p.Childrens.Add(new NFP() { Points = item.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray() });
+            }
+            p2.Points = ar1[1].Polygon.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+            foreach (var item in ar1[1].Polygon.Childrens)
+            {
+                if (p2.Childrens == null)
+                    p2.Childrens = new List<NFP>();
+                p2.Childrens.Add(new NFP() { Points = item.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray() });
+            }
+            return new[] { p, p2 };
+        }
+        private void button14_Click(object sender, EventArgs e)
+        {
+            var res = getPairOfSelectedNfps();
+            if (res == null) return;
+            var p = res[0];
+            var p2 = res[1];
+            var offs = DeepNest.getInnerNfp(p, p2);
+
+            if (offs != null)
+            {
+                foreach (var item in offs)
+                {
+                    PolygonHelper ph = new PolygonHelper();
+                    //ph.Polygon.Points = item.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+                    ph.Polygon = DeepNest.clone2(item);
+                    Items.Add(ph);
+                }
+
+                UpdateList();
+            }
+        }
+
+        private void button13_Click(object sender, EventArgs e)
+        {
+            var res = getPairOfSelectedNfps();
+            if (res == null) return;
+            var p = res[0];
+            var p2 = res[1];
+            var offs = DeepNest.getOuterNfp(p, p2);
+
+            if (offs != null)
+            {
+
+                PolygonHelper ph = new PolygonHelper();
+                //ph.Polygon.Points = offs.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+                ph.Polygon = DeepNest.clone2(offs);
+
+                Items.Add(ph);
+
+
+                UpdateList();
+            }
+        }
+
+        private void button15_Click(object sender, EventArgs e)
+        {
+            var res = getPairOfSelectedNfps();
+            if (res == null) return;
+            var p = res[0];
+            var p2 = res[1];
+            var offs = DeepNest.Convolve(p2, p);
+
+            if (offs != null)
+            {
+                foreach (var item in offs)
+                {
+                    PolygonHelper ph = new PolygonHelper();
+                    //ph.Polygon.Points = item.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+                    ph.Polygon = DeepNest.clone2(item);
+                    Items.Add(ph);
+                }
+
+                UpdateList();
+            }
+        }
+
+        private void propertyGrid1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
+        {
+            var hi = propertyGrid1.SelectedObject as HelperItem;
+            for (int i = 0; i < listView1.Items.Count; i++)
+            {
+                if (listView1.Items[i].Tag == hi)
+                {
+                    listView1.Items[i].SubItems[1].Text = hi.Name;
+                }
+            }
+        }
+
+        
+
+        private void button17_Click(object sender, EventArgs e)
+        {
+            List<SegmentHelper> ar1 = new List<SegmentHelper>();
+            for (int i = 0; i < listView1.SelectedItems.Count; i++)
+            {
+                if (listView1.SelectedItems[i].Tag is SegmentHelper ph1)
+                {
+                    ar1.Add(ph1);
+                }
+            }
+            if (ar1.Count != 2) { StatusMessage("there are no 2 line segments selected", StatusMessageType.Warning); return; }
+
+            Vector2d ret = Vector2d.Zero;
+            if (!GeometryUtils.IntersectSegments(ar1[0].Point, ar1[0].Point2, ar1[1].Point, ar1[1].Point2, ref ret))
+            {
+                StatusMessage("no intersections", StatusMessageType.Warning);
+                return;
+            }
+
+            PointHelper ph = new PointHelper();
+            ph.Point = ret;
+            Items.Add(ph);
+            UpdateList();
+        }
+        bool editEnabled = false;
+        private void toolStripButton3_Click_1(object sender, EventArgs e)
+        {
+            editEnabled = toolStripButton3.Checked;
+            toolStripButton3.BackColor = editEnabled ? Color.LightGreen : Color.Transparent;
+        }
+
+        private void cloneToolStripMenuItem_Click_1(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            var hh = listView1.SelectedItems[0].Tag as HelperItem;
+            if (hh is SegmentHelper sh)
+            {
+                Items.Add(new SegmentHelper() { X = sh.X, Y = sh.Y, X2 = sh.X2, Y2 = sh.Y2 });
+            }
+
+            UpdateList();
+        }
+
+        private void randomizePointsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            var hh = listView1.SelectedItems[0].Tag as HelperItem;
+            if (hh is PolygonHelper ph)
+            {
+                for (int i = 0; i < ph.Polygon.Points.Length; i++)
+                {
+                    ph.Polygon.Points[i] = new SvgPoint(rand.Next(-100, 100), rand.Next(-100, 100));
+                }
+            }
+        }
+
+        private void fitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            var hh = listView1.SelectedItems[0].Tag as HelperItem;
+            List<PointF> pp = new List<PointF>();
+
+
+            var rect = hh.BoundingBox();
+            if (rect == null) return;
+            pp.Add(rect.Value.Location);
+            pp.Add(new PointF(rect.Value.Right, rect.Value.Bottom));
+
+            if (pp.Count == 0) return;
+            dc.FitToPoints(pp.ToArray(), 5);
+        }
+
+        private void checkBox4_CheckedChanged(object sender, EventArgs e)
+        {
+            drawAxis = checkBox4.Checked;
+        }
+
+        private void extractChildsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+            var hh = listView1.SelectedItems[0].Tag as HelperItem;
+            if (!(hh is PolygonHelper ph)) return;
+
+            foreach (var item in ph.Polygon.Childrens)
+            {
+                PolygonHelper ph2 = new PolygonHelper();
+                ph2.Polygon = DeepNest.clone(item);
+                Items.Add(ph2);
+            }
+        }
+
+        private void checkBox5_CheckedChanged(object sender, EventArgs e)
+        {
+            bubbleUpSelected = true;
+        }
+
+        private void moveToToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0) return;
+
+            var h = listView1.SelectedItems[0].Tag as HelperItem;
+            VectorSetValuesDialog d = new VectorSetValuesDialog();
+            d.ShowDialog();
+            h.Shift(d.Vector.Xy);
         }
     }
 }

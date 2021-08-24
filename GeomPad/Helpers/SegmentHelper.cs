@@ -1,12 +1,22 @@
-﻿using System.Drawing;
+﻿using OpenTK;
+using System;
+using System.Drawing;
 
 namespace GeomPad.Helpers
 {
     public class SegmentHelper : HelperItem
     {
-        public PointF Point;
-        public PointF Point2;
+        public Vector2d Point;
+        public Vector2d Point2;
 
+        public override RectangleF? BoundingBox()
+        {
+            var maxx = (float)Math.Max(Point.X, Point2.X);
+            var maxy = (float)Math.Max(Point.Y, Point2.Y);
+            var minx = (float)Math.Min(Point.X, Point2.X);
+            var miny = (float)Math.Min(Point.Y, Point2.Y);
+            return new RectangleF(minx, miny, maxx - minx, maxy - miny);
+        }
         public string X2
         {
             get => Point2.X + "";
@@ -40,8 +50,8 @@ namespace GeomPad.Helpers
                 br = Brushes.Red;
                 pen = Pens.Red;
             }
-            var tr1 = dc.Transform(Point);
-            var tr2 = dc.Transform(Point2);
+            var tr1 = dc.Transform(Point.ToPointF());
+            var tr2 = dc.Transform(Point2.ToPointF());
             dc.gr.FillEllipse(br, tr1.X - r, tr1.Y - r, 2 * r, 2 * r);
             dc.gr.DrawLine(pen, tr1, tr2);
             dc.gr.FillEllipse(br, tr2.X - r, tr2.Y - r, 2 * r, 2 * r);

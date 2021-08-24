@@ -113,6 +113,7 @@
     <Compile Include="Helper.cs" />
     <Compile Include="HelperItem.cs" />
     <Compile Include="Helpers.cs" />
+    <Compile Include="Helpers\Extensions.cs" />
     <Compile Include="Helpers\MeshHelper.cs" />
     <Compile Include="Helpers\RectangleGenerator.cs" />
     <Compile Include="Helpers3D\HingeHelper.cs" />
@@ -141,6 +142,7 @@
       <DependentUpon>mdi.cs</DependentUpon>
     </Compile>
     <Compile Include="MessageFilter.cs" />
+    <Compile Include="MinkowskiWrapper.cs" />
     <Compile Include="MouseRay.cs" />
     <Compile Include="NFP.cs" />
     <Compile Include="Helpers\PointHelper.cs" />

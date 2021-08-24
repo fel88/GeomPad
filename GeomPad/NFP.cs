@@ -10,6 +10,20 @@ namespace GeomPad
         public SvgPoint[] Points = new SvgPoint[] { };
         public List<NFP> Childrens = new List<NFP>();
         public NFP Parent;
+
+        public void Shift(Vector2d vector)
+        {
+            for (int i = 0; i < Points.Length; i++)
+            {
+                Points[i].X += vector.X;
+                Points[i].Y += vector.Y;
+            }
+        }
+        public double SignedArea()
+        {
+            return StaticHelpers.signed_area(Points);
+        }
+
         public int Length
         {
             get
@@ -59,7 +73,7 @@ namespace GeomPad
             Points = list.ToArray();
         }
 
-       
+
 
         internal void Translate(Vector2d c)
         {

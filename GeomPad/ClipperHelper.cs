@@ -51,7 +51,7 @@ namespace GeomPad
             }
             return result.ToArray();
         }
-        public static IntPoint[][] nfpToClipperCoordinates(NFP nfp, double clipperScale)
+        public static IntPoint[][] nfpToClipperCoordinates(NFP nfp, double clipperScale = 10000000)
         {
 
             List<IntPoint[]> clipperNfp = new List<IntPoint[]>();
@@ -90,7 +90,7 @@ namespace GeomPad
 
             return clipperNfp.ToArray();
         }
-        public static IntPoint[][] ToClipperCoordinates(NFP[] nfp, double clipperScale)
+        public static IntPoint[][] ToClipperCoordinates(NFP[] nfp, double clipperScale = 10000000)
         {
             List<IntPoint[]> clipperNfp = new List<IntPoint[]>();
             for (var i = 0; i < nfp.Count(); i++)
@@ -126,9 +126,98 @@ namespace GeomPad
             List<List<IntPoint>> finalNfp = new List<List<IntPoint>>();
             if (clipper.Execute(ClipType.ctIntersection, finalNfp, PolyFillType.pftNonZero, PolyFillType.pftNonZero) && finalNfp != null && finalNfp.Count > 0)
             {
-                return finalNfp.Select(z=>toNestCoordinates(z.ToArray(), clipperScale)).ToArray();
+                return finalNfp.Select(z => toNestCoordinates(z.ToArray(), clipperScale)).ToArray();
             }
             return null;
         }
+        public static NFP MinkowskiSum(NFP pattern, NFP path, bool useChilds = false, bool takeOnlyBiggestArea = true)
+        {
+            var ac = ScaleUpPaths(pattern);
+
+            List<List<IntPoint>> solution = null;
+            if (useChilds)
+            {
+                var bc = nfpToClipperCoordinates(path);
+                for (var i = 0; i < bc.Length; i++)
+                {
+                    for (int j = 0; j < bc[i].Length; j++)
+                    {
+                        bc[i][j].X *= -1;
+                        bc[i][j].Y *= -1;
+                    }
+                }
+
+                solution = ClipperLib.Clipper.MinkowskiSum(new List<IntPoint>(ac), new List<List<IntPoint>>(bc.Select(z => z.ToList())), true);
+            }
+            else
+            {
+                var bc = ScaleUpPaths(path);
+                for (var i = 0; i < bc.Length; i++)
+                {
+                    bc[i].X *= -1;
+                    bc[i].Y *= -1;
+                }
+                solution = Clipper.MinkowskiSum(new List<IntPoint>(ac), new List<IntPoint>(bc), true);
+            }
+            NFP clipperNfp = null;
+
+            double? largestArea = null;
+            int largestIndex = -1;
+
+            for (int i = 0; i < solution.Count(); i++)
+            {
+                var n = toNestCoordinates(solution[i].ToArray(), 10000000);
+                var sarea = Math.Abs(GeometryUtil.polygonArea(n));
+                if (largestArea == null || largestArea < sarea)
+                {
+                    clipperNfp = n;
+                    largestArea = sarea;
+                    largestIndex = i;
+                }
+            }
+            if (!takeOnlyBiggestArea)
+            {
+                for (int j = 0; j < solution.Count; j++)
+                {
+                    if (j == largestIndex) continue;
+                    var n = toNestCoordinates(solution[j].ToArray(), 10000000);
+                    if (clipperNfp.Childrens == null)
+                        clipperNfp.Childrens = new List<NFP>();
+                    clipperNfp.Childrens.Add(n);
+                }
+            }
+
+            for (var i = 0; i < clipperNfp.Length; i++)
+            {
+
+                clipperNfp[i].X *= -1;
+                clipperNfp[i].Y *= -1;
+                clipperNfp[i].X += pattern[0].X;
+                clipperNfp[i].Y += pattern[0].Y;
+
+            }
+            var minx = clipperNfp.Points.Min(z => z.X);
+            var miny = clipperNfp.Points.Min(z => z.Y);
+            var minx2 = path.Points.Min(z => z.X);
+            var miny2 = path.Points.Min(z => z.Y);
+
+            var shiftx = minx2 - minx;
+            var shifty = miny2 - miny;
+            if (clipperNfp.Childrens != null)
+                foreach (var nFP in clipperNfp.Childrens)
+                {
+                    for (int j = 0; j < nFP.Length; j++)
+                    {
+
+                        nFP.Points[j].X *= -1;
+                        nFP.Points[j].Y *= -1;
+                        nFP.Points[j].X += pattern[0].X;
+                        nFP.Points[j].Y += pattern[0].Y; 
+                    }
+                }
+
+            return clipperNfp;
+        }
+
     }
 }

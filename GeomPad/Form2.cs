@@ -183,7 +183,7 @@ namespace GeomPad
             }
         }
 
-        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        void deleteItems()
         {
             if (listView1.SelectedItems.Count == 0) return;
             if (!StaticHelpers.ShowQuestion("Are you sure to delete selected item?", Text)) return;
@@ -194,6 +194,10 @@ namespace GeomPad
             }
 
             updateHelpersList();
+        }
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            deleteItems();
         }
 
         private void intersectToolStripMenuItem_Click(object sender, EventArgs e)
@@ -662,6 +666,14 @@ namespace GeomPad
         {
             f.MdiParent = MdiParent;
             f.Show();
+        }
+
+        private void listView1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                deleteItems();
+            }
         }
     }
 }

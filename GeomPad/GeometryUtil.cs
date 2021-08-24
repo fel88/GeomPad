@@ -7,6 +7,66 @@ namespace GeomPad
 {
     public class GeometryUtil
     {
+        public class PolygonBounds
+        {
+            public double X;
+            public double Y;
+            public double Width;
+            public double Height;
+            public PolygonBounds(double _x, double _y, double _w, double _h)
+            {
+                X = _x;
+                Y = _y;
+                Width = _w;
+                Height = _h;
+            }
+        }
+        public static PolygonBounds GetPolygonBounds(NFP _polygon)
+        {
+            return GetPolygonBounds(_polygon.Points);
+        }
+        public static PolygonBounds GetPolygonBounds(SvgPoint[] polygon)
+        {
+
+            if (polygon == null || polygon.Count() < 3)
+            {
+                throw new ArgumentException("null");
+            }
+
+            var xmin = polygon[0].X;
+            var xmax = polygon[0].X;
+            var ymin = polygon[0].Y;
+            var ymax = polygon[0].Y;
+
+            for (var i = 1; i < polygon.Length; i++)
+            {
+                if (polygon[i].X > xmax)
+                {
+                    xmax = polygon[i].X;
+                }
+                else if (polygon[i].X < xmin)
+                {
+                    xmin = polygon[i].X;
+                }
+
+                if (polygon[i].Y > ymax)
+                {
+                    ymax = polygon[i].Y;
+                }
+                else if (polygon[i].Y < ymin)
+                {
+                    ymin = polygon[i].Y;
+                }
+            }
+
+            var w = xmax - xmin;
+            var h = ymax - ymin;
+            //return new rectanglef(xmin, ymin, xmax - xmin, ymax - ymin);
+            return new PolygonBounds(xmin, ymin, w, h);
+
+
+        }
+
         // returns true if points are within the given distance
         public static bool _withinDistance(SvgPoint p1, SvgPoint p2, double distance)
         {
