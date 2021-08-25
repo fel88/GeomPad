@@ -464,7 +464,20 @@ namespace GeomPad
         {
             drawAxis = checkBox1.Checked;
         }
-
+        void camToSelected(Vector3d[] vv)
+        {
+            if (vv == null || vv.Length == 0) return;
+            Vector3d cnt = Vector3d.Zero;
+            foreach (var item in vv)
+            {
+                cnt += item;
+            }
+            cnt /= vv.Length;
+            var len = camera1.DirLen;
+            var dir = camera1.Dir;
+            camera1.CamTo = cnt.ToVector3();
+            camera1.CamFrom = camera1.CamTo + dir * len;
+        }
         private void setCameraToPlaneToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (listView1.SelectedItems.Count == 0) return;
@@ -477,6 +490,10 @@ namespace GeomPad
             if (h is PlaneHelper ph)
             {
                 camera1.CamTo = ph.Position.ToVector3();
+            }
+            if (h is SplineHelper sph)
+            {
+                camToSelected(sph.Poles.ToArray());                
             }
         }
 
@@ -554,6 +571,10 @@ namespace GeomPad
                 if (item is PointCloudHelper phc)
                 {
                     pp.AddRange(phc.Cloud.Points);
+                }
+                if (item is SplineHelper sph)
+                {
+                    pp.AddRange(sph.Poles);
                 }
                 if (item is AbstractBRepFaceHelper bh)
                 {
@@ -674,6 +695,28 @@ namespace GeomPad
             {
                 deleteItems();
             }
+        }
+
+        private void splineToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var ph = new SplineHelper()
+            {
+                Degree = 2
+            };
+            ph.IsPeriodic = false;
+            ph.IsNonPeriodic = true;
+            ph.IsBSpline = true;
+            ph.IsPolynomial = false;
+            ph.SetKnots(new double[] { 0, 1 });
+            ph.SetMultiplicities(new[] { 3, 3 });
+            ph.SetWeights(new double[] { 1, 1, 1 });
+            ph.SetPoles(new Vector3d[] {
+                    new Vector3d (-3, -2.858306, 5.2154),
+                    new Vector3d (-3,-5,5.2154),
+                    new Vector3d (-3,-5,2.7154)
+            });
+            Helpers.Add(ph);
+            updateHelpersList();
         }
     }
 }

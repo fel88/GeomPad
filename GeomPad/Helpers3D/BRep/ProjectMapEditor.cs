@@ -20,10 +20,35 @@ namespace GeomPad.Helpers3D.BRep
             SizeChanged += Form1_SizeChanged;
             dc.Init(pictureBox1);
             dc.MouseUp += Dc_MouseUp;
+            dc.MouseDown += Dc_MouseDown;
+
             Load += Form1_Load;
             FormClosing += ProjectMapEditor_FormClosing;
+
+
+            pet = new CylinderProjectionPointEditorToolPanel();
+            pet.Set += Pet_Set;
+            pet.PointChanged += Pet_PointChanged;
+            tp.SetControl(pet);
+            tp.Left = 10;
+            tp.Top = pictureBox1.Height - tp.Height - 10;
+            tp.Visible = false;
+            pictureBox1.Controls.Add(tp);
+
         }
 
+        private void Pet_Set()
+        {
+            tp.Visible = false;
+        }
+
+        private void Pet_PointChanged(Vector2d obj)
+        {
+            sp.Points[lastEditedPointIndex] = obj;
+        }
+
+        CylinderProjectionPointEditorToolPanel pet;
+        ToolPanel tp = new ToolPanel() { Title = "Point" };
         private void ProjectMapEditor_FormClosing(object sender, FormClosingEventArgs e)
         {
             List<ProjectPolygon> pp = new List<ProjectPolygon>();
@@ -57,8 +82,17 @@ namespace GeomPad.Helpers3D.BRep
         {
             if (addPolygonMode && b == MouseButtons.Left)
                 newPolygonPoints.Add(new Vector2(arg1, boundY(arg2)));
+            captured = false;
         }
-
+        private void Dc_MouseDown(float arg1, float arg2, MouseButtons b)
+        {
+            if (sindex > -1 && b == MouseButtons.Left)
+            {
+                captured = true;
+                tp.Visible = true;
+                pet.SetPoint(sp.Points[sindex]);
+            }
+        }
         private void Form1_Load(object sender, EventArgs e)
         {
             mf = new MessageFilter();
@@ -80,6 +114,7 @@ namespace GeomPad.Helpers3D.BRep
                     item.Scale(xxScale, yyScale);
                 }
             }
+            fitAll();
 
         }
         private void Form1_SizeChanged(object sender, EventArgs e)
@@ -97,9 +132,50 @@ namespace GeomPad.Helpers3D.BRep
         }
         double xxScale = 20;
         double yyScale = 100;
+        public int sindex = -1;
+        public int lastEditedPointIndex = -1;
+        public ProjectPolygon sp = null;
+        public void UpdateNearest()
+        {
+
+            var pos = pictureBox1.PointToClient(Cursor.Position);
+            var posx = (pos.X / dc.zoom - dc.sx);
+            double posy = (-pos.Y / dc.zoom - dc.sy);
+
+            foreach (var item in polygons)
+            {
+
+                var fr = item.Points.OrderBy(z => (z - new Vector2d(posx, posy)).Length).First();
+                if (!captured)
+                {
+                    if (((fr - new Vector2d(posx, posy)).Length) < 10 / dc.zoom)
+                    {
+                        sp = item;
+                        sindex = item.Points.IndexOf(fr);
+                        break;
+                    }
+                    else
+                    {
+                        sindex = -1;
+                    }
+                }
+            }
+
+            if (sindex >= 0 && captured && sp != null)
+            {
+                if (posy < 0) posy = 0;
+                if (posy > yyScale) posy = yyScale;
+                sp.Points[sindex] = new Vector2d(posx, posy);
+                pet.SetPoint(sp.Points[sindex]);
+                lastEditedPointIndex = sindex;
+            }
+
+        }
+        bool captured = false;
         private void timer1_Tick(object sender, EventArgs e)
         {
             dc.UpdateDrag();
+            UpdateNearest();
             gr.Clear(Color.White);
 
             gr.DrawLine(Pens.Red, dc.Transform(new PointF(0, 0)), dc.Transform(new PointF(500, 0)));
@@ -128,10 +204,11 @@ namespace GeomPad.Helpers3D.BRep
 
             foreach (var polygon in temp1)
             {
-                foreach (var item in polygon.Points)
+                for (int i = 0; i < polygon.Points.Count; i++)
                 {
+                    Vector2d item = (Vector2d)polygon.Points[i];
                     var tr = dc.Transform(item.X, item.Y);
-                    gr.FillRectangle(Brushes.Blue, tr.X - w1, tr.Y - w1, w1 * 2, w1 * 2);
+                    gr.FillRectangle((sp == polygon && i == sindex) ? Brushes.Red : Brushes.Blue, tr.X - w1, tr.Y - w1, w1 * 2, w1 * 2);
                     gr.FillRectangle(Brushes.LightBlue, tr.X - w2, tr.Y - w2, w2 * 2, w2 * 2);
                 }
                 if (polygon.Points.Count > 2)
@@ -156,9 +233,12 @@ namespace GeomPad.Helpers3D.BRep
 
             var pos = pictureBox1.PointToClient(Cursor.Position);
             var back = dc.BackTransform(pos);
-            gr.FillRectangle(new SolidBrush(Color.FromArgb(64, Color.LightBlue)), 0, 0, 100, 35);
-            gr.DrawString(dc.scale + "", SystemFonts.DefaultFont, Brushes.Black, 0, 0);
-            gr.DrawString(back.X + "; " + back.Y, SystemFonts.DefaultFont, Brushes.Black, 0, 15);
+            gr.FillRectangle(new SolidBrush(Color.FromArgb(64, Color.LightBlue)), 0, 0, 150, 60);
+            gr.DrawString("Projection mode: Cylinder", SystemFonts.DefaultFont, Brushes.Black, 0, 0);
+            var ang = ((back.X / xxScale) * 180 / Math.PI) % 360;
+            gr.DrawString($"X: {back.X}", SystemFonts.DefaultFont, Brushes.Black, 0, 15);
+            gr.DrawString($"Y: {back.Y}", SystemFonts.DefaultFont, Brushes.Black, 0, 30);
+            gr.DrawString($"Angle: {ang:N2}°", SystemFonts.DefaultFont, Brushes.Black, 0, 45);
 
             pictureBox1.Image = bmp;
         }
@@ -186,7 +266,7 @@ namespace GeomPad.Helpers3D.BRep
             }
         }
 
-        private void toolStripButton4_Click(object sender, EventArgs e)
+        void fitAll()
         {
             List<PointF> pp = new List<PointF>();
             foreach (var item in polygons)
@@ -198,6 +278,10 @@ namespace GeomPad.Helpers3D.BRep
             }
             if (pp.Count == 0) return;
             dc.FitToPoints(pp.ToArray(), 5);
+        }
+        private void toolStripButton4_Click(object sender, EventArgs e)
+        {
+            fitAll();
         }
 
         private void toolStripButton5_Click(object sender, EventArgs e)

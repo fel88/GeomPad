@@ -17,3 +17,4 @@
 * DeepNestPort (https://github.com/fel88/DeepNestPort)
 * Original Triangle code by Jonathan Richard Shewchuk, http://www.cs.cmu.edu/~quake/triangle.html
 * Triangle.NET code by Christian Woltering, http://triangle.codeplex.com/
+* NURBS (https://www.codeproject.com/Articles/1095142/Generate-and-understand-NURBS-curves)

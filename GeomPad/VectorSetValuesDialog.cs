@@ -1,7 +1,6 @@
 ﻿using OpenTK;
 using System;
 using System.Data;
-using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
@@ -46,33 +45,24 @@ namespace GeomPad
                 var vals = ar.Select(z => double.Parse(z.Replace(",", "."), CultureInfo.InvariantCulture)).ToArray();
                 Vector = new Vector3d(vals[0], vals[1], vals[2]);
                 updLabels();
-                setNormalStyle(textBox1);
+                textBox1.SetNormalStyle();
             }
             catch (Exception ex)
             {
-                setErrorStyle(textBox1);
+                textBox1.SetErrorStyle();
             }
         }
-        void setErrorStyle(TextBox c)
-        {
-            c.BackColor = Color.Red;
-            c.ForeColor = Color.White;
-        }
-        void setNormalStyle(TextBox c)
-        {
-            c.BackColor = Color.White;
-            c.ForeColor = Color.Black;
-        }
+        
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
             try
             {
                 Vector.X = StaticHelpers.ParseDouble(textBox2.Text);
-                setNormalStyle(sender as TextBox);
+                (sender as TextBox).SetNormalStyle();
             }
             catch
             {
-                setErrorStyle(sender as TextBox);
+                (sender as TextBox).SetErrorStyle();
             }
         }
 
@@ -81,11 +71,11 @@ namespace GeomPad
             try
             {
                 Vector.Y = StaticHelpers.ParseDouble(textBox3.Text);
-                setNormalStyle(sender as TextBox);
+                (sender as TextBox).SetNormalStyle();
             }
             catch
             {
-                setErrorStyle(sender as TextBox);
+                (sender as TextBox).SetErrorStyle();
             }
         }
 
@@ -94,11 +84,11 @@ namespace GeomPad
             try
             {
                 Vector.Z = StaticHelpers.ParseDouble(textBox4.Text);
-                setNormalStyle(sender as TextBox);
+                (sender as TextBox).SetNormalStyle();
             }
             catch
             {
-                setErrorStyle(sender as TextBox);
+                (sender as TextBox).SetErrorStyle();
             }
         }
     }

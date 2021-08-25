@@ -15,7 +15,7 @@ namespace GeomPad
 
         public Vector3 Dir
         {
-            get { return CamFrom - CamTo; }
+            get { return (CamFrom - CamTo).Normalized(); }
         }
         public float DirLen
         {

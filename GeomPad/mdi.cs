@@ -8,7 +8,7 @@ namespace GeomPad
     {
         public mdi()
         {
-            InitializeComponent();
+            InitializeComponent();           
         }
 
         private void toolStripButton1_Click(object sender, EventArgs e)

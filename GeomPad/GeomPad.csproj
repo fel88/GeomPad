@@ -63,8 +63,15 @@
   <ItemGroup>
     <Compile Include="AbstractFieldEditor.cs" />
     <Compile Include="AbstractHelperItem.cs" />
+    <Compile Include="CylinderProjectionPointEditorToolPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CylinderProjectionPointEditorToolPanel.Designer.cs">
+      <DependentUpon>CylinderProjectionPointEditorToolPanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="GeometryUtils.cs" />
     <Compile Include="GeomPadException.cs" />
+    <Compile Include="GuiExtensions.cs" />
     <Compile Include="Helpers3D\BRep\AbstractBRepFaceHelper.cs" />
     <Compile Include="Helpers3D\ArcDividerHelper.cs" />
     <Compile Include="BoolFieldEditor.cs" />
@@ -95,7 +102,10 @@
     <Compile Include="Helpers3D\Geometry.cs" />
     <Compile Include="Helpers3D\HelperItem.cs" />
     <Compile Include="Helpers3D\Mesh.cs" />
+    <Compile Include="Helpers3D\NURBS.cs" />
     <Compile Include="Helpers3D\PointCloudHelper.cs" />
+    <Compile Include="Helpers3D\RationalBSplinePoint.cs" />
+    <Compile Include="Helpers3D\SplineHelper.cs" />
     <Compile Include="Helpers3D\TriangleInfo.cs" />
     <Compile Include="Helpers3D\VertexInfo.cs" />
     <Compile Include="Helpers\CircleGenerator.cs" />
@@ -150,6 +160,12 @@
     <Compile Include="Helpers3D\PlaneHelper.cs" />
     <Compile Include="Helpers3D\Point3DHelper.cs" />
     <Compile Include="PlyLoader.cs" />
+    <Compile Include="PointEditorToolPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PointEditorToolPanel.Designer.cs">
+      <DependentUpon>PointEditorToolPanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="PolyBool.cs" />
     <Compile Include="Helpers\PolygonHelper.cs" />
     <Compile Include="Helpers3D\PolygonHelper.cs" />
@@ -167,6 +183,15 @@
       <DependentUpon>TextBoxCaption.cs</DependentUpon>
     </Compile>
     <Compile Include="Helpers3D\TriangleHelper.cs" />
+    <Compile Include="ToolHeader.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ToolPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ToolPanel.Designer.cs">
+      <DependentUpon>ToolPanel.cs</DependentUpon>
+    </Compile>
     <Compile Include="VectorFieldEditor.cs" />
     <Compile Include="VectorSetValuesDialog.cs">
       <SubType>Form</SubType>
@@ -174,6 +199,9 @@
     <Compile Include="VectorSetValuesDialog.Designer.cs">
       <DependentUpon>VectorSetValuesDialog.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="CylinderProjectionPointEditorToolPanel.resx">
+      <DependentUpon>CylinderProjectionPointEditorToolPanel.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -189,6 +217,9 @@
     <EmbeddedResource Include="mdi.resx">
       <DependentUpon>mdi.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="PointEditorToolPanel.resx">
+      <DependentUpon>PointEditorToolPanel.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -201,6 +232,9 @@
     </Compile>
     <EmbeddedResource Include="TextBoxCaption.resx">
       <DependentUpon>TextBoxCaption.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ToolPanel.resx">
+      <DependentUpon>ToolPanel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="VectorSetValuesDialog.resx">
       <DependentUpon>VectorSetValuesDialog.cs</DependentUpon>

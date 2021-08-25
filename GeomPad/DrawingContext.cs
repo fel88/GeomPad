@@ -105,6 +105,9 @@ namespace GeomPad
                 origsx = sx;
                 origsy = sy;
             }
+
+            var tt = BackTransform(e.X, e.Y);
+            MouseDown?.Invoke(tt.X, tt.Y, e.Button);
         }
 
         internal void ResetView()
@@ -129,6 +132,7 @@ namespace GeomPad
         }
 
         public event Action<float, float, MouseButtons> MouseUp;
+        public event Action<float, float, MouseButtons> MouseDown;
         public virtual PointF Transform(PointF p1)
         {
             return new PointF((p1.X + sx) * zoom, -(p1.Y + sy) * zoom);
@@ -152,7 +156,7 @@ namespace GeomPad
             var posy = (-p1.Y / zoom - sy);
             return new PointF(posx, posy);
         }
-        public virtual PointF BackTransform(float x,float y)
+        public virtual PointF BackTransform(float x, float y)
         {
             var posx = (x / zoom - sx);
             var posy = (-y / zoom - sy);
