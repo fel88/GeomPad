@@ -125,6 +125,7 @@
     <Compile Include="Helpers.cs" />
     <Compile Include="Helpers\Extensions.cs" />
     <Compile Include="Helpers\MeshHelper.cs" />
+    <Compile Include="Helpers\OrthogonalDist2Segments.cs" />
     <Compile Include="Helpers\RectangleGenerator.cs" />
     <Compile Include="Helpers3D\HingeHelper.cs" />
     <Compile Include="DebugHelper.cs" />

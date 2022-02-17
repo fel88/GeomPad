@@ -9,6 +9,7 @@ using System.Xml.Linq;
 
 namespace GeomPad.Helpers
 {
+    [XmlParse(XmlKey = "polygonHelper")]
     public class PolygonHelper : HelperItem
     {
         public NFP Polygon = new NFP();
@@ -68,6 +69,21 @@ namespace GeomPad.Helpers
             return dc.Transform(new SvgPoint(p.X + OffsetX, p.Y + OffsetY));
         }
 
+        public NFP GetTrasformed(NFP polygon)
+        {
+            NFP ret = new NFP();
+
+            foreach (var p in polygon.Points)
+            {
+                Matrix mtr = new Matrix();
+                mtr.RotateAt((float)Rotation, new PointF(0, 0));
+                PointF[] pnt = new PointF[] { new PointF((float)p.X, (float)p.Y) };
+                mtr.TransformPoints(pnt);
+                var p2 = new SvgPoint(pnt[0].X, pnt[0].Y);
+                ret.AddPoint(new SvgPoint(p2.X + OffsetX, p2.Y + OffsetY));
+            }
+            return ret;
+        }
         public bool DrawPoints { get; set; } = false;
         public override void Draw(IDrawingContext idc)
         {
@@ -171,7 +187,7 @@ namespace GeomPad.Helpers
             return ret;
         }
 
-        internal void ParseXml(XElement item)
+        public override void ParseXml(XElement item)
         {
             if (item.Attribute("name") != null)
                 Name = item.Attribute("name").Value;
@@ -226,5 +242,10 @@ namespace GeomPad.Helpers
         {
             return new NFP() { Points = TransformedPoints() };
         }
+    }
+
+    public class XmlParseAttribute : Attribute
+    {
+        public string XmlKey { get; set; }
     }
 }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
+using System.Xml.Linq;
 
 namespace GeomPad.Helpers
 {
@@ -20,6 +21,11 @@ namespace GeomPad.Helpers
         }
 
         public virtual void Shift(Vector2d vector)
+        {
+            
+        }
+
+        public virtual void ParseXml(XElement item)
         {
             
         }

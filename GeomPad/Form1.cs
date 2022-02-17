@@ -9,6 +9,7 @@ using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml.Linq;
@@ -911,17 +912,20 @@ namespace GeomPad
             var doc = XDocument.Load(ofd.FileName);
             var root = doc.Descendants("root").First();
             Items.Clear();
+            var types = Assembly.GetExecutingAssembly().GetTypes().Where(z => z.GetCustomAttribute(typeof(XmlParseAttribute)) != null).ToArray();
             foreach (var item in root.Elements())
             {
-                if (item.Name == "polygonHelper")
+                var fr = types.FirstOrDefault(z => (z.GetCustomAttribute(typeof(XmlParseAttribute)) as XmlParseAttribute).XmlKey == item.Name);
+                if (fr != null)
                 {
-                    var ph = new PolygonHelper();
+                    var ph = Activator.CreateInstance(fr) as HelperItem;
                     ph.ParseXml(item);
                     Items.Add(ph);
                 }
             }
             UpdateList();
         }
+
         bool snapEnable = false;
         private void toolStripButton2_Click_1(object sender, EventArgs e)
         {
@@ -1278,7 +1282,7 @@ namespace GeomPad
             }
         }
 
-        
+
 
         private void button17_Click(object sender, EventArgs e)
         {
@@ -1384,6 +1388,110 @@ namespace GeomPad
             VectorSetValuesDialog d = new VectorSetValuesDialog();
             d.ShowDialog();
             h.Shift(d.Vector.Xy);
+        }
+
+        public HelperItem[] SelectedHelpers
+        {
+            get
+            {
+                List<HelperItem> ret = new List<HelperItem>();
+                for (int i = 0; i < listView1.SelectedItems.Count; i++)
+                {
+                    var hh = listView1.SelectedItems[i].Tag as HelperItem;
+                    ret.Add(hh);
+                }
+                return ret.ToArray();
+            }
+        }
+        public void calcOrthogonalFor2Polygons(bool xAxis = true)
+        {
+            var hh = SelectedHelpers.OfType<PolygonHelper>().ToArray();
+            var p1 = hh[0] as PolygonHelper;
+            var p2 = hh[1] as PolygonHelper;
+
+            List<SegmentHelper> s1 = new List<SegmentHelper>();
+            List<SegmentHelper> s2 = new List<SegmentHelper>();
+
+            //skip all segments outside boundingBox
+
+            var tr1 = p1.GetTrasformed(p1.Polygon);
+            var tr2 = p2.GetTrasformed(p2.Polygon);
+            for (int i = 1; i < tr1.Points.Length; i++)
+            {
+                var p00 = tr1.Points[i - 1];
+                var p11 = tr1.Points[i];
+                s1.Add(new SegmentHelper() { Point = new Vector2d(p00.X, p00.Y), Point2 = new Vector2d(p11.X, p11.Y) });
+            }
+            for (int i = 1; i < tr2.Points.Length; i++)
+            {
+                var p00 = tr2.Points[i - 1];
+                var p11 = tr2.Points[i];
+                s2.Add(new SegmentHelper() { Point = new Vector2d(p00.X, p00.Y), Point2 = new Vector2d(p11.X, p11.Y) });
+            }
+
+            double mindist = double.MaxValue;
+            SegmentHelper mins1 = null;
+            SegmentHelper minss1 = null;
+            SegmentHelper minss2 = null;
+            foreach (var seg1 in s1)
+            {
+                foreach (var seg2 in s2)
+                {
+
+                    SegmentHelper dist = null;
+                    if (xAxis)
+                        dist = OrthogonalDist2Segments.SegmentsXDist(seg1, seg2);
+                    else
+                        dist = OrthogonalDist2Segments.SegmentsYDist(seg1, seg2);
+
+                    if (dist != null)
+                    {
+                        if (mindist > dist.Length)
+                        {
+                            minss1 = seg1;
+                            minss2 = seg2;
+                            mindist = dist.Length;
+                            mins1 = dist;
+                        }
+                    }
+                }
+            }
+            if (mins1 != null)
+            {
+                mins1.Reverse();
+                double reqDist = (mins1.Point.X > mins1.Point2.X ? -1 : 1) * mins1.Length;
+                if (!xAxis)
+                {
+                    reqDist = (mins1.Point.Y > mins1.Point2.Y ? -1 : 1) * mins1.Length;
+                }
+                Items.Add(new OrthogonalDist2Segments()
+                {
+                    Name = $"{p1.Name} --> {p2.Name}",
+                    Segment1 = minss1.Clone(),
+                    Segment2 = minss2.Clone(),
+                    DistSegment = mins1
+                ,
+                    RequiredOffset = reqDist
+                });
+                //p1.OffsetX += (mins1.Point.X > mins1.Point2.X ? 1 : -1) * mins1.Length;
+
+                UpdateList();
+            }
+            else
+            {
+
+                StatusMessage("no orthogonal intersection", StatusMessageType.Warning);
+            }
+        }
+        private void button16_Click(object sender, EventArgs e)
+        {
+            calcOrthogonalFor2Polygons();
+
+        }
+
+        private void button18_Click(object sender, EventArgs e)
+        {
+            calcOrthogonalFor2Polygons(false);
         }
     }
 }
