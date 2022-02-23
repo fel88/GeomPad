@@ -43,6 +43,7 @@
       <HintPath>..\packages\OpenTK.GLControl.3.1.0\lib\net20\OpenTK.GLControl.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.5.0.0\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
@@ -59,10 +60,67 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WeifenLuo.WinFormsUI.Docking, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5cded1a1a0a7b481, processorArchitecture=MSIL">
+      <HintPath>..\packages\DockPanelSuite.3.1.0\lib\net40\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
+    </Reference>
+    <Reference Include="WeifenLuo.WinFormsUI.Docking.ThemeVS2015, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5cded1a1a0a7b481, processorArchitecture=MSIL">
+      <HintPath>..\packages\DockPanelSuite.ThemeVS2015.3.1.0\lib\net40\WeifenLuo.WinFormsUI.Docking.ThemeVS2015.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AboutBox1.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AboutBox1.Designer.cs">
+      <DependentUpon>AboutBox1.cs</DependentUpon>
+    </Compile>
     <Compile Include="AbstractFieldEditor.cs" />
     <Compile Include="AbstractHelperItem.cs" />
+    <Compile Include="Controls\2d\Viewer2DDockPanel.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Controls\2d\ClipperOperationsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\2d\ClipperOperationsControl.Designer.cs">
+      <DependentUpon>ClipperOperationsControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\2d\DebugControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\2d\DebugControl.Designer.cs">
+      <DependentUpon>DebugControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\2d\HelpersListControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\2d\HelpersListControl.Designer.cs">
+      <DependentUpon>HelpersListControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\2d\NFPOperationsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\2d\NFPOperationsControl.Designer.cs">
+      <DependentUpon>NFPOperationsControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\2d\OtherOperationsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\2d\OtherOperationsControl.Designer.cs">
+      <DependentUpon>OtherOperationsControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\2d\PointsListControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\2d\PointsListControl.Designer.cs">
+      <DependentUpon>PointsListControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\2d\PolyBoolOperationsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\2d\PolyBoolOperationsControl.Designer.cs">
+      <DependentUpon>PolyBoolOperationsControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="CylinderProjectionPointEditorToolPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -70,8 +128,10 @@
       <DependentUpon>CylinderProjectionPointEditorToolPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="GeometryUtils.cs" />
+    <Compile Include="GeomExtensions.cs" />
     <Compile Include="GeomPadException.cs" />
     <Compile Include="GuiExtensions.cs" />
+    <Compile Include="GuiHelpers.cs" />
     <Compile Include="Helpers3D\BRep\AbstractBRepFaceHelper.cs" />
     <Compile Include="Helpers3D\ArcDividerHelper.cs" />
     <Compile Include="BoolFieldEditor.cs" />
@@ -157,6 +217,10 @@
     <Compile Include="MouseRay.cs" />
     <Compile Include="NFP.cs" />
     <Compile Include="Helpers\PointHelper.cs" />
+    <Compile Include="Controls\2d\Pad2DDataModel.cs" />
+    <Compile Include="Controls\2d\Pad2DMainPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Plane.cs" />
     <Compile Include="Helpers3D\PlaneHelper.cs" />
     <Compile Include="Helpers3D\Point3DHelper.cs" />
@@ -200,6 +264,30 @@
     <Compile Include="VectorSetValuesDialog.Designer.cs">
       <DependentUpon>VectorSetValuesDialog.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="AboutBox1.resx">
+      <DependentUpon>AboutBox1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\2d\ClipperOperationsControl.resx">
+      <DependentUpon>ClipperOperationsControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\2d\DebugControl.resx">
+      <DependentUpon>DebugControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\2d\HelpersListControl.resx">
+      <DependentUpon>HelpersListControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\2d\NFPOperationsControl.resx">
+      <DependentUpon>NFPOperationsControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\2d\OtherOperationsControl.resx">
+      <DependentUpon>OtherOperationsControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\2d\PointsListControl.resx">
+      <DependentUpon>PointsListControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\2d\PolyBoolOperationsControl.resx">
+      <DependentUpon>PolyBoolOperationsControl.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="CylinderProjectionPointEditorToolPanel.resx">
       <DependentUpon>CylinderProjectionPointEditorToolPanel.cs</DependentUpon>
     </EmbeddedResource>

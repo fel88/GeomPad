@@ -24,5 +24,11 @@ namespace GeomPad
             f.MdiParent = this;
             f.Show();
         }
+
+        private void toolStripButton3_Click(object sender, EventArgs e)
+        {
+            AboutBox1 a = new AboutBox1();
+            a.ShowDialog();
+        }
     }
 }

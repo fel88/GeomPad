@@ -13,7 +13,6 @@ namespace GeomPad.Helpers
         
         
         public Action Changed;
-       
 
         public virtual RectangleF? BoundingBox()
         {

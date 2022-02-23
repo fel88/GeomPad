@@ -36,6 +36,7 @@ namespace GeomPad.Helpers
                 Changed?.Invoke();
             }
         }
+        public bool DrawPoints { get; set; } = false;
         public bool DrawWireframe { get; set; } = true;
         public Brush FillBrush = SystemBrushes.Highlight;
         public override void Draw(IDrawingContext idc)
@@ -62,11 +63,12 @@ namespace GeomPad.Helpers
                     dc.gr.FillPath(FillBrush, gp);
 
                 }
-                foreach (var item2 in item)
-                {
-                    var tr1 = dc.Transform(item2);
-                    dc.gr.FillEllipse(br, tr1.X - r, tr1.Y - r, 2 * r, 2 * r);
-                }
+                if (DrawPoints)
+                    foreach (var item2 in item)
+                    {
+                        var tr1 = dc.Transform(item2);
+                        dc.gr.FillEllipse(br, tr1.X - r, tr1.Y - r, 2 * r, 2 * r);
+                    }
 
                 if (DrawWireframe)
                     for (int i = 0; i < item.Length; i++)
