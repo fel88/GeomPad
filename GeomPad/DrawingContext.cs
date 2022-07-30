@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenTK;
+using System;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -146,6 +147,10 @@ namespace GeomPad
             return new PointF((float)((x + sx) * zoom), (float)(-(y + sy) * zoom));
         }
         public virtual PointF Transform(SvgPoint p1)
+        {
+            return new PointF((float)((p1.X + sx) * zoom), (float)(-(p1.Y + sy) * zoom));
+        }
+        public virtual PointF Transform(Vector2d p1)
         {
             return new PointF((float)((p1.X + sx) * zoom), (float)(-(p1.Y + sy) * zoom));
         }

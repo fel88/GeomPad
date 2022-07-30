@@ -59,6 +59,8 @@
             this.fitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractChildsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.moveToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.linesSetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.polylineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -122,6 +124,8 @@
             this.segmentToolStripMenuItem1,
             this.circleToolStripMenuItem,
             this.rectangleToolStripMenuItem,
+            this.linesSetToolStripMenuItem,
+            this.polylineToolStripMenuItem,
             this.toolStripSeparator1,
             this.fromXmlToolStripMenuItem,
             this.dxfFromFileToolStripMenuItem});
@@ -167,7 +171,7 @@
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(135, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(177, 6);
             // 
             // fromXmlToolStripMenuItem
             // 
@@ -223,7 +227,7 @@
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(127, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(177, 6);
             // 
             // orderToolStripMenuItem
             // 
@@ -295,6 +299,18 @@
             this.moveToToolStripMenuItem.Text = "move to";
             this.moveToToolStripMenuItem.Click += new System.EventHandler(this.moveToToolStripMenuItem_Click);
             // 
+            // linesSetToolStripMenuItem
+            // 
+            this.linesSetToolStripMenuItem.Name = "linesSetToolStripMenuItem";
+            this.linesSetToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.linesSetToolStripMenuItem.Text = "lines set";
+            // 
+            // polylineToolStripMenuItem
+            // 
+            this.polylineToolStripMenuItem.Name = "polylineToolStripMenuItem";
+            this.polylineToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.polylineToolStripMenuItem.Text = "polyline";
+            // 
             // HelpersListControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -339,5 +355,7 @@
         private System.Windows.Forms.ToolStripMenuItem fitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem extractChildsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem moveToToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem linesSetToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem polylineToolStripMenuItem;
     }
 }

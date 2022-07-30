@@ -1,4 +1,6 @@
-﻿namespace GeomPad
+﻿using OpenTK;
+
+namespace GeomPad
 {
     public class SvgPoint
     {
@@ -16,6 +18,5 @@
         public bool marked;
         public double X;
         public double Y;
-
     }
 }

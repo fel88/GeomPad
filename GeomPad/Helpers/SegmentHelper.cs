@@ -81,7 +81,7 @@ namespace GeomPad.Helpers
             }
 
             if (DrawArrowCap)
-            {                
+            {
                 var p00 = Point2;
                 var p11 = -Dir * ArrowLen;
                 Matrix mtr = new Matrix();
@@ -104,9 +104,9 @@ namespace GeomPad.Helpers
                 p11 += Point2;
                 var tp22 = dc.Transform(p11.ToPointF());
                 dc.gr.DrawLine(pen, tr2, tp22);
-                dc.gr.FillPolygon(Brushes.Blue,new PointF[] { tr2,tp22,tp11});
+                dc.gr.FillPolygon(Brushes.Blue, new PointF[] { tr2, tp22, tp11 });
 
-                
+
             }
         }
 
@@ -145,4 +145,5 @@ namespace GeomPad.Helpers
 
         }
     }
+
 }

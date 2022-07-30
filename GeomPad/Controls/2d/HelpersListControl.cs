@@ -135,59 +135,90 @@ namespace GeomPad.Controls._2d
         }
         HelperItem[] loadXml(string content)
         {
-            var doc = XDocument.Parse(content);
+            List<HelperItem> ret = new List<HelperItem>();
 
-            List<NFP> nfps = new List<NFP>();
-            foreach (var item in doc.Descendants("region"))
+            var doc = XDocument.Parse(content);
+            foreach (var pitem in doc.Descendants("polyline"))
             {
-                //  PolygonHelper ph = new PolygonHelper();
-                //  Items.Add(ph);
-                List<SvgPoint> pnts = new List<SvgPoint>();
-                foreach (var point in item.Descendants("point"))
+                PolylineHelper lsh = new PolylineHelper();
+
+                List<Vector2d> pnts = new List<Vector2d>();
+                foreach (var point in pitem.Descendants("point"))
                 {
                     var x = float.Parse(point.Attribute("x").Value.Replace(",", "."), CultureInfo.InvariantCulture);
                     var y = float.Parse(point.Attribute("y").Value.Replace(",", "."), CultureInfo.InvariantCulture);
-                    pnts.Add(new SvgPoint(x, y));
+                    pnts.Add(new Vector2d(x, y));
                 }
-                nfps.Add(new NFP() { Points = pnts.Select(y => new SvgPoint(y.X, y.Y)).ToArray() });
-                //  ph.Polygon.Points = pnts.ToArray();
-
+                ret.Add(lsh);
             }
-
-            //UpdateList();
-
-            //var nfps = r.regions.Select(z => new NFP() { Points = z.Select(y => new SvgPoint(y.x, y.y)).ToArray() }).ToArray();
-
-            for (int i = 0; i < nfps.Count; i++)
+            foreach (var pitem in doc.Descendants("linesSet"))
             {
-                for (int j = 0; j < nfps.Count; j++)
+                LinesSetHelper lsh = new LinesSetHelper();
+                foreach (var item in pitem.Elements("line"))
                 {
-                    if (i != j)
+                    List<Vector2d> pnts = new List<Vector2d>();
+                    foreach (var point in item.Descendants("point"))
                     {
-                        var d2 = nfps[i];
-                        var d3 = nfps[j];
-                        var f0 = d3.Points[0];
-                        if (StaticHelpers.pnpoly(d2.Points.ToArray(), f0.X, f0.Y))
+                        var x = float.Parse(point.Attribute("x").Value.Replace(",", "."), CultureInfo.InvariantCulture);
+                        var y = float.Parse(point.Attribute("y").Value.Replace(",", "."), CultureInfo.InvariantCulture);
+                        pnts.Add(new Vector2d(x, y));
+                    }
+                    lsh.Lines.Add(new Line2D() { Start = pnts[0], End = pnts[1] });
+                }
+                ret.Add(lsh);
+            }
+            foreach (var pitem in doc.Descendants("polygon"))
+            {
+                List<NFP> nfps = new List<NFP>();
+                foreach (var item in pitem.Elements("region"))
+                {
+                    //  PolygonHelper ph = new PolygonHelper();
+                    //  Items.Add(ph);
+                    List<SvgPoint> pnts = new List<SvgPoint>();
+                    foreach (var point in item.Descendants("point"))
+                    {
+                        var x = float.Parse(point.Attribute("x").Value.Replace(",", "."), CultureInfo.InvariantCulture);
+                        var y = float.Parse(point.Attribute("y").Value.Replace(",", "."), CultureInfo.InvariantCulture);
+                        pnts.Add(new SvgPoint(x, y));
+                    }
+                    nfps.Add(new NFP() { Points = pnts.Select(y => new SvgPoint(y.X, y.Y)).ToArray() });
+                    //  ph.Polygon.Points = pnts.ToArray();
+
+                }
+
+                //UpdateList();
+
+                //var nfps = r.regions.Select(z => new NFP() { Points = z.Select(y => new SvgPoint(y.x, y.y)).ToArray() }).ToArray();
+
+                for (int i = 0; i < nfps.Count; i++)
+                {
+                    for (int j = 0; j < nfps.Count; j++)
+                    {
+                        if (i != j)
                         {
-                            d3.Parent = d2;
-                            if (!d2.Childrens.Contains(d3))
+                            var d2 = nfps[i];
+                            var d3 = nfps[j];
+                            var f0 = d3.Points[0];
+                            if (StaticHelpers.pnpoly(d2.Points.ToArray(), f0.X, f0.Y))
                             {
-                                d2.Childrens.Add(d3);
+                                d3.Parent = d2;
+                                if (!d2.Childrens.Contains(d3))
+                                {
+                                    d2.Childrens.Add(d3);
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            List<HelperItem> ret = new List<HelperItem>();
-            foreach (var item in nfps)
-            {
-                if (item.Parent != null) continue;
-                PolygonHelper phh = new PolygonHelper();
-                ret.Add(phh);
-                phh.Polygon = item;
+                foreach (var item in nfps)
+                {
+                    if (item.Parent != null) continue;
+                    PolygonHelper phh = new PolygonHelper();
+                    ret.Add(phh);
+                    phh.Polygon = item;
+                }
             }
-
             return ret.ToArray();
         }
 
@@ -273,13 +304,25 @@ namespace GeomPad.Controls._2d
         {
             if (dataModel.SelectedItems.Length == 0) return;
             var hh = dataModel.SelectedItem;
-            if (!(hh is PolygonHelper ph)) return;
-
-            foreach (var item in ph.Polygon.Childrens)
+            if ((hh is PolygonHelper ph))
             {
-                PolygonHelper ph2 = new PolygonHelper();
-                ph2.Polygon = DeepNest.clone(item);
-                dataModel.AddItem(ph2);
+
+                foreach (var item in ph.Polygon.Childrens)
+                {
+                    PolygonHelper ph2 = new PolygonHelper();
+                    ph2.Polygon = DeepNest.clone(item);
+                    dataModel.AddItem(ph2);
+                }
+            }
+            if ((hh is LinesSetHelper lsh))
+            {
+                foreach (var item in lsh.Lines)
+                {
+                    SegmentHelper ph2 = new SegmentHelper();
+                    ph2.Point = item.Start;
+                    ph2.Point2 = item.End;
+                    dataModel.AddItem(ph2);
+                }
             }
         }
 
@@ -301,7 +344,7 @@ namespace GeomPad.Controls._2d
 
         private void segmentToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            dataModel.AddItem(new SegmentHelper() { Point2 = new Vector2d(10, 10) });            
+            dataModel.AddItem(new SegmentHelper() { Point2 = new Vector2d(10, 10) });
         }
 
         private void clipboardToolStripMenuItem_Click(object sender, EventArgs e)
@@ -316,7 +359,7 @@ namespace GeomPad.Controls._2d
             }
             catch (Exception ex)
             {
-              dataModel.ParentForm.  StatusMessage(ex.Message, StatusMessageType.Error);
+                dataModel.ParentForm.StatusMessage(ex.Message, StatusMessageType.Error);
             }
         }
 
@@ -327,7 +370,7 @@ namespace GeomPad.Controls._2d
             if (hh is SegmentHelper sh)
             {
                 dataModel.AddItem(new SegmentHelper() { X = sh.X, Y = sh.Y, X2 = sh.X2, Y2 = sh.Y2 });
-            }            
+            }
         }
         Random rand = new Random();
         private void randomizePointsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -359,7 +402,7 @@ namespace GeomPad.Controls._2d
             {
                 var minz = dataModel.Items.Min(z => z.Z);
                 dataModel.SelectedItems[i].Z = minz - 1;
-            }            
+            }
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
@@ -370,12 +413,12 @@ namespace GeomPad.Controls._2d
         private void circleToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var ph = new CircleGenerator();
-            dataModel.AddItem(ph);            
+            dataModel.AddItem(ph);
         }
 
         private void polygonToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            dataModel.AddItem(new PolygonHelper());            
+            dataModel.AddItem(new PolygonHelper());
         }
     }
 }

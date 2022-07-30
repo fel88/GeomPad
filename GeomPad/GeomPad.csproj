@@ -32,6 +32,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>019.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="IxMilia.Dxf, Version=0.8.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\IxMilia.Dxf.0.8.0\lib\netstandard2.0\IxMilia.Dxf.dll</HintPath>
@@ -184,8 +187,11 @@
     <Compile Include="HelperItem.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="Helpers\Extensions.cs" />
+    <Compile Include="Helpers\Line2D.cs" />
+    <Compile Include="Helpers\LinesSetHelper.cs" />
     <Compile Include="Helpers\MeshHelper.cs" />
     <Compile Include="Helpers\OrthogonalDist2Segments.cs" />
+    <Compile Include="Helpers\PolylineHelper.cs" />
     <Compile Include="Helpers\RectangleGenerator.cs" />
     <Compile Include="Helpers3D\HingeHelper.cs" />
     <Compile Include="DebugHelper.cs" />
@@ -352,6 +358,9 @@
       <Project>{5a12c4a1-bc07-4f18-82b5-b08e150025df}</Project>
       <Name>Triangle</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="019.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
