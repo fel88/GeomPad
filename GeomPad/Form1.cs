@@ -28,7 +28,7 @@ namespace GeomPad
             FormClosing += Form1_FormClosing;
             dataModel = new Pad2DDataModel() { ParentForm = this };
             //dataModel.OnListUpdated += () => { UpdateList(); };
-            
+
             dpanel = new Pad2DMainPanel();
 
             tableLayoutPanel1.Controls.Add(dpanel, 0, 0);
@@ -95,13 +95,76 @@ namespace GeomPad
             dc.UpdateDrag();
             gr.Clear(Color.White);
 
+            var pos = dpanel.view.PictureBox.PointToClient(Cursor.Position);
+            var back = dc.BackTransform(pos);
+
             if (drawAxis)
             {
                 gr.DrawLine(Pens.Red, dc.Transform(new PointF(0, 0)), dc.Transform(new PointF(500, 0)));
                 gr.DrawLine(Pens.Green, dc.Transform(new PointF(0, 0)), dc.Transform(new PointF(0, 500)));
             }
 
+            if (dc.SnapEnable)
+            {
+                double mindist = double.MaxValue;
+                Vector2d? minp = null;
+                foreach (var hitem in Items)
+                {
+                    if (hitem is PolygonHelper ph2)
+                    {
+                        var trans = ph2.GetTrasformed(ph2.Polygon);
+                        foreach (var pp in trans)
+                        {
+                            foreach (var item in pp.Points)
+                            {
+                                double dist = ((new Vector2d(item.X, item.Y)) - new Vector2d(back.X, back.Y)).Length;
+                                if (dist < mindist)
+                                {
+                                    mindist = dist;
+                                    minp = new Vector2d(item.X, item.Y);
+                                }
+                            }
+                        }
+                    }
+                    if (hitem is LinesSetHelper lsh)
+                    {
+                        foreach (var pp in lsh.Lines)
+                        {
+                            foreach (var item in new[] { pp.Start, pp.End })
+                            {
+                                double dist = ((new Vector2d(item.X, item.Y)) - new Vector2d(back.X, back.Y)).Length;
+                                if (dist < mindist)
+                                {
+                                    mindist = dist;
+                                    minp = item;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (minp != null)
+                {
+                    dc.SnapPoint = minp;
 
+                    int snapW = 10;
+                    var trrrr = dc.Transform(minp.Value);
+                    var dist1 = (new Vector2d(minp.Value.X, minp.Value.Y) - new Vector2d(back.X, back.Y)).Length;
+                    if (dist1 > 3)
+                    {
+                        dc.SnapPoint = null;
+                    }
+                    else
+                    {
+                        toolStripStatusLabel2.Text = "snapped point: " + minp.Value.X + "; " + minp.Value.Y;
+                        gr.DrawRectangle(Pens.Blue, trrrr.X - snapW / 2, trrrr.Y - snapW / 2, snapW, snapW);
+                    }
+
+                }
+            }
+            else
+            {
+                toolStripStatusLabel2.Text = string.Empty;
+            }
 
             //gr.ResetTransform();
 
@@ -126,15 +189,34 @@ namespace GeomPad
 
                 var curp = dc.Transform(dc.GetCursor());
                 var t = dc.Transform(new PointF(dc.startx, dc.starty));
+
+                if (dc.SnapEnable && dc.SnapPoint != null)
+                {
+                    var trsp = dc.Transform(dc.SnapPoint.Value);
+                    curp = new PointF(trsp.X, trsp.Y);
+                }
                 gr.DrawLine(pen, dc.startx, dc.starty, curp.X, curp.Y);
-                var pp = dc.BackTransform(new PointF(dc.startx, dc.starty));
-                Vector2 v1 = new Vector2(pp.X, pp.Y);
-                Vector2 v2 = new Vector2(dc.GetCursor().X, dc.GetCursor().Y);
-                var dist = (v2 - v1).Length;
+                //var pp = dc.BackTransform(new PointF(dc.startx, dc.starty));
+                //Vector2 v1 = new Vector2(pp.X, pp.Y);
+                var v1 = dc.startReal;
+
+                Vector2d v2 = new Vector2d(curp.X, curp.Y);
+                var v22 = dc.BackTransform(v2.X, v2.Y);
+                double dist = 0;
+                if (dc.SnapPoint != null)
+                {
+                    dist = (v1 - dc.SnapPoint.Value).Length;
+                }
+                else
+                {
+                    var pp = dc.BackTransform(new PointF(dc.startx, dc.starty));
+                    v1 = new Vector2d(pp.X, pp.Y);
+                    v2 = new Vector2d(dc.GetCursor().X, dc.GetCursor().Y);
+                    dist = (v2 - v1).Length;                    
+                }
                 gr.DrawString(dist.ToString("N2"), SystemFonts.DefaultFont, Brushes.Black, curp.X + 10, curp.Y);
             }
-            var pos = dpanel.view.PictureBox.PointToClient(Cursor.Position);
-            var back = dc.BackTransform(pos);
+
             var str = $"X: {back.X,8:N2}";
             var str3 = $"Y: {back.Y,8:N2}";
             var str2 = $"X: 99999.999 ; Y: 99999.999";
@@ -155,7 +237,7 @@ namespace GeomPad
             }
             dpanel.view.PictureBox.Image = bmp;
         }
-        
+
         HelperItem selected => dataModel.SelectedItem;
 
         public float zoom = 1;
@@ -196,7 +278,7 @@ namespace GeomPad
             dc.FitToPoints(pp.ToArray(), 5);
         }
 
-        
+
         private void randomToolStripMenuItem_Click(object sender, EventArgs e)
         {
             /*if (listView2.SelectedItems.Count == 0) return;
@@ -205,7 +287,7 @@ namespace GeomPad
             ppw.Y = rand.Next(-100, 300);*/
         }
 
-          
+
 
         private void addPointToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -229,15 +311,15 @@ namespace GeomPad
             }
         }
 
-     
-        
+
+
         private void deleteToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             //if (listView2.SelectedItems.Count == 0) return;
             // var ppw = listView2.SelectedItems[0].Tag as PolygonPointEditorWrapper;
 
         }
-                
+
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -255,7 +337,7 @@ namespace GeomPad
             File.WriteAllText(sfd.FileName, sb.ToString());
         }
 
-        
+
 
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -279,14 +361,13 @@ namespace GeomPad
             dataModel.UpdateList();
         }
 
-        bool snapEnable = false;
 
         private void toolStripButton2_Click_1(object sender, EventArgs e)
         {
-            snapEnable = toolStripButton2.Checked;
-            toolStripButton2.BackColor = snapEnable ? Color.LightGreen : Color.Transparent;
+            dc.SnapEnable = toolStripButton2.Checked;
+            toolStripButton2.BackColor = dc.SnapEnable ? Color.LightGreen : Color.Transparent;
         }
-                
+
 
         private void propertyGrid1_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
         {
@@ -300,7 +381,7 @@ namespace GeomPad
             }*/
         }
 
-      
+
         bool editEnabled = false;
         private void toolStripButton3_Click_1(object sender, EventArgs e)
         {
@@ -308,8 +389,8 @@ namespace GeomPad
             toolStripButton3.BackColor = editEnabled ? Color.LightGreen : Color.Transparent;
         }
 
-     
-   
+
+
         private void debugToolStripMenuItem_Click(object sender, EventArgs e)
         {
             dpanel.ShowDebug();

@@ -72,24 +72,25 @@
             this.randomToolStripMenuItem,
             this.deleteToolStripMenuItem1});
             this.contextMenuStrip2.Name = "contextMenuStrip2";
-            this.contextMenuStrip2.Size = new System.Drawing.Size(126, 70);
+            this.contextMenuStrip2.Size = new System.Drawing.Size(181, 92);
             // 
             // addPointToolStripMenuItem
             // 
             this.addPointToolStripMenuItem.Name = "addPointToolStripMenuItem";
-            this.addPointToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.addPointToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.addPointToolStripMenuItem.Text = "add point";
+            this.addPointToolStripMenuItem.Click += new System.EventHandler(this.addPointToolStripMenuItem_Click);
             // 
             // randomToolStripMenuItem
             // 
             this.randomToolStripMenuItem.Name = "randomToolStripMenuItem";
-            this.randomToolStripMenuItem.Size = new System.Drawing.Size(125, 22);
+            this.randomToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.randomToolStripMenuItem.Text = "random";
             // 
             // deleteToolStripMenuItem1
             // 
             this.deleteToolStripMenuItem1.Name = "deleteToolStripMenuItem1";
-            this.deleteToolStripMenuItem1.Size = new System.Drawing.Size(125, 22);
+            this.deleteToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.deleteToolStripMenuItem1.Text = "delete";
             // 
             // PointsListControl
