@@ -97,7 +97,7 @@ namespace GeomPad
 
             var mtr = camera1.ViewMatrix;
             var q = mtr.ExtractRotation();
-            var mtr3 = Matrix4.CreateFromQuaternion(q);
+            var mtr3 = Matrix4d.CreateFromQuaternion(q);
             GL.MultMatrix(ref mtr3);
             GL.LineWidth(2);
             GL.Color3(Color.Red);
@@ -170,7 +170,7 @@ namespace GeomPad
 
         private void triangleToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Helpers.Add(new TriangleHelper() { Verticies = new[] { new Vector3d(), new Vector3d(10, 0, 0), new Vector3d(0, 10, 0) } });
+            Helpers.Add(new TriangleHelper() { Vertices = new[] { new Vector3d(), new Vector3d(10, 0, 0), new Vector3d(0, 10, 0) } });
             updateHelpersList();
         }
 
@@ -266,11 +266,8 @@ namespace GeomPad
             }
         }
 
-        public enum StatusTypeEnum
-        {
-            Information, Warning, Error
-        }
-        private void SetStatus(string v, StatusTypeEnum type)
+        
+        public void SetStatus(string v, StatusTypeEnum type)
         {
             switch (type)
             {
@@ -407,23 +404,23 @@ namespace GeomPad
 
         private void button2_Click(object sender, EventArgs e)
         {
-            camera1.CamTo = Vector3.Zero;
-            camera1.CamFrom = new Vector3(0, -10, 0);
-            camera1.CamUp = Vector3.UnitZ;
+            camera1.CamTo = Vector3d.Zero;
+            camera1.CamFrom = new Vector3d(0, -10, 0);
+            camera1.CamUp = Vector3d.UnitZ;
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            camera1.CamTo = Vector3.Zero;
-            camera1.CamFrom = new Vector3(-10, 0, 0);
-            camera1.CamUp = Vector3.UnitZ;
+            camera1.CamTo = Vector3d.Zero;
+            camera1.CamFrom = new Vector3d(-10, 0, 0);
+            camera1.CamUp = Vector3d.UnitZ;
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            camera1.CamTo = Vector3.Zero;
-            camera1.CamFrom = new Vector3(0, 0, -10);
-            camera1.CamUp = Vector3.UnitY;
+            camera1.CamTo = Vector3d.Zero;
+            camera1.CamFrom = new Vector3d(0, 0, -10);
+            camera1.CamUp = Vector3d.UnitY;
         }
 
         private void commandsToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
@@ -475,7 +472,7 @@ namespace GeomPad
             cnt /= vv.Length;
             var len = camera1.DirLen;
             var dir = camera1.Dir;
-            camera1.CamTo = cnt.ToVector3();
+            camera1.CamTo = cnt;
             camera1.CamFrom = camera1.CamTo + dir * len;
         }
         private void setCameraToPlaneToolStripMenuItem_Click(object sender, EventArgs e)
@@ -485,15 +482,19 @@ namespace GeomPad
             var h = listView1.SelectedItems[0].Tag as HelperItem;
             if (h is LineHelper lh)
             {
-                camera1.CamTo = lh.Start.ToVector3();
+                camera1.CamTo = lh.Start;
+            }
+            if (h is PointHelper pnh)
+            {
+                camera1.CamTo = pnh.Position;
             }
             if (h is PlaneHelper ph)
             {
-                camera1.CamTo = ph.Position.ToVector3();
+                camera1.CamTo = ph.Position;
             }
             if (h is SplineHelper sph)
             {
-                camToSelected(sph.Poles.ToArray());                
+                camToSelected(sph.Poles.ToArray());
             }
         }
 
@@ -718,5 +719,73 @@ namespace GeomPad
             Helpers.Add(ph);
             updateHelpersList();
         }
+
+        HelperItem[] loadXml(string content)
+        {
+            List<HelperItem> ret = new List<HelperItem>();
+
+            var doc = XDocument.Parse(content);
+            var root = doc.Descendants("root");
+            foreach (var pitem in root.Elements("line"))
+            {
+                LineHelper lh = new LineHelper();
+
+                List<Vector3d> pnts = new List<Vector3d>();
+                foreach (var point in pitem.Descendants("point"))
+                {
+                    var x = point.Attribute("x").Value.ParseDouble();
+                    var y = point.Attribute("y").Value.ParseDouble();
+                    var z = point.Attribute("z").Value.ParseDouble();
+                    pnts.Add(new Vector3d(x, y, z));
+                }
+                lh.Start = pnts[0];
+                lh.End = pnts[1];
+
+                ret.Add(lh);
+            }
+            foreach (var pitem in doc.Descendants("mesh"))
+            {
+                MeshHelper mh = new MeshHelper();
+                foreach (var item in pitem.Elements("triangle"))
+                {
+                    List<Vector3d> pnts = new List<Vector3d>();
+                    foreach (var point in item.Descendants("vertex"))
+                    {
+                        var x = point.Attribute("x").Value.ParseDouble();
+                        var y = point.Attribute("y").Value.ParseDouble();
+                        var z = point.Attribute("z").Value.ParseDouble();
+                        pnts.Add(new Vector3d(x, y, z));
+                    }
+                    mh.Mesh.Triangles.Add(new TriangleInfo() { Vertices = pnts.Select(z => new VertexInfo() { Position = z }).ToArray() });
+                }
+                ret.Add(mh);
+            }
+
+            return ret.ToArray();
+        }
+
+        private void fromClipboardToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var hh = loadXml(Clipboard.GetText());
+                Helpers.AddRange(hh);
+                updateHelpersList();
+                SetStatus("succesfully loaded.", StatusTypeEnum.Information);                
+            }
+            catch (Exception ex)
+            {
+                SetStatus(ex.Message, StatusTypeEnum.Error);                
+            }
+        }
+
+        private void fromFileToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+
+        }
+    }
+    public enum StatusTypeEnum
+    {
+        Information, Warning, Error
     }
 }

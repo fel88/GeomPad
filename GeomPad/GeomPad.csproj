@@ -164,7 +164,11 @@
     </Compile>
     <Compile Include="Helpers3D\Geometry.cs" />
     <Compile Include="Helpers3D\HelperItem.cs" />
+    <Compile Include="Helpers3D\Math\IntersectInfo.cs" />
+    <Compile Include="Helpers3D\Math\Model.cs" />
+    <Compile Include="Helpers3D\Math\Plane.cs" />
     <Compile Include="Helpers3D\Mesh.cs" />
+    <Compile Include="Helpers3D\MeshHelper.cs" />
     <Compile Include="Helpers3D\NURBS.cs" />
     <Compile Include="Helpers3D\PointCloudHelper.cs" />
     <Compile Include="Helpers3D\RationalBSplinePoint.cs" />
@@ -212,6 +216,7 @@
     <Compile Include="Helpers3D\LineHelper.cs" />
     <Compile Include="LineElement.cs" />
     <Compile Include="LocalContour.cs" />
+    <Compile Include="Helpers3D\Math\Intersection.cs" />
     <Compile Include="mdi.cs">
       <SubType>Form</SubType>
     </Compile>

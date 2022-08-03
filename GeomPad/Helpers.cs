@@ -12,6 +12,7 @@ namespace GeomPad
         {
             return double.Parse(z.Replace(",", "."), CultureInfo.InvariantCulture);
         }
+        
         public static float ParseFloat(string z)
         {
             return float.Parse(z.Replace(",", "."), CultureInfo.InvariantCulture);
