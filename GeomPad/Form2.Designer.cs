@@ -46,6 +46,7 @@
             this.polygonToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.arcToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.hingeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.splineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ellipseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.pointCloudToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -85,7 +86,9 @@
             this.toolStripButton3 = new System.Windows.Forms.ToolStripButton();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.splineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.parseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.fromFileToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.fromClipboardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -208,7 +211,8 @@
             this.ellipseToolStripMenuItem,
             this.toolStripSeparator2,
             this.pointCloudToolStripMenuItem,
-            this.bRepToolStripMenuItem});
+            this.bRepToolStripMenuItem,
+            this.parseToolStripMenuItem});
             this.addHelperToolStripMenuItem.Name = "addHelperToolStripMenuItem";
             this.addHelperToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.addHelperToolStripMenuItem.Text = "add helper";
@@ -261,6 +265,13 @@
             this.hingeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.hingeToolStripMenuItem.Text = "hinge";
             this.hingeToolStripMenuItem.Click += new System.EventHandler(this.hingeToolStripMenuItem_Click);
+            // 
+            // splineToolStripMenuItem
+            // 
+            this.splineToolStripMenuItem.Name = "splineToolStripMenuItem";
+            this.splineToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.splineToolStripMenuItem.Text = "spline";
+            this.splineToolStripMenuItem.Click += new System.EventHandler(this.splineToolStripMenuItem_Click);
             // 
             // ellipseToolStripMenuItem
             // 
@@ -589,12 +600,28 @@
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(13, 17);
             this.toolStripStatusLabel1.Text = "..";
             // 
-            // splineToolStripMenuItem
+            // parseToolStripMenuItem
             // 
-            this.splineToolStripMenuItem.Name = "splineToolStripMenuItem";
-            this.splineToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.splineToolStripMenuItem.Text = "spline";
-            this.splineToolStripMenuItem.Click += new System.EventHandler(this.splineToolStripMenuItem_Click);
+            this.parseToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fromFileToolStripMenuItem1,
+            this.fromClipboardToolStripMenuItem});
+            this.parseToolStripMenuItem.Name = "parseToolStripMenuItem";
+            this.parseToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.parseToolStripMenuItem.Text = "from xml";
+            // 
+            // fromFileToolStripMenuItem1
+            // 
+            this.fromFileToolStripMenuItem1.Name = "fromFileToolStripMenuItem1";
+            this.fromFileToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.fromFileToolStripMenuItem1.Text = "file";
+            this.fromFileToolStripMenuItem1.Click += new System.EventHandler(this.fromFileToolStripMenuItem1_Click);
+            // 
+            // fromClipboardToolStripMenuItem
+            // 
+            this.fromClipboardToolStripMenuItem.Name = "fromClipboardToolStripMenuItem";
+            this.fromClipboardToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.fromClipboardToolStripMenuItem.Text = "clipboard";
+            this.fromClipboardToolStripMenuItem.Click += new System.EventHandler(this.fromClipboardToolStripMenuItem_Click);
             // 
             // Form2
             // 
@@ -681,5 +708,8 @@
         private System.Windows.Forms.ToolStripMenuItem bRepToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cylinderToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem splineToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem parseToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem fromFileToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem fromClipboardToolStripMenuItem;
     }
 }

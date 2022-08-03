@@ -41,7 +41,7 @@ namespace GeomPad.Helpers3D
             }
         }
 
-        public Vector3d[] Verticies
+        public Vector3d[] Vertices
         {
             get
             {
@@ -60,7 +60,7 @@ namespace GeomPad.Helpers3D
         public override void AppendToXml(StringBuilder sb)
         {
             sb.AppendLine($"<triangle>");
-            foreach (var item in Verticies)
+            foreach (var item in Vertices)
             {
                 sb.AppendLine($"<vertex pos=\"{item.X};{item.Y};{item.Z}\"/>");
             }
@@ -74,7 +74,7 @@ namespace GeomPad.Helpers3D
             GL.Color3(Color.Blue);
 
             GL.Begin(PrimitiveType.LineLoop);
-            foreach (var item in Verticies)
+            foreach (var item in Vertices)
             {
                 GL.Vertex3(item);
             }
@@ -85,7 +85,7 @@ namespace GeomPad.Helpers3D
                 GL.Color3(Color.Red);
             }
             GL.Begin(PrimitiveType.Triangles);
-            foreach (var item in Verticies)
+            foreach (var item in Vertices)
             {
                 GL.Vertex3(item);
             }
@@ -95,7 +95,7 @@ namespace GeomPad.Helpers3D
         internal Vector3d Center()
         {
             var s = Vector3d.Zero;
-            foreach (var item in Verticies)
+            foreach (var item in Vertices)
             {
                 s += item;
             }
@@ -255,5 +255,4 @@ namespace GeomPad.Helpers3D
             };
         }
     }
-   
 }

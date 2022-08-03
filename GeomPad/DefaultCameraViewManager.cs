@@ -11,15 +11,15 @@ namespace GeomPad
         {
             var dir = Camera.CamFrom - Camera.CamTo;
             var cv = dir;
-            var moveVec = new Vector3(cv.X, cv.Y, cv.Z).Normalized();
-            var a1 = Vector3.Cross(Camera.CamUp, cv.Normalized()); ;
+            var moveVec = new Vector3d(cv.X, cv.Y, cv.Z).Normalized();
+            var a1 = Vector3d.Cross(Camera.CamUp, cv.Normalized()); ;
             //var moveVecTan = new Vector3(-moveVec.Y, moveVec.X, );
             var moveVecTan = a1.Normalized();
-            moveVec = Vector3.Cross(a1.Normalized(), cv.Normalized()).Normalized();
+            moveVec = Vector3d.Cross(a1.Normalized(), cv.Normalized()).Normalized();
 
 
             var pos = CursorPosition;
-            float zoom = 360f / (Camera.CamFrom - Camera.CamTo).Length;
+            var zoom = 360f / (Camera.CamFrom - Camera.CamTo).Length;
 
             {
                 if (drag2)
@@ -38,15 +38,18 @@ namespace GeomPad
                     float kk = 3;
                     //cameraToStart = new Vector3(cameraToStart.X, 0, 0);
                     //Camera.CamTo = cameraToStart;
-                    Vector3 v1 = cameraFromStart - cameraToStart;
+                    Vector3d v1 = cameraFromStart - cameraToStart;
 
-                    var m1 = Matrix3.CreateFromAxisAngle(Vector3.Cross(v1, cameraUpStart), -(startPosY - pos.Y) / 180f / kk * (float)Math.PI);
+                    var m1 = Matrix4d.CreateFromAxisAngle(Vector3d.Cross(v1, cameraUpStart), -(startPosY - pos.Y) / 180f / kk * (float)Math.PI);
                     //var m1 = Matrix3.CreateFromAxisAngle(Vector3.UnitX, -(startPosY - pos.Y) / 180f / kk * (float)Math.PI);
-                    var m2 = Matrix3.CreateFromAxisAngle(cameraUpStart, -(startPosX - pos.X) / 180f / kk * (float)Math.PI);
+                    var m2 = Matrix4d.CreateFromAxisAngle(cameraUpStart, -(startPosX - pos.X) / 180f / kk * (float)Math.PI);
                     //var m2 = Matrix3.CreateFromAxisAngle(Vector3.UnitZ, -(startPosX - pos.X) / 180f / kk * (float)Math.PI);
 
-                    v1 *= m1;
-                    v1 *= m2;
+                    v1 = Vector3d.Transform(v1, m1);
+                    //v1 *= m1;
+                    v1 = Vector3d.Transform(v1, m2);
+                    //v1 *= m2;
+                    
                     var up1 = cameraUpStart;
 
                     //up1 *= m1;
@@ -176,16 +179,16 @@ namespace GeomPad
         }
 
         protected bool lshiftcmd = false;
-        public static Vector3? lineIntersection(Vector3 planePoint, Vector3 planeNormal, Vector3 linePoint, Vector3 lineDirection)
+        public static Vector3d? lineIntersection(Vector3d planePoint, Vector3d planeNormal, Vector3d linePoint, Vector3d lineDirection)
         {
-            if (Math.Abs(Vector3.Dot(planeNormal, lineDirection)) < 10e-6f)
+            if (Math.Abs(Vector3d.Dot(planeNormal, lineDirection)) < 10e-6f)
             {
                 return null;
             }
 
-            var dot1 = Vector3.Dot(planeNormal, planePoint);
-            var dot2 = Vector3.Dot(planeNormal, linePoint);
-            var dot3 = Vector3.Dot(planeNormal, lineDirection);
+            var dot1 = Vector3d.Dot(planeNormal, planePoint);
+            var dot2 = Vector3d.Dot(planeNormal, linePoint);
+            var dot3 = Vector3d.Dot(planeNormal, lineDirection);
             double t = (dot1 - dot2) / dot3;
             return linePoint + lineDirection * (float)t;
         }
@@ -209,12 +212,12 @@ namespace GeomPad
                 var mr = new MouseRay(pos.X, pos.Y, Camera);
                 var d1 = Camera.CamFrom - Camera.CamTo;
                 //var plane1 : forw
-                var crs1 = Vector3.Cross(cameraUpStart, d1);
-                var z1 = Vector3.UnitZ;
+                var crs1 = Vector3d.Cross(cameraUpStart, d1);
+                var z1 = Vector3d.UnitZ;
                 if (SnapModePlane)
                 {
 
-                    var inter = lineIntersection(Vector3.Zero, Vector3.UnitZ, Camera.CamFrom, Camera.CamTo - Camera.CamFrom);
+                    var inter = lineIntersection(Vector3d.Zero, Vector3d.UnitZ, Camera.CamFrom, Camera.CamTo - Camera.CamFrom);
                     if (inter != null)
                     {
                         drag = true;
@@ -242,7 +245,7 @@ namespace GeomPad
 
 
 
-                    var inter = lineIntersection(Camera.CamTo, crs1, Vector3.Zero, Vector3.UnitX);
+                    var inter = lineIntersection(Camera.CamTo, crs1, Vector3d.Zero, Vector3d.UnitX);
                     if (inter != null)
                     {
                         drag = true;
@@ -271,9 +274,9 @@ namespace GeomPad
         protected float startShiftY;
         protected float startPosX;
         protected float startPosY;
-        protected Vector3 cameraFromStart;
-        protected Vector3 cameraToStart;
-        protected Vector3 cameraUpStart;
+        protected Vector3d cameraFromStart;
+        protected Vector3d cameraToStart;
+        protected Vector3d cameraUpStart;
         public PointF CursorPosition
         {
             get

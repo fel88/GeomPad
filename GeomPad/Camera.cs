@@ -9,66 +9,70 @@ namespace GeomPad
     public class Camera
     {
 
-        public Vector3 CamFrom = new Vector3(250, 250, 250);
-        public Vector3 CamTo = new Vector3(0, 0, 0);
-        public Vector3 CamUp = new Vector3(0, 0, 1);
+        public Vector3d CamFrom = new Vector3d(250, 250, 250);
+        public Vector3d CamTo = new Vector3d(0, 0, 0);
+        public Vector3d CamUp = new Vector3d(0, 0, 1);
 
-        public Vector3 Dir
+        public Vector3d Dir
         {
             get { return (CamFrom - CamTo).Normalized(); }
         }
-        public float DirLen
+        public double DirLen
         {
             get { return Dir.Length; }
         }
 
-        public Vector3 CameraFrom
+        public Vector3d CameraFrom
         {
             get { return CamFrom; }
         }
-        public Vector3 CameraTo
+        public Vector3d CameraTo
         {
             get { return CamTo; }
         }
-        public Vector3 CameraUp
+        public Vector3d CameraUp
         {
             get { return CamUp; }
         }
 
-        public Matrix4 ProjectionMatrix { get; set; }
-        public Matrix4 ViewMatrix { get; set; }
+        public Matrix4d ProjectionMatrix { get; set; }
+        public Matrix4d ViewMatrix { get; set; }
         public int[] viewport = new int[4];
         public void MoveForw(float ang)
         {
 
             var vect = CamFrom - CamTo;
-            CamTo += new Vector3(ang, 0, 0);
+            CamTo += new Vector3d(ang, 0, 0);
             CamFrom = vect + CamTo;
         }
+
         public void RotateFromZ(float ang)
         {
             var vect = CamFrom - CamTo;
-            var m = Matrix4.CreateFromAxisAngle(CamUp, ang);
-            CamFrom = ((m * new Vector4(vect, 1)).Xyz + CamTo);
-            CamUp = ((m * new Vector4(CamUp, 1)).Xyz);
+            var m = Matrix4d.CreateFromAxisAngle(CamUp, ang);
+            CamFrom = Vector3d.Transform(vect, m) + CamTo;
+            CamUp = Vector3d.Transform(CamUp, m);
         }
+
         public void RotateFromX(float ang)
         {
             var vect = CamFrom - CamTo;
-            var m = Matrix4.CreateFromAxisAngle(Vector3.UnitX, ang);
+            var m = Matrix4d.CreateFromAxisAngle(Vector3d.UnitX, ang);
 
-            CamUp = ((m * new Vector4(CamUp, 1)).Xyz);
-            CamFrom = ((m * new Vector4(vect, 1)).Xyz + CamTo);
+            CamFrom = Vector3d.Transform(vect, m) + CamTo;
+            CamUp = Vector3d.Transform(CamUp, m);
         }
+
         public void RotateFromY(float ang)
         {
             var vect = CamFrom - CamTo;
 
-            var cross1 = Vector3.Cross(vect, CamUp);
-            var m = Matrix4.CreateFromAxisAngle(cross1, ang);
+            var cross1 = Vector3d.Cross(vect, CamUp);
+            var m = Matrix4d.CreateFromAxisAngle(cross1, ang);
             //var m = Matrix4.CreateRotationY(ang);
-            CamUp = ((m * new Vector4(CamUp, 1)).Xyz);
-            CamFrom = ((m * new Vector4(vect, 1)).Xyz + CamTo);
+
+            CamFrom = Vector3d.Transform(vect, m) + CamTo;
+            CamUp = Vector3d.Transform(CamUp, m);
         }
 
         public float zoom = 1;
@@ -77,7 +81,7 @@ namespace GeomPad
         public float ZFar = 25e3f;
 
         public bool IsOrtho { get; set; } = false;
-        public float OrthoWidth { get; set; } = 1000;
+        public double OrthoWidth { get; set; } = 1000;
         public float Fov { get; set; } = 60;
 
         public void UpdateMatricies(GLControl glControl)
@@ -88,9 +92,9 @@ namespace GeomPad
             viewport[2] = glControl.Width;
             viewport[3] = glControl.Height;
             var aspect = glControl.Width / (float)glControl.Height;
-            var o = Matrix4.CreateOrthographic(OrthoWidth, OrthoWidth / aspect, ZNear, ZFar);
+            var o = Matrix4d.CreateOrthographic(OrthoWidth, OrthoWidth / aspect, ZNear, ZFar);
 
-            Matrix4 mp = Matrix4.CreatePerspectiveFieldOfView((float)(Fov * Math.PI / 180) * zoom,
+            Matrix4d mp = Matrix4d.CreatePerspectiveFieldOfView((float)(Fov * System.Math.PI / 180) * zoom,
                 glControl.Width / (float)glControl.Height, 1, 25e4f);
 
 
@@ -102,10 +106,9 @@ namespace GeomPad
             else
             {
                 ProjectionMatrix = mp;
-
             }
 
-            Matrix4 modelview = Matrix4.LookAt(CamFrom, CamTo, CamUp);
+            Matrix4d modelview = Matrix4d.LookAt(CamFrom, CamTo, CamUp);
             ViewMatrix = modelview;
         }
         public void Setup(GLControl glControl)
@@ -116,9 +119,9 @@ namespace GeomPad
             viewport[2] = glControl.Width;
             viewport[3] = glControl.Height;
             var aspect = glControl.Width / (float)glControl.Height;
-            var o = Matrix4.CreateOrthographic(OrthoWidth, OrthoWidth / aspect, ZNear, ZFar);
+            var o = Matrix4d.CreateOrthographic(OrthoWidth, OrthoWidth / aspect, ZNear, ZFar);
 
-            Matrix4 mp = Matrix4.CreatePerspectiveFieldOfView((float)(Fov * Math.PI / 180) * zoom,
+            Matrix4d mp = Matrix4d.CreatePerspectiveFieldOfView((float)(Fov * Math.PI / 180) * zoom,
                 glControl.Width / (float)glControl.Height, 1, 25e4f);
 
             GL.MatrixMode(MatrixMode.Projection);
@@ -133,7 +136,7 @@ namespace GeomPad
                 GL.LoadMatrix(ref mp);
             }
 
-            Matrix4 modelview = Matrix4.LookAt(CamFrom, CamTo, CamUp);
+            Matrix4d modelview = Matrix4d.LookAt(CamFrom, CamTo, CamUp);
             //modelview = WorldMatrix * modelview;
             GL.MatrixMode(MatrixMode.Modelview);
             GL.LoadMatrix(ref modelview);
@@ -142,31 +145,31 @@ namespace GeomPad
             GL.MultMatrix(ref WorldMatrix);
         }
 
-        public Matrix4 WorldMatrix = Matrix4.Identity;
+        public Matrix4d WorldMatrix = Matrix4d.Identity;
 
-        public void Shift(Vector3 vector3)
+        public void Shift(Vector3d vector3)
         {
             CamFrom += vector3;
             CamTo += vector3;
         }
 
-        public Vector3 GetSide()
+        public Vector3d GetSide()
         {
             var dirr = CamFrom - CamTo;
-            var forw = new Vector3(dirr.X, dirr.Y, 0);
+            var forw = new Vector3d(dirr.X, dirr.Y, 0);
             forw.Normalize();
-            var crs = Vector3.Cross(forw, CamUp);
-            var side = new Vector3(crs.X, crs.Y, 0);
+            var crs = Vector3d.Cross(forw, CamUp);
+            var side = new Vector3d(crs.X, crs.Y, 0);
             side.Normalize();
             return side;
         }
 
         public void FitToPoints(Vector3d[] pnts, int w, int h)
         {
-            List<Vector2> vv = new List<Vector2>();
+            List<Vector2d> vv = new List<Vector2d>();
             foreach (var vertex in pnts)
             {
-                var p = MouseRay.Project(new Vector3((float)vertex.X, (float)vertex.Y, (float)vertex.Z), ProjectionMatrix, ViewMatrix, WorldMatrix, viewport);
+                var p = MouseRay.Project(new Vector3d((float)vertex.X, (float)vertex.Y, (float)vertex.Z), ProjectionMatrix, ViewMatrix, WorldMatrix, viewport);
                 vv.Add(p.Xy);
             }
 

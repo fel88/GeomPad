@@ -7,6 +7,6 @@ namespace GeomPad
         void OpenChildWindow(Form f);
         void AddHelper(AbstractHelperItem h);
         void AddHelpers(AbstractHelperItem[] h);
+        void SetStatus(string v, StatusTypeEnum type);
     }
-
 }

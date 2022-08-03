@@ -6,81 +6,81 @@ namespace GeomPad
 {
     public class MouseRay
     {
-        public Vector3 _start;
-        public Vector3 _end;
+        public Vector3d _start;
+        public Vector3d _end;
 
-        public Vector3 Start { get { return _start; } }
+        public Vector3d Start { get { return _start; } }
 
-        public Vector3 End { get { return _end; } }
+        public Vector3d End { get { return _end; } }
 
         public MouseRay(Point mouse)
             : this(mouse.X, mouse.Y)
         {
         }
 
-        public MouseRay(Vector3 start, Vector3 end)
+        public MouseRay(Vector3d start, Vector3d end)
         {
             _start = start;
             _end = end;
 
         }
         public static int[] viewport = new int[4];
-        public static Matrix4 modelMatrix, projMatrix;
+        public static Matrix4d modelMatrix, projMatrix;
 
         public static void UpdateMatrices()
         {
-            GL.GetFloat(GetPName.ModelviewMatrix, out modelMatrix);
-            GL.GetFloat(GetPName.ProjectionMatrix, out projMatrix);
+            GL.GetDouble(GetPName.ModelviewMatrix, out modelMatrix);
+            GL.GetDouble(GetPName.ProjectionMatrix, out projMatrix);
             GL.GetInteger(GetPName.Viewport, viewport);
         }
 
-        public Vector3 Dir
+        public Vector3d Dir
         {
             get { return (End - Start).Normalized(); }
         }
 
-        public MouseRay(float x, float y, Camera view)
+        public MouseRay(double x, double y, Camera view)
         {
             int[] viewport = new int[4];
-            Matrix4 modelMatrix, projMatrix;
+            Matrix4d modelMatrix, projMatrix;
             viewport = view.viewport;
             modelMatrix = view.ViewMatrix;
             projMatrix = view.ProjectionMatrix;
 
 
-            _start = UnProject(new Vector3(x, y, 0.0f), projMatrix, modelMatrix, new Size(viewport[2], viewport[3]));
-            _end = UnProject(new Vector3(x, y, 1.0f), projMatrix, modelMatrix, new Size(viewport[2], viewport[3]));
+            _start = UnProject(new Vector3d(x, y, 0.0f), projMatrix, modelMatrix, new Size(viewport[2], viewport[3]));
+            _end = UnProject(new Vector3d(x, y, 1.0f), projMatrix, modelMatrix, new Size(viewport[2], viewport[3]));
         }
 
         public MouseRay(int x, int y)
         {
 
-            _start = UnProject(new Vector3(x, y, 0.0f), projMatrix, modelMatrix, new Size(viewport[2], viewport[3]));
-            _end = UnProject(new Vector3(x, y, 1.0f), projMatrix, modelMatrix, new Size(viewport[2], viewport[3]));
+            _start = UnProject(new Vector3d(x, y, 0.0f), projMatrix, modelMatrix, new Size(viewport[2], viewport[3]));
+            _end = UnProject(new Vector3d(x, y, 1.0f), projMatrix, modelMatrix, new Size(viewport[2], viewport[3]));
         }
 
 
-        private static bool WithinEpsilon(float a, float b)
+        private static bool WithinEpsilon(double a, double b)
         {
-            float num = a - b;
-            return ((-1.401298E-45f <= num) && (num <= float.Epsilon));
+            double num = a - b;
+            return ((-1.401298E-45f <= num) && (num <= double.Epsilon));
         }
 
-        public static Vector3 Project(Vector3 _source, Matrix4 projection, Matrix4 view, Matrix4 world, int[] viewport)
+        public static Vector3d Project(Vector3d _source, Matrix4d projection, Matrix4d view, Matrix4d world, int[] viewport)
         {
-            Vector4 source = new Vector4(_source, 1);
+            Vector4d source = new Vector4d(_source, 1);
 
             var w = viewport[2];
             var h = viewport[3];
             int x = 0;
             int y = 0;
 
-            Matrix4 matrix = Matrix4.Mult(Matrix4.Mult(world, view), projection);
-            Vector4 vector = Vector4.Transform(source, matrix);
-            float a = (((source.X * matrix.M14) + (source.Y * matrix.M24)) + (source.Z * matrix.M34)) + matrix.M44;
+            Matrix4d matrix = Matrix4d.Mult(Matrix4d.Mult(world, view), projection);
+            Vector4d vector = Vector4d.Transform(source, matrix);
+            var a = (((source.X * matrix.M14) + (source.Y * matrix.M24)) + (source.Z * matrix.M34)) + matrix.M44;
             if (!WithinEpsilon(a, 1f))
             {
-                vector = (Vector4)(vector / a);
+                vector = (vector / a);
             }
             vector.X = (((vector.X + 1f) * 0.5f) * w) + x;
             vector.Y = (((-vector.Y + 1f) * 0.5f) * h) + y;
@@ -132,20 +132,20 @@ namespace GeomPad
         }
 
 
-        public static Vector3 UnProject(Vector3 mouse, Matrix4 projection, Matrix4 view, Size viewport)
+        public static Vector3d UnProject(Vector3d mouse, Matrix4d projection, Matrix4d view, Size viewport)
         {
-            Vector4 vec;
+            Vector4d vec;
 
-            vec.X = 2.0f * mouse.X / (float)viewport.Width - 1;
-            vec.Y = -(2.0f * mouse.Y / (float)viewport.Height - 1);
+            vec.X = 2.0f * mouse.X / viewport.Width - 1;
+            vec.Y = -(2.0f * mouse.Y / viewport.Height - 1);
             vec.Z = mouse.Z;
             vec.W = 1.0f;
 
-            Matrix4 viewInv = Matrix4.Invert(view);
-            Matrix4 projInv = Matrix4.Invert(projection);
+            Matrix4d viewInv = Matrix4d.Invert(view);
+            Matrix4d projInv = Matrix4d.Invert(projection);
 
-            Vector4.Transform(ref vec, ref projInv, out vec);
-            Vector4.Transform(ref vec, ref viewInv, out vec);
+            Vector4d.Transform(ref vec, ref projInv, out vec);
+            Vector4d.Transform(ref vec, ref viewInv, out vec);
 
             if (vec.W > 0.000001f || vec.W < -0.000001f)
             {
