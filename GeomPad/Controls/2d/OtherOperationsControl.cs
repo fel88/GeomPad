@@ -200,17 +200,24 @@ namespace GeomPad.Controls._2d
 
             var tr1 = p1.GetTrasformed(p1.Polygon);
             var tr2 = p2.GetTrasformed(p2.Polygon);
-            for (int i = 1; i < tr1.Points.Length; i++)
+            foreach (var trr1 in tr1)
             {
-                var p00 = tr1.Points[i - 1];
-                var p11 = tr1.Points[i];
-                s1.Add(new SegmentHelper() { Point = new Vector2d(p00.X, p00.Y), Point2 = new Vector2d(p11.X, p11.Y) });
+                for (int i = 1; i < trr1.Points.Length; i++)
+                {
+                    var p00 = trr1.Points[i - 1];
+                    var p11 = trr1.Points[i];
+                    s1.Add(new SegmentHelper() { Point = new Vector2d(p00.X, p00.Y), Point2 = new Vector2d(p11.X, p11.Y) });
+                }
             }
-            for (int i = 1; i < tr2.Points.Length; i++)
+
+            foreach (var trr2 in tr2)
             {
-                var p00 = tr2.Points[i - 1];
-                var p11 = tr2.Points[i];
-                s2.Add(new SegmentHelper() { Point = new Vector2d(p00.X, p00.Y), Point2 = new Vector2d(p11.X, p11.Y) });
+                for (int i = 1; i < trr2.Points.Length; i++)
+                {
+                    var p00 = trr2.Points[i - 1];
+                    var p11 = trr2.Points[i];
+                    s2.Add(new SegmentHelper() { Point = new Vector2d(p00.X, p00.Y), Point2 = new Vector2d(p11.X, p11.Y) });
+                }
             }
 
             double mindist = double.MaxValue;

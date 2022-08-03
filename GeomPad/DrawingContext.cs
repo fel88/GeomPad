@@ -14,6 +14,7 @@ namespace GeomPad
 
         public float startx, starty;
         public float origsx, origsy;
+        public Vector2d startReal;
         public bool isDrag = false;
         private bool isMiddleDrag = false;
         public bool MiddleDrag { get { return isMiddleDrag; } }
@@ -84,6 +85,9 @@ namespace GeomPad
             sy = (pos.Y / zold + sy - pos.Y / zoom);
         }
 
+        public bool SnapEnable = false;
+        public Vector2d? SnapPoint;
+        
         public virtual void PictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
             var pos = PictureBox.Control.PointToClient(Cursor.Position);
@@ -105,6 +109,13 @@ namespace GeomPad
                 starty = pos.Y;
                 origsx = sx;
                 origsy = sy;
+                if (SnapEnable && SnapPoint != null)
+                {
+                    startReal = new Vector2d(SnapPoint.Value.X, SnapPoint.Value.Y);
+                    var trsp = Transform(SnapPoint.Value);
+                    startx = trsp.X;
+                    starty = trsp.Y;
+                }
             }
 
             var tt = BackTransform(e.X, e.Y);
@@ -166,6 +177,12 @@ namespace GeomPad
             var posx = (x / zoom - sx);
             var posy = (-y / zoom - sy);
             return new PointF(posx, posy);
+        }
+        public virtual PointF BackTransform(double x, double y)
+        {
+            var posx = (x / zoom - sx);
+            var posy = (-y / zoom - sy);
+            return new PointF((float)posx, (float)posy);
         }
         public EventWrapperPictureBox PictureBox;
 

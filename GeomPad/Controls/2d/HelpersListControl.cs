@@ -133,25 +133,27 @@ namespace GeomPad.Controls._2d
 
             dataModel.UpdateList();
         }
+
         HelperItem[] loadXml(string content)
         {
             List<HelperItem> ret = new List<HelperItem>();
 
             var doc = XDocument.Parse(content);
-            foreach (var pitem in doc.Descendants("polyline"))
+            var root = doc.Element("root");
+            foreach (var pitem in root.Elements("polyline"))
             {
                 PolylineHelper lsh = new PolylineHelper();
 
                 List<Vector2d> pnts = new List<Vector2d>();
                 foreach (var point in pitem.Descendants("point"))
                 {
-                    var x = float.Parse(point.Attribute("x").Value.Replace(",", "."), CultureInfo.InvariantCulture);
-                    var y = float.Parse(point.Attribute("y").Value.Replace(",", "."), CultureInfo.InvariantCulture);
+                    var x = point.Attribute("x").Value.ParseDouble();
+                    var y = point.Attribute("y").Value.ParseDouble();
                     pnts.Add(new Vector2d(x, y));
                 }
                 ret.Add(lsh);
             }
-            foreach (var pitem in doc.Descendants("linesSet"))
+            foreach (var pitem in root.Elements("lineSet"))
             {
                 LinesSetHelper lsh = new LinesSetHelper();
                 foreach (var item in pitem.Elements("line"))
@@ -159,36 +161,29 @@ namespace GeomPad.Controls._2d
                     List<Vector2d> pnts = new List<Vector2d>();
                     foreach (var point in item.Descendants("point"))
                     {
-                        var x = float.Parse(point.Attribute("x").Value.Replace(",", "."), CultureInfo.InvariantCulture);
-                        var y = float.Parse(point.Attribute("y").Value.Replace(",", "."), CultureInfo.InvariantCulture);
+                        var x = point.Attribute("x").Value.ParseDouble();
+                        var y = point.Attribute("y").Value.ParseDouble();
                         pnts.Add(new Vector2d(x, y));
                     }
                     lsh.Lines.Add(new Line2D() { Start = pnts[0], End = pnts[1] });
                 }
                 ret.Add(lsh);
             }
-            foreach (var pitem in doc.Descendants("polygon"))
+            foreach (var pitem in root.Elements("polygon"))
             {
                 List<NFP> nfps = new List<NFP>();
                 foreach (var item in pitem.Elements("region"))
-                {
-                    //  PolygonHelper ph = new PolygonHelper();
-                    //  Items.Add(ph);
+                {                    
                     List<SvgPoint> pnts = new List<SvgPoint>();
                     foreach (var point in item.Descendants("point"))
                     {
-                        var x = float.Parse(point.Attribute("x").Value.Replace(",", "."), CultureInfo.InvariantCulture);
-                        var y = float.Parse(point.Attribute("y").Value.Replace(",", "."), CultureInfo.InvariantCulture);
+                        var x = point.Attribute("x").Value.ParseDouble();
+                        var y = point.Attribute("y").Value.ParseDouble();
                         pnts.Add(new SvgPoint(x, y));
                     }
-                    nfps.Add(new NFP() { Points = pnts.Select(y => new SvgPoint(y.X, y.Y)).ToArray() });
-                    //  ph.Polygon.Points = pnts.ToArray();
-
+                    nfps.Add(new NFP() { Points = pnts.Select(y => new SvgPoint(y.X, y.Y)).ToArray() });                    
                 }
-
-                //UpdateList();
-
-                //var nfps = r.regions.Select(z => new NFP() { Points = z.Select(y => new SvgPoint(y.x, y.y)).ToArray() }).ToArray();
+                                
 
                 for (int i = 0; i < nfps.Count; i++)
                 {

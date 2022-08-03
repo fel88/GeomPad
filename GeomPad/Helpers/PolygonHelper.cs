@@ -69,21 +69,40 @@ namespace GeomPad.Helpers
             return dc.Transform(new SvgPoint(p.X + OffsetX, p.Y + OffsetY));
         }
 
-        public NFP GetTrasformed(NFP polygon)
+        public NFP[] GetTrasformed(NFP polygon)
         {
-            NFP ret = new NFP();
-
-            foreach (var p in polygon.Points)
+            List<NFP> rets = new List<NFP>();
+            Queue<NFP> q = new Queue<NFP>();
+            List<NFP> alls = new List<NFP>();
+            q.Enqueue(polygon);
+            while (q.Any())
             {
-                Matrix mtr = new Matrix();
-                mtr.RotateAt((float)Rotation, new PointF(0, 0));
-                PointF[] pnt = new PointF[] { new PointF((float)p.X, (float)p.Y) };
-                mtr.TransformPoints(pnt);
-                var p2 = new SvgPoint(pnt[0].X, pnt[0].Y);
-                ret.AddPoint(new SvgPoint(p2.X + OffsetX, p2.Y + OffsetY));
+                var deq = q.Dequeue();
+                alls.Add(deq);
+                foreach (var d in deq.Childrens)
+                {
+                    q.Enqueue(d);
+                }
             }
-            return ret;
+
+            foreach (var item in alls)
+            {
+                NFP ret = new NFP();
+                rets.Add(ret);
+                foreach (var p in item.Points)
+                {
+                    Matrix mtr = new Matrix();
+                    mtr.RotateAt((float)Rotation, new PointF(0, 0));
+                    PointF[] pnt = new PointF[] { new PointF((float)p.X, (float)p.Y) };
+                    mtr.TransformPoints(pnt);
+                    var p2 = new SvgPoint(pnt[0].X, pnt[0].Y);
+                    ret.AddPoint(new SvgPoint(p2.X + OffsetX, p2.Y + OffsetY));
+                }
+            }
+
+            return rets.ToArray();
         }
+
         public bool DrawPoints { get; set; } = false;
         public override void Draw(IDrawingContext idc)
         {
