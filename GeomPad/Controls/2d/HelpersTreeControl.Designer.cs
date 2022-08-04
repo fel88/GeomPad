@@ -1,6 +1,7 @@
-﻿namespace GeomPad.Controls._2d
+﻿
+namespace GeomPad.Controls._2d
 {
-    partial class HelpersListControl
+    partial class HelpersTreeControl
     {
         /// <summary> 
         /// Required designer variable.
@@ -29,11 +30,9 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.listView1 = new System.Windows.Forms.ListView();
-            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.treeListView1 = new BrightIdeasSoftware.TreeListView();
+            this.olvColumn1 = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.olvColumn2 = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.addToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pointToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -61,47 +60,43 @@
             this.fitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractChildsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.moveToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            ((System.ComponentModel.ISupportInitialize)(this.treeListView1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // listView1
+            // treeListView1
             // 
-            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader6,
-            this.columnHeader1,
-            this.columnHeader2,
-            this.columnHeader5});
-            this.listView1.ContextMenuStrip = this.contextMenuStrip1;
-            this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listView1.FullRowSelect = true;
-            this.listView1.GridLines = true;
-            this.listView1.HideSelection = false;
-            this.listView1.Location = new System.Drawing.Point(0, 0);
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(267, 255);
-            this.listView1.TabIndex = 1;
-            this.listView1.UseCompatibleStateImageBehavior = false;
-            this.listView1.View = System.Windows.Forms.View.Details;
-            this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
-            this.listView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listView1_KeyDown);
+            this.treeListView1.AllColumns.Add(this.olvColumn1);
+            this.treeListView1.AllColumns.Add(this.olvColumn2);
+            this.treeListView1.CellEditUseWholeCell = false;
+            this.treeListView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.olvColumn1,
+            this.olvColumn2});
+            this.treeListView1.ContextMenuStrip = this.contextMenuStrip1;
+            this.treeListView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeListView1.FullRowSelect = true;
+            this.treeListView1.GridLines = true;
+            this.treeListView1.HideSelection = false;
+            this.treeListView1.Location = new System.Drawing.Point(0, 0);
+            this.treeListView1.Name = "treeListView1";
+            this.treeListView1.ShowGroups = false;
+            this.treeListView1.Size = new System.Drawing.Size(363, 247);
+            this.treeListView1.TabIndex = 0;
+            this.treeListView1.UseCompatibleStateImageBehavior = false;
+            this.treeListView1.View = System.Windows.Forms.View.Details;
+            this.treeListView1.VirtualMode = true;
+            this.treeListView1.SelectedIndexChanged += new System.EventHandler(this.treeListView1_SelectedIndexChanged);
+            this.treeListView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.treeListView1_KeyDown);
             // 
-            // columnHeader6
+            // olvColumn1
             // 
-            this.columnHeader6.Text = "";
-            this.columnHeader6.Width = 30;
+            this.olvColumn1.AspectName = "Name";
+            this.olvColumn1.Text = "Name";
             // 
-            // columnHeader1
+            // olvColumn2
             // 
-            this.columnHeader1.Text = "Name";
-            this.columnHeader1.Width = 100;
-            // 
-            // columnHeader2
-            // 
-            this.columnHeader2.Text = "Type";
-            // 
-            // columnHeader5
-            // 
-            this.columnHeader5.Text = "Childs";
+            this.olvColumn2.AspectName = "TypeName";
+            this.olvColumn2.Text = "Type";
             // 
             // contextMenuStrip1
             // 
@@ -145,7 +140,6 @@
             this.polygonToolStripMenuItem1.Name = "polygonToolStripMenuItem1";
             this.polygonToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.polygonToolStripMenuItem1.Text = "polygon";
-            this.polygonToolStripMenuItem1.Click += new System.EventHandler(this.polygonToolStripMenuItem1_Click);
             // 
             // segmentToolStripMenuItem1
             // 
@@ -159,21 +153,18 @@
             this.circleToolStripMenuItem.Name = "circleToolStripMenuItem";
             this.circleToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.circleToolStripMenuItem.Text = "circle";
-            this.circleToolStripMenuItem.Click += new System.EventHandler(this.circleToolStripMenuItem_Click);
             // 
             // rectangleToolStripMenuItem
             // 
             this.rectangleToolStripMenuItem.Name = "rectangleToolStripMenuItem";
             this.rectangleToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.rectangleToolStripMenuItem.Text = "rectangle";
-            this.rectangleToolStripMenuItem.Click += new System.EventHandler(this.rectangleToolStripMenuItem_Click);
             // 
             // linesSetToolStripMenuItem
             // 
             this.linesSetToolStripMenuItem.Name = "linesSetToolStripMenuItem";
             this.linesSetToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.linesSetToolStripMenuItem.Text = "lines set";
-            this.linesSetToolStripMenuItem.Click += new System.EventHandler(this.linesSetToolStripMenuItem_Click);
             // 
             // polylineToolStripMenuItem
             // 
@@ -200,12 +191,11 @@
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
             this.fileToolStripMenuItem.Text = "file";
-            this.fileToolStripMenuItem.Click += new System.EventHandler(this.fileToolStripMenuItem_Click);
             // 
             // clipboardToolStripMenuItem
             // 
             this.clipboardToolStripMenuItem.Name = "clipboardToolStripMenuItem";
-            this.clipboardToolStripMenuItem.Size = new System.Drawing.Size(124, 22);
+            this.clipboardToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.clipboardToolStripMenuItem.Text = "clipboard";
             this.clipboardToolStripMenuItem.Click += new System.EventHandler(this.clipboardToolStripMenuItem_Click);
             // 
@@ -228,7 +218,6 @@
             this.updateToolStripMenuItem.Name = "updateToolStripMenuItem";
             this.updateToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.updateToolStripMenuItem.Text = "update";
-            this.updateToolStripMenuItem.Click += new System.EventHandler(this.updateToolStripMenuItem_Click);
             // 
             // clearToolStripMenuItem
             // 
@@ -256,14 +245,12 @@
             this.bringToFrontToolStripMenuItem.Name = "bringToFrontToolStripMenuItem";
             this.bringToFrontToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.bringToFrontToolStripMenuItem.Text = "bring to front";
-            this.bringToFrontToolStripMenuItem.Click += new System.EventHandler(this.bringToFrontToolStripMenuItem_Click);
             // 
             // sendToBackToolStripMenuItem
             // 
             this.sendToBackToolStripMenuItem.Name = "sendToBackToolStripMenuItem";
             this.sendToBackToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
             this.sendToBackToolStripMenuItem.Text = "send to back";
-            this.sendToBackToolStripMenuItem.Click += new System.EventHandler(this.sendToBackToolStripMenuItem_Click);
             // 
             // actionsToolStripMenuItem
             // 
@@ -282,26 +269,24 @@
             this.cloneToolStripMenuItem.Name = "cloneToolStripMenuItem";
             this.cloneToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.cloneToolStripMenuItem.Text = "clone";
-            this.cloneToolStripMenuItem.Click += new System.EventHandler(this.cloneToolStripMenuItem_Click);
             // 
             // randomizePointsToolStripMenuItem
             // 
             this.randomizePointsToolStripMenuItem.Name = "randomizePointsToolStripMenuItem";
             this.randomizePointsToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.randomizePointsToolStripMenuItem.Text = "randomize points";
-            this.randomizePointsToolStripMenuItem.Click += new System.EventHandler(this.randomizePointsToolStripMenuItem_Click);
             // 
             // fitToolStripMenuItem
             // 
             this.fitToolStripMenuItem.Name = "fitToolStripMenuItem";
-            this.fitToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.fitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.fitToolStripMenuItem.Text = "fit";
             this.fitToolStripMenuItem.Click += new System.EventHandler(this.fitToolStripMenuItem_Click);
             // 
             // extractChildsToolStripMenuItem
             // 
             this.extractChildsToolStripMenuItem.Name = "extractChildsToolStripMenuItem";
-            this.extractChildsToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
+            this.extractChildsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.extractChildsToolStripMenuItem.Text = "extract childs";
             this.extractChildsToolStripMenuItem.Click += new System.EventHandler(this.extractChildsToolStripMenuItem_Click);
             // 
@@ -310,15 +295,16 @@
             this.moveToToolStripMenuItem.Name = "moveToToolStripMenuItem";
             this.moveToToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.moveToToolStripMenuItem.Text = "move to";
-            this.moveToToolStripMenuItem.Click += new System.EventHandler(this.moveToToolStripMenuItem_Click);
             // 
-            // HelpersListControl
+            // HelpersTreeControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.listView1);
-            this.Name = "HelpersListControl";
-            this.Size = new System.Drawing.Size(267, 255);
+            this.Controls.Add(this.treeListView1);
+            this.DoubleBuffered = true;
+            this.Name = "HelpersTreeControl";
+            this.Size = new System.Drawing.Size(363, 247);
+            ((System.ComponentModel.ISupportInitialize)(this.treeListView1)).EndInit();
             this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -326,11 +312,9 @@
 
         #endregion
 
-        private System.Windows.Forms.ListView listView1;
-        private System.Windows.Forms.ColumnHeader columnHeader6;
-        private System.Windows.Forms.ColumnHeader columnHeader1;
-        private System.Windows.Forms.ColumnHeader columnHeader2;
-        private System.Windows.Forms.ColumnHeader columnHeader5;
+        private BrightIdeasSoftware.TreeListView treeListView1;
+        private BrightIdeasSoftware.OLVColumn olvColumn1;
+        private BrightIdeasSoftware.OLVColumn olvColumn2;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ToolStripMenuItem addToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pointToolStripMenuItem1;
@@ -338,6 +322,8 @@
         private System.Windows.Forms.ToolStripMenuItem segmentToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem circleToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rectangleToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem linesSetToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem polylineToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem fromXmlToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
@@ -356,7 +342,5 @@
         private System.Windows.Forms.ToolStripMenuItem fitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem extractChildsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem moveToToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem linesSetToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem polylineToolStripMenuItem;
     }
 }

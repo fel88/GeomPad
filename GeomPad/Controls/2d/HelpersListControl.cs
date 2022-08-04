@@ -88,18 +88,22 @@ namespace GeomPad.Controls._2d
             dataModel.Clear();
             UpdateList();
         }
+
         void deleteItems()
         {
             if (listView1.SelectedItems.Count == 0) return;
             if (dataModel.ParentForm.ShowQuestion($"Are you to sure to delete {listView1.SelectedItems.Count} items?") == DialogResult.No) return;
 
+            List<HelperItem> toDel = new List<HelperItem>();
             for (int i = 0; i < listView1.SelectedItems.Count; i++)
             {
-                dataModel.RemoveItem(listView1.SelectedItems[i].Tag as HelperItem);
+                toDel.Add(listView1.SelectedItems[i].Tag as HelperItem);
             }
+            dataModel.RemoveItems(toDel.ToArray());
 
             UpdateList();
         }
+
         private void listView1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Delete)
@@ -134,46 +138,89 @@ namespace GeomPad.Controls._2d
             dataModel.UpdateList();
         }
 
+        HelperItem loadPolyline(XElement el)
+        {
+            PolylineHelper lsh = new PolylineHelper();            
+            
+            foreach (var point in el.Descendants("point"))
+            {
+                var x = point.Attribute("x").Value.ParseDouble();
+                var y = point.Attribute("y").Value.ParseDouble();
+                lsh.Points.Add(new Vector2d(x, y));
+            }
+            
+            return lsh;
+        }
+        HelperItem loadLineSet(XElement el)
+        {
+            LinesSetHelper lsh = new LinesSetHelper();
+            foreach (var item in el.Elements("line"))
+            {
+                List<Vector2d> pnts = new List<Vector2d>();
+                foreach (var point in item.Descendants("point"))
+                {
+                    var x = point.Attribute("x").Value.ParseDouble();
+                    var y = point.Attribute("y").Value.ParseDouble();
+                    pnts.Add(new Vector2d(x, y));
+                }
+                lsh.Lines.Add(new Line2D() { Start = pnts[0], End = pnts[1] });
+            }
+            return lsh;
+        }
+        HelperItem loadLine(XElement el)
+        {
+            SegmentHelper lsh = new SegmentHelper();
+
+            List<Vector2d> pnts = new List<Vector2d>();
+            foreach (var point in el.Descendants("point"))
+            {
+                var x = point.Attribute("x").Value.ParseDouble();
+                var y = point.Attribute("y").Value.ParseDouble();
+                pnts.Add(new Vector2d(x, y));
+            }
+            lsh.Point = pnts[0];
+            lsh.Point2 = pnts[1];
+            return lsh;
+        }
         HelperItem[] loadXml(string content)
         {
             List<HelperItem> ret = new List<HelperItem>();
 
             var doc = XDocument.Parse(content);
             var root = doc.Element("root");
+
+            //todo: maeker recursive here
+            foreach (var pitem in root.Elements("group"))
+            {
+                Group gr = new Group();
+                foreach (var el in pitem.Elements())
+                {
+                    if (el.Name == "polyline")
+                        gr.Items.Add(loadPolyline(el));
+                    if (el.Name == "lineSet")
+                        gr.Items.Add(loadLineSet(el));
+                    if (el.Name == "line")
+                        gr.Items.Add(loadLine(el));
+                }
+                ret.Add(gr);
+            }
             foreach (var pitem in root.Elements("polyline"))
             {
-                PolylineHelper lsh = new PolylineHelper();
-
-                List<Vector2d> pnts = new List<Vector2d>();
-                foreach (var point in pitem.Descendants("point"))
-                {
-                    var x = point.Attribute("x").Value.ParseDouble();
-                    var y = point.Attribute("y").Value.ParseDouble();
-                    pnts.Add(new Vector2d(x, y));
-                }
-                ret.Add(lsh);
+                ret.Add(loadPolyline(pitem));
             }
             foreach (var pitem in root.Elements("lineSet"))
             {
-                LinesSetHelper lsh = new LinesSetHelper();
-                foreach (var item in pitem.Elements("line"))
-                {
-                    List<Vector2d> pnts = new List<Vector2d>();
-                    foreach (var point in item.Descendants("point"))
-                    {
-                        var x = point.Attribute("x").Value.ParseDouble();
-                        var y = point.Attribute("y").Value.ParseDouble();
-                        pnts.Add(new Vector2d(x, y));
-                    }
-                    lsh.Lines.Add(new Line2D() { Start = pnts[0], End = pnts[1] });
-                }
-                ret.Add(lsh);
+                ret.Add(loadLineSet(pitem));
+            }
+            foreach (var pitem in root.Elements("line"))
+            {
+                ret.Add(loadLine(pitem));
             }
             foreach (var pitem in root.Elements("polygon"))
             {
                 List<NFP> nfps = new List<NFP>();
                 foreach (var item in pitem.Elements("region"))
-                {                    
+                {
                     List<SvgPoint> pnts = new List<SvgPoint>();
                     foreach (var point in item.Descendants("point"))
                     {
@@ -181,9 +228,9 @@ namespace GeomPad.Controls._2d
                         var y = point.Attribute("y").Value.ParseDouble();
                         pnts.Add(new SvgPoint(x, y));
                     }
-                    nfps.Add(new NFP() { Points = pnts.Select(y => new SvgPoint(y.X, y.Y)).ToArray() });                    
+                    nfps.Add(new NFP() { Points = pnts.Select(y => new SvgPoint(y.X, y.Y)).ToArray() });
                 }
-                                
+
 
                 for (int i = 0; i < nfps.Count; i++)
                 {
@@ -302,22 +349,35 @@ namespace GeomPad.Controls._2d
             if ((hh is PolygonHelper ph))
             {
 
+                List<PolygonHelper> pp = new List<PolygonHelper>();
                 foreach (var item in ph.Polygon.Childrens)
                 {
                     PolygonHelper ph2 = new PolygonHelper();
                     ph2.Polygon = DeepNest.clone(item);
-                    dataModel.AddItem(ph2);
+                    pp.Add(ph2);
                 }
+                dataModel.AddItems(pp.ToArray());
             }
             if ((hh is LinesSetHelper lsh))
             {
+                List<SegmentHelper> pp = new List<SegmentHelper>();
                 foreach (var item in lsh.Lines)
                 {
                     SegmentHelper ph2 = new SegmentHelper();
                     ph2.Point = item.Start;
                     ph2.Point2 = item.End;
-                    dataModel.AddItem(ph2);
+                    ph2.DrawArrowCap = lsh.DrawArrows;
+                    ph2.ArrowZoomRelative = lsh.ArrowZoomRelative;
+                    ph2.ArrowLen = lsh.ArrowLen;
+                    ph2.ArrowAng = lsh.ArrowAng;
+
+                    pp.Add(ph2);
                 }
+                dataModel.AddItems(pp.ToArray());
+            }
+            if (GuiHelpers.Question($"Remove parent item: {hh.Name}?", ParentForm.Text))
+            {
+                dataModel.RemoveItem(hh);
             }
         }
 
@@ -414,6 +474,15 @@ namespace GeomPad.Controls._2d
         private void polygonToolStripMenuItem1_Click(object sender, EventArgs e)
         {
             dataModel.AddItem(new PolygonHelper());
+        }
+
+        private void linesSetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var lsh = new LinesSetHelper() { };
+            dataModel.AddItem(lsh);
+            lsh.Lines.Add(new Line2D() { Start = new Vector2d(0, 0), End = new Vector2d(100, 100) });
+            lsh.Lines.Add(new Line2D() { Start = new Vector2d(100, 100), End = new Vector2d(100, 120) });
+
         }
     }
 }

@@ -7,11 +7,11 @@ using System.Xml.Linq;
 
 namespace GeomPad.Helpers
 {
-    public abstract class HelperItem: AbstractHelperItem
+    public abstract class HelperItem : AbstractHelperItem
     {
         public int Z { get; set; }
-        
-        
+
+
         public Action Changed;
 
         public virtual RectangleF? BoundingBox()
@@ -21,12 +21,17 @@ namespace GeomPad.Helpers
 
         public virtual void Shift(Vector2d vector)
         {
-            
+
         }
 
         public virtual void ParseXml(XElement item)
         {
-            
+
         }
-    }      
+
+        public virtual void ClearSelection()
+        {
+            Selected = false;
+        }
+    }
 }

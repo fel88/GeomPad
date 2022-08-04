@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 
 namespace GeomPad.Helpers
 {
@@ -9,6 +10,16 @@ namespace GeomPad.Helpers
     {
         public bool DrawPoints { get; set; }
 
+        public override RectangleF? BoundingBox()
+        {
+            var minx = (float)Points.Min(z => z.X);
+            var maxx = (float)Points.Max(z => z.X);
+            var miny = (float)Points.Min(z => z.Y);
+            var maxy = (float)Points.Max(z => z.Y);
+
+            return new RectangleF(minx, miny, maxx - minx, maxy - miny);
+
+        }
         public List<Vector2d> Points = new List<Vector2d>();
         public Pen Color { get; set; } = Pens.Black;
 

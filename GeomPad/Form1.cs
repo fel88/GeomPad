@@ -108,7 +108,9 @@ namespace GeomPad
             {
                 double mindist = double.MaxValue;
                 Vector2d? minp = null;
-                foreach (var hitem in Items)
+                //get all items
+                var items = GetAllItems();
+                foreach (var hitem in items)
                 {
                     if (hitem is PolygonHelper ph2)
                     {
@@ -138,6 +140,18 @@ namespace GeomPad
                                     mindist = dist;
                                     minp = item;
                                 }
+                            }
+                        }
+                    }
+                    if (hitem is PolylineHelper plh)
+                    {
+                        foreach (var item in plh.Points)
+                        {
+                            double dist = ((new Vector2d(item.X, item.Y)) - new Vector2d(back.X, back.Y)).Length;
+                            if (dist < mindist)
+                            {
+                                mindist = dist;
+                                minp = item;
                             }
                         }
                     }
@@ -212,7 +226,7 @@ namespace GeomPad
                     var pp = dc.BackTransform(new PointF(dc.startx, dc.starty));
                     v1 = new Vector2d(pp.X, pp.Y);
                     v2 = new Vector2d(dc.GetCursor().X, dc.GetCursor().Y);
-                    dist = (v2 - v1).Length;                    
+                    dist = (v2 - v1).Length;
                 }
                 gr.DrawString(dist.ToString("N2"), SystemFonts.DefaultFont, Brushes.Black, curp.X + 10, curp.Y);
             }
@@ -236,6 +250,34 @@ namespace GeomPad
                 gr.DrawString($"{mh.TianglesCount} triangles", SystemFonts.DefaultFont, Brushes.Black, 5, 40);
             }
             dpanel.view.PictureBox.Image = bmp;
+        }
+
+        private HelperItem[] GetAllItems(HelperItem h = null, List<HelperItem> list = null)
+        {
+            if (list == null)
+            {
+                list = new List<HelperItem>();
+            }
+
+            if (h != null)
+                list.Add(h);
+
+            if (h == null)
+            {                
+                foreach (var item in Items)
+                {
+                    GetAllItems(item, list);
+                }
+            }
+            else if (h is Group g)
+            {                
+                foreach (var item in g.Items)
+                {
+                    GetAllItems(item, list);
+                }               
+            }
+
+            return list.ToArray();
         }
 
         HelperItem selected => dataModel.SelectedItem;

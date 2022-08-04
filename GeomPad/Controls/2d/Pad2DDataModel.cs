@@ -71,7 +71,8 @@ namespace GeomPad.Controls._2d
         }
         public void ClearSelection()
         {
-            Items.ForEach(z => z.Selected = false);
+            Items.ForEach(z => z.ClearSelection());
+            
         }
 
         internal void AddItem(HelperItem pointHelper)
@@ -80,6 +81,7 @@ namespace GeomPad.Controls._2d
             pointHelper.Changed = () => { OnListUpdated?.Invoke(); };
             OnListUpdated?.Invoke();
         }
+        
         internal void AddItems(HelperItem[] pointHelper)
         {
             Items.AddRange(pointHelper);
@@ -88,6 +90,15 @@ namespace GeomPad.Controls._2d
                 item.Changed = () => { OnListUpdated?.Invoke(); };
             }
             
+            OnListUpdated?.Invoke();
+        }
+
+        internal void RemoveItems(HelperItem[] helperItems)
+        {
+            foreach (var item in helperItems)
+            {
+                Items.Remove(item);
+            }            
             OnListUpdated?.Invoke();
         }
 
