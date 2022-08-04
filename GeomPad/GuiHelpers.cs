@@ -18,9 +18,9 @@ namespace GeomPad
             return MessageBox.Show(text, f.Text, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
         }
 
-        public static DialogResult ShowQuestion(string caption, string text)
+        public static bool Question(string text, string caption)
         {
-            return MessageBox.Show(text, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            return MessageBox.Show(text, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
         }
     }
 }

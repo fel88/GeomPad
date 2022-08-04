@@ -139,11 +139,11 @@ namespace GeomPad.Controls._2d
 
     public class HelpersListDockPanel : DockContent, IDataModel2DConsumer
     {
-        public HelpersListControl Control;
+        public HelpersTreeControl Control;
         public HelpersListDockPanel()
         {
             Text = "Objects";
-            Control = new HelpersListControl();
+            Control = new HelpersTreeControl();
             Controls.Add(Control);
             Control.Dock = DockStyle.Fill;
         }

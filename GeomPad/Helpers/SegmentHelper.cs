@@ -55,8 +55,9 @@ namespace GeomPad.Helpers
         public Pen Color { get; set; } = Pens.Black;
         public double Length { get => (Point - Point2).Length; }
         public Vector2d Dir { get => (Point2 - Point).Normalized(); }
+        public bool ArrowZoomRelative { get; set; } = false;
 
-        public int ArrowLen { get; set; } = 3;
+        public double ArrowLen { get; set; } = 3;
         public int ArrowAng { get; set; } = 35;
         public override void Draw(IDrawingContext idc)
         {
@@ -80,10 +81,13 @@ namespace GeomPad.Helpers
                 dc.gr.FillEllipse(br, tr2.X - r, tr2.Y - r, 2 * r, 2 * r);
             }
 
+            var arrowLen = ArrowLen;
+            if (!ArrowZoomRelative)
+                arrowLen /= dc.zoom;
+
             if (DrawArrowCap)
-            {
-                var p00 = Point2;
-                var p11 = -Dir * ArrowLen;
+            {                
+                var p11 = -Dir * arrowLen;
                 Matrix mtr = new Matrix();
                 mtr.RotateAt((float)ArrowAng, new PointF(0, 0));
                 PointF[] pnt = new PointF[] {
@@ -95,7 +99,7 @@ namespace GeomPad.Helpers
                 dc.gr.DrawLine(pen, tr2, tp11);
 
                 mtr = new Matrix();
-                p11 = -Dir * ArrowLen;
+                p11 = -Dir * arrowLen;
                 pnt = new PointF[] {
                     new PointF((float)p11.X, (float)p11.Y) };
                 mtr.RotateAt((float)-ArrowAng, new PointF(0, 0));
@@ -105,8 +109,6 @@ namespace GeomPad.Helpers
                 var tp22 = dc.Transform(p11.ToPointF());
                 dc.gr.DrawLine(pen, tr2, tp22);
                 dc.gr.FillPolygon(Brushes.Blue, new PointF[] { tr2, tp22, tp11 });
-
-
             }
         }
 
