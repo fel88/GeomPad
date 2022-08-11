@@ -24,7 +24,7 @@ namespace GeomPad.Helpers3D
                     CultureInfo.InvariantCulture)).ToArray();
                 Verticies.Add(new Vector3d(pos[0], pos[1], pos[2]));
             }
-        }
+        }        
 
         public override void AppendToXml(StringBuilder sb)
         {

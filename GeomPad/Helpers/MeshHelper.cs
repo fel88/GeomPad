@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using OpenTK;
+using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
@@ -7,11 +8,18 @@ namespace GeomPad.Helpers
 {
     public class MeshHelper : HelperItem
     {
-        public MeshHelper(PointF[][] triangles)
+        public MeshHelper()
+        {
+
+        }
+
+        public MeshHelper(Vector2d[][] triangles)
         {
             _mesh = triangles;
         }
-        PointF[][] _mesh;
+
+        Vector2d[][] _mesh;
+        public Vector2d[][] Mesh { get => _mesh; }
         bool _fill = true;
         public bool Fill { get => _fill; set { _fill = value; Changed?.Invoke(); } }
 
