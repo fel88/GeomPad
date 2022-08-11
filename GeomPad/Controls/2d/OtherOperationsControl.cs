@@ -167,11 +167,13 @@ namespace GeomPad.Controls._2d
 
         private void button9_Click(object sender, EventArgs e)
         {
+            
             if (!(dataModel.SelectedItem is PolygonHelper ph2)) { return; }
 
             var hull = DeepNest.getHull(ph2.TransformedNfp());
             PolygonHelper ph = new PolygonHelper();
-            ph.Polygon = hull;
+            ph.Polygon = hull;            
+            
             var box = ph.BoundingBox().Value;
             PolygonHelper ph3 = new PolygonHelper();
             ph3.Polygon = new NFP()
@@ -285,6 +287,11 @@ namespace GeomPad.Controls._2d
         {
             calcOrthogonalFor2Polygons(false);
 
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            //largest interior rectangle
         }
     }
 }

@@ -22,8 +22,8 @@ namespace GeomPad.Controls._2d
 
             treeListView1.CanExpandGetter = (xx) =>
             {
-                if (xx is Group)
-                    return true;
+                if (xx is Group gr)
+                    return gr.Items.Count > 0;
                 return false;
             };
             treeListView1.ChildrenGetter = (xx) =>
@@ -61,7 +61,8 @@ namespace GeomPad.Controls._2d
 
         private void pointToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-
+            dataModel.AddItem(new PointHelper());
+            UpdateList();
         }
 
         private void clipboardToolStripMenuItem_Click(object sender, EventArgs e)
@@ -92,6 +93,17 @@ namespace GeomPad.Controls._2d
 
             return lsh;
         }
+
+        HelperItem loadPoint(XElement el)
+        {
+            PointHelper lsh = new PointHelper();
+            var x = el.Attribute("x").Value.ParseDouble();
+            var y = el.Attribute("y").Value.ParseDouble();
+            lsh.Point.X = x;
+            lsh.Point.Y = y;
+            return lsh;
+        }
+
         HelperItem loadLineSet(XElement el)
         {
             LinesSetHelper lsh = new LinesSetHelper();
@@ -123,6 +135,7 @@ namespace GeomPad.Controls._2d
             lsh.Point2 = pnts[1];
             return lsh;
         }
+
         HelperItem[] loadXml(string content)
         {
             List<HelperItem> ret = new List<HelperItem>();
@@ -130,7 +143,7 @@ namespace GeomPad.Controls._2d
             var doc = XDocument.Parse(content);
             var root = doc.Element("root");
 
-            //todo: maeker recursive here
+            //todo: make recursive here
             foreach (var pitem in root.Elements("group"))
             {
                 Group gr = new Group();
@@ -142,12 +155,18 @@ namespace GeomPad.Controls._2d
                         gr.Items.Add(loadLineSet(el));
                     if (el.Name == "line")
                         gr.Items.Add(loadLine(el));
+                    if (el.Name == "point")
+                        gr.Items.Add(loadPoint(el));
                 }
                 ret.Add(gr);
             }
             foreach (var pitem in root.Elements("polyline"))
             {
                 ret.Add(loadPolyline(pitem));
+            }
+            foreach (var pitem in root.Elements("point"))
+            {
+                ret.Add(loadPoint(pitem));
             }
             foreach (var pitem in root.Elements("lineSet"))
             {
@@ -204,6 +223,7 @@ namespace GeomPad.Controls._2d
             }
             return ret.ToArray();
         }
+
         void deleteItems()
         {
             if (treeListView1.SelectedObjects.Count == 0) return;
@@ -227,11 +247,12 @@ namespace GeomPad.Controls._2d
             {
                 return;
             }
-            List<HelperItem> sel = new List<HelperItem>();
-            for (int i = 0; i < treeListView1.SelectedObjects.Count; i++)
+
+            var sel = treeListView1.SelectedObjects.OfType<HelperItem>().ToArray();
+/*            for (int i = 0; i < treeListView1.SelectedObjects.Count; i++)
             {
-                sel.Add(treeListView1.SelectedObjects[i] as HelperItem);
-            }
+                sel.Add(treeListView1.SelectedObjects.[i] as HelperItem);
+            }*/
             dataModel.ChangeSelectedItems(sel.ToArray());
         }
 
@@ -359,6 +380,45 @@ namespace GeomPad.Controls._2d
             }
 
             dataModel.AddItems(ret.ToArray());
+        }
+
+        private void polygonToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            dataModel.AddItem(new PolygonHelper());
+        }
+
+        private void circleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var ph = new CircleGenerator();
+            dataModel.AddItem(ph);
+        }
+
+        private void rectangleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var ph = new RectangleGenerator() { Changed = changed };
+            dataModel.AddItem(ph);
+            UpdateList();
+        }
+
+        private void groupToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var ph = new Group() { Changed = changed };
+            dataModel.AddItem(ph);
+            UpdateList();
+        }
+        Random rand = new Random();
+
+        private void randomizePointsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (dataModel.SelectedItems.Length == 0) return;
+            var hh = dataModel.SelectedItem;
+            if (hh is PolygonHelper ph)
+            {
+                for (int i = 0; i < ph.Polygon.Points.Length; i++)
+                {
+                    ph.Polygon.Points[i] = new SvgPoint(rand.Next(-100, 100), rand.Next(-100, 100));
+                }
+            }
         }
     }
 }
