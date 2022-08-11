@@ -261,6 +261,12 @@ namespace GeomPad.Helpers
         {
             return new NFP() { Points = TransformedPoints() };
         }
+        public double Area { get; set; }
+
+        internal void RecalcArea()
+        {
+            Area = Math.Abs(StaticHelpers.signed_area(Polygon.Points));
+        }
     }
 
     public class XmlParseAttribute : Attribute

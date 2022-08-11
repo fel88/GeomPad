@@ -120,6 +120,29 @@ namespace GeomPad.Controls._2d
             }
             return lsh;
         }
+
+        HelperItem loadMesh(XElement el)
+        {
+
+            List<Vector2d[]> trs = new List<Vector2d[]>();
+            foreach (var tr in el.Descendants("triangle"))
+            {
+                List<Vector2d> pnts = new List<Vector2d>();
+                foreach (var pitem in tr.Elements("point"))
+                {
+                    var x = pitem.Attribute("x").Value.ParseDouble();
+                    var y = pitem.Attribute("y").Value.ParseDouble();
+                    pnts.Add(new Vector2d(x, y));
+                }
+                trs.Add(pnts.ToArray());
+            }
+
+
+            MeshHelper msh = new MeshHelper(trs.ToArray());
+            
+            return msh;
+        }
+
         HelperItem loadLine(XElement el)
         {
             SegmentHelper lsh = new SegmentHelper();
@@ -153,6 +176,8 @@ namespace GeomPad.Controls._2d
                         gr.Items.Add(loadPolyline(el));
                     if (el.Name == "lineSet")
                         gr.Items.Add(loadLineSet(el));
+                    if (el.Name == "mesh")
+                        gr.Items.Add(loadMesh(el));
                     if (el.Name == "line")
                         gr.Items.Add(loadLine(el));
                     if (el.Name == "point")
@@ -175,6 +200,10 @@ namespace GeomPad.Controls._2d
             foreach (var pitem in root.Elements("line"))
             {
                 ret.Add(loadLine(pitem));
+            }
+            foreach (var pitem in root.Elements("mesh"))
+            {
+                ret.Add(loadMesh(pitem));
             }
             foreach (var pitem in root.Elements("polygon"))
             {
@@ -249,10 +278,10 @@ namespace GeomPad.Controls._2d
             }
 
             var sel = treeListView1.SelectedObjects.OfType<HelperItem>().ToArray();
-/*            for (int i = 0; i < treeListView1.SelectedObjects.Count; i++)
-            {
-                sel.Add(treeListView1.SelectedObjects.[i] as HelperItem);
-            }*/
+            /*            for (int i = 0; i < treeListView1.SelectedObjects.Count; i++)
+                        {
+                            sel.Add(treeListView1.SelectedObjects.[i] as HelperItem);
+                        }*/
             dataModel.ChangeSelectedItems(sel.ToArray());
         }
 
@@ -300,6 +329,7 @@ namespace GeomPad.Controls._2d
         {
             if (dataModel.SelectedItems.Length == 0) return;
             var hh = dataModel.SelectedItem;
+            bool was = false;
             if ((hh is PolygonHelper ph))
             {
 
@@ -311,7 +341,9 @@ namespace GeomPad.Controls._2d
                     pp.Add(ph2);
                 }
                 dataModel.AddItems(pp.ToArray());
+                was = true;
             }
+            else
             if ((hh is LinesSetHelper lsh))
             {
                 List<SegmentHelper> pp = new List<SegmentHelper>();
@@ -328,8 +360,23 @@ namespace GeomPad.Controls._2d
                     pp.Add(ph2);
                 }
                 dataModel.AddItems(pp.ToArray());
+                was = true;
             }
-            if (GuiHelpers.Question($"Remove parent item: {hh.Name}?", ParentForm.Text))
+            else
+            if ((hh is MeshHelper mh))
+            {
+                List<PolygonHelper> pp = new List<PolygonHelper>();
+                foreach (var item in mh.Mesh)
+                {
+                    PolygonHelper ph2 = new PolygonHelper();
+                    ph2.Polygon.Points = item.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+                    ph2.RecalcArea();
+                    pp.Add(ph2);
+                }
+                dataModel.AddItems(pp.ToArray());
+                was = true;
+            }
+            if (was && GuiHelpers.Question($"Remove parent item: {hh.Name}?", ParentForm.Text))
             {
                 dataModel.RemoveItem(hh);
             }

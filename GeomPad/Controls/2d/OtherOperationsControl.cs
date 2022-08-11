@@ -93,10 +93,10 @@ namespace GeomPad.Controls._2d
 
             var trng = (new GenericMesher()).Triangulate(poly2, new ConstraintOptions(), new QualityOptions());
 
-            var tr = trng.Triangles.Select(z => new PointF[] {
-                  new PointF((float)z.GetVertex(0).X, (float)z.GetVertex(0).Y),
-                  new PointF((float)z.GetVertex(1).X, (float)z.GetVertex(1).Y),
-                  new PointF((float)z.GetVertex(2).X, (float)z.GetVertex(2).Y)
+            var tr = trng.Triangles.Select(z => new Vector2d[] {
+                  new Vector2d(z.GetVertex(0).X, z.GetVertex(0).Y),
+                  new Vector2d(z.GetVertex(1).X, z.GetVertex(1).Y),
+                  new Vector2d(z.GetVertex(2).X, z.GetVertex(2).Y)
             }).ToArray();
             dataModel.AddItem(new MeshHelper(tr) { Name = "triangulate" });
         }
