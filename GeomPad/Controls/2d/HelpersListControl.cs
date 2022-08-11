@@ -189,7 +189,7 @@ namespace GeomPad.Controls._2d
             var doc = XDocument.Parse(content);
             var root = doc.Element("root");
 
-            //todo: maeker recursive here
+            //todo: make recursive here
             foreach (var pitem in root.Elements("group"))
             {
                 Group gr = new Group();

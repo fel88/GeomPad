@@ -155,6 +155,15 @@ namespace GeomPad
                             }
                         }
                     }
+                    if (hitem is PointHelper pnh)
+                    {
+                        double dist = ((new Vector2d(pnh.Point.X, pnh.Point.Y)) - new Vector2d(back.X, back.Y)).Length;
+                        if (dist < mindist)
+                        {
+                            mindist = dist;
+                            minp = pnh.Point;
+                        }
+                    }
                 }
                 if (minp != null)
                 {
@@ -263,18 +272,18 @@ namespace GeomPad
                 list.Add(h);
 
             if (h == null)
-            {                
+            {
                 foreach (var item in Items)
                 {
                     GetAllItems(item, list);
                 }
             }
             else if (h is Group g)
-            {                
+            {
                 foreach (var item in g.Items)
                 {
                     GetAllItems(item, list);
-                }               
+                }
             }
 
             return list.ToArray();

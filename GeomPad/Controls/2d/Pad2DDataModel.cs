@@ -115,10 +115,10 @@ namespace GeomPad.Controls._2d
             {
                 helperItem[i].Selected = true;
             }
-
-            OnSelectedChanged?.Invoke(helperItem[0]);            
+            
             SelectedItem = helperItem[0];            
-            SelectedItems = helperItem;            
+            SelectedItems = helperItem;     
+            OnSelectedChanged?.Invoke(helperItem[0]);                   
         }
 
         internal void UpdateList()
