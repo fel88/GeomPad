@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -16,6 +17,12 @@ namespace GeomPad.Helpers3D
             if (item.Attribute("name") != null)
                 Name = item.Attribute("name").Value;
         }
+
+        public override RectangleF? BoundingBox()
+        {
+            throw new NotImplementedException();
+        }
+
         protected Vector3d parseVector(Vector3d defValue, XElement parent, string key, bool required = false)
         {
             var nrm = parent.Element(key);

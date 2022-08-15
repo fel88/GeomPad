@@ -34,10 +34,10 @@ namespace GeomPad.Helpers3D
                 if (dd != null)
                 {
                     cc.AddHelper(new PointHelper() { Position = dd.Point });
-                    cc.SetStatus("intersection found: " + dd.Point.ToString(), StatusTypeEnum.Information);
+                    cc.SetStatus("intersection found: " + dd.Point.ToString(), StatusMessageType.Info);
                 }
                 else
-                    cc.SetStatus("intersection not found.", StatusTypeEnum.Warning);
+                    cc.SetStatus("intersection not found.", StatusMessageType.Warning);
             };
         }
         public override void AppendToXml(StringBuilder sb)

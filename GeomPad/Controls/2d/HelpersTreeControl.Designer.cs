@@ -47,6 +47,8 @@ namespace GeomPad.Controls._2d
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clipboardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.dxfFromFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.groupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.updateToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -60,8 +62,8 @@ namespace GeomPad.Controls._2d
             this.fitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.extractChildsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.moveToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.groupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.meshToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.commandsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.treeListView1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -109,9 +111,10 @@ namespace GeomPad.Controls._2d
             this.clearToolStripMenuItem,
             this.toolStripSeparator3,
             this.orderToolStripMenuItem,
-            this.actionsToolStripMenuItem});
+            this.actionsToolStripMenuItem,
+            this.commandsToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 164);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 186);
             // 
             // addToolStripMenuItem
             // 
@@ -122,6 +125,7 @@ namespace GeomPad.Controls._2d
             this.circleToolStripMenuItem,
             this.rectangleToolStripMenuItem,
             this.linesSetToolStripMenuItem,
+            this.meshToolStripMenuItem,
             this.polylineToolStripMenuItem,
             this.toolStripSeparator1,
             this.fromXmlToolStripMenuItem,
@@ -129,7 +133,7 @@ namespace GeomPad.Controls._2d
             this.toolStripSeparator2,
             this.groupToolStripMenuItem});
             this.addToolStripMenuItem.Name = "addToolStripMenuItem";
-            this.addToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.addToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.addToolStripMenuItem.Text = "add helper";
             // 
             // pointToolStripMenuItem1
@@ -172,12 +176,14 @@ namespace GeomPad.Controls._2d
             this.linesSetToolStripMenuItem.Name = "linesSetToolStripMenuItem";
             this.linesSetToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.linesSetToolStripMenuItem.Text = "lines set";
+            this.linesSetToolStripMenuItem.Click += new System.EventHandler(this.linesSetToolStripMenuItem_Click);
             // 
             // polylineToolStripMenuItem
             // 
             this.polylineToolStripMenuItem.Name = "polylineToolStripMenuItem";
             this.polylineToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.polylineToolStripMenuItem.Text = "polyline";
+            this.polylineToolStripMenuItem.Click += new System.EventHandler(this.polylineToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
@@ -213,30 +219,42 @@ namespace GeomPad.Controls._2d
             this.dxfFromFileToolStripMenuItem.Text = "dxf from file";
             this.dxfFromFileToolStripMenuItem.Click += new System.EventHandler(this.dxfFromFileToolStripMenuItem_Click);
             // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
+            // 
+            // groupToolStripMenuItem
+            // 
+            this.groupToolStripMenuItem.Name = "groupToolStripMenuItem";
+            this.groupToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.groupToolStripMenuItem.Text = "group";
+            this.groupToolStripMenuItem.Click += new System.EventHandler(this.groupToolStripMenuItem_Click);
+            // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.deleteToolStripMenuItem.Text = "delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
             // updateToolStripMenuItem
             // 
             this.updateToolStripMenuItem.Name = "updateToolStripMenuItem";
-            this.updateToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.updateToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.updateToolStripMenuItem.Text = "update";
             // 
             // clearToolStripMenuItem
             // 
             this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
-            this.clearToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.clearToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.clearToolStripMenuItem.Text = "clear";
             this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(127, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(177, 6);
             // 
             // orderToolStripMenuItem
             // 
@@ -244,7 +262,7 @@ namespace GeomPad.Controls._2d
             this.bringToFrontToolStripMenuItem,
             this.sendToBackToolStripMenuItem});
             this.orderToolStripMenuItem.Name = "orderToolStripMenuItem";
-            this.orderToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.orderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.orderToolStripMenuItem.Text = "order";
             // 
             // bringToFrontToolStripMenuItem
@@ -280,7 +298,7 @@ namespace GeomPad.Controls._2d
             // randomizePointsToolStripMenuItem
             // 
             this.randomizePointsToolStripMenuItem.Name = "randomizePointsToolStripMenuItem";
-            this.randomizePointsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.randomizePointsToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.randomizePointsToolStripMenuItem.Text = "randomize points";
             this.randomizePointsToolStripMenuItem.Click += new System.EventHandler(this.randomizePointsToolStripMenuItem_Click);
             // 
@@ -304,17 +322,19 @@ namespace GeomPad.Controls._2d
             this.moveToToolStripMenuItem.Size = new System.Drawing.Size(166, 22);
             this.moveToToolStripMenuItem.Text = "move to";
             // 
-            // groupToolStripMenuItem
+            // meshToolStripMenuItem
             // 
-            this.groupToolStripMenuItem.Name = "groupToolStripMenuItem";
-            this.groupToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.groupToolStripMenuItem.Text = "group";
-            this.groupToolStripMenuItem.Click += new System.EventHandler(this.groupToolStripMenuItem_Click);
+            this.meshToolStripMenuItem.Name = "meshToolStripMenuItem";
+            this.meshToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.meshToolStripMenuItem.Text = "mesh";
+            this.meshToolStripMenuItem.Click += new System.EventHandler(this.meshToolStripMenuItem_Click);
             // 
-            // toolStripSeparator2
+            // commandsToolStripMenuItem
             // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(177, 6);
+            this.commandsToolStripMenuItem.Name = "commandsToolStripMenuItem";
+            this.commandsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.commandsToolStripMenuItem.Text = "commands";
+            this.commandsToolStripMenuItem.DropDownOpening += new System.EventHandler(this.commandsToolStripMenuItem_DropDownOpening);
             // 
             // HelpersTreeControl
             // 
@@ -364,5 +384,7 @@ namespace GeomPad.Controls._2d
         private System.Windows.Forms.ToolStripMenuItem moveToToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem groupToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem meshToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem commandsToolStripMenuItem;
     }
 }
