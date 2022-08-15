@@ -14,13 +14,12 @@ using System.Xml.Linq;
 
 namespace GeomPad
 {
-    public partial class Form1 : Form
+    public partial class Form1 : Form, IPadContainer
     {
-
         Pad2DDataModel dataModel;
 
         Pad2DMainPanel dpanel;
-        List<HelperItem> Items => dataModel.Items;
+        List<AbstractHelperItem> Items => dataModel.Items;
 
         public Form1()
         {
@@ -261,11 +260,11 @@ namespace GeomPad
             dpanel.view.PictureBox.Image = bmp;
         }
 
-        private HelperItem[] GetAllItems(HelperItem h = null, List<HelperItem> list = null)
+        private AbstractHelperItem[] GetAllItems(AbstractHelperItem h = null, List<AbstractHelperItem> list = null)
         {
             if (list == null)
             {
-                list = new List<HelperItem>();
+                list = new List<AbstractHelperItem>();
             }
 
             if (h != null)
@@ -452,10 +451,25 @@ namespace GeomPad
             dpanel.ShowNfp();
 
         }
-    }
 
-    public enum StatusMessageType
-    {
-        Message, Warning, Error, Info
+        public void OpenChildWindow(Form f)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddHelper(AbstractHelperItem h)
+        {
+            dataModel.AddItem(h);
+        }
+
+        public void AddHelpers(AbstractHelperItem[] h)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetStatus(string v, StatusMessageType type)
+        {
+            StatusMessage(v, type);
+        }
     }
 }

@@ -8,7 +8,7 @@ namespace GeomPad.Controls._2d
 {
     public class Pad2DDataModel
     {
-        public List<HelperItem> Items = new List<HelperItem>();
+        public List<AbstractHelperItem> Items = new List<AbstractHelperItem>();
         public HelperItem SelectedItem;
         public HelperItem[] SelectedItems;
 
@@ -75,7 +75,7 @@ namespace GeomPad.Controls._2d
             
         }
 
-        internal void AddItem(HelperItem pointHelper)
+        internal void AddItem(AbstractHelperItem pointHelper)
         {
             Items.Add(pointHelper);
             pointHelper.Changed = () => { OnListUpdated?.Invoke(); };

@@ -4,13 +4,11 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
 
@@ -55,18 +53,15 @@ namespace GeomPad
                 glControl.MakeCurrent();
             }
 
-
             Redraw();
-
         }
+
         void Redraw()
         {
             ViewManager.Update();
 
             GL.ClearColor(Color.LightGray);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-
 
             GL.Viewport(0, 0, glControl.Width, glControl.Height);
             var o2 = Matrix4.CreateOrthographic(glControl.Width, glControl.Height, 1, 1000);
@@ -217,7 +212,7 @@ namespace GeomPad
                 }
                 else
                 {
-                    SetStatus("no intersection", StatusTypeEnum.Warning);
+                    SetStatus("no intersection", StatusMessageType.Warning);
                 }
             }
             if (objs.Any(z => z is LineHelper) && objs.Any(z => z is PointHelper))
@@ -228,11 +223,11 @@ namespace GeomPad
                 var l = new Line3D() { Start = th.Start, End = th.End };
                 if (l.IsPointOnLine(pl.Position))
                 {
-                    SetStatus($"point is on line ({(l.IsPointInsideSegment(pl.Position) ? "inside" : "not inside")})", StatusTypeEnum.Information);
+                    SetStatus($"point is on line ({(l.IsPointInsideSegment(pl.Position) ? "inside" : "not inside")})", StatusMessageType.Info);
                 }
                 else
                 {
-                    SetStatus("point is not on line", StatusTypeEnum.Warning);
+                    SetStatus("point is not on line", StatusMessageType.Warning);
                 }
 
             }
@@ -265,21 +260,20 @@ namespace GeomPad
                 }
             }
         }
-
         
-        public void SetStatus(string v, StatusTypeEnum type)
+        public void SetStatus(string v, StatusMessageType type)
         {
             switch (type)
             {
-                case StatusTypeEnum.Information:
+                case StatusMessageType.Info:
                     toolStripStatusLabel1.BackColor = Color.LightGreen;
                     toolStripStatusLabel1.ForeColor = Color.Black;
                     break;
-                case StatusTypeEnum.Warning:
+                case StatusMessageType.Warning:
                     toolStripStatusLabel1.BackColor = Color.Yellow;
                     toolStripStatusLabel1.ForeColor = Color.Blue;
                     break;
-                case StatusTypeEnum.Error:
+                case StatusMessageType.Error:
                     toolStripStatusLabel1.BackColor = Color.Red;
                     toolStripStatusLabel1.ForeColor = Color.White;
                     break;
@@ -771,11 +765,11 @@ namespace GeomPad
                 var hh = loadXml(Clipboard.GetText());
                 Helpers.AddRange(hh);
                 updateHelpersList();
-                SetStatus("succesfully loaded.", StatusTypeEnum.Information);                
+                SetStatus("succesfully loaded.", StatusMessageType.Info);                
             }
             catch (Exception ex)
             {
-                SetStatus(ex.Message, StatusTypeEnum.Error);                
+                SetStatus(ex.Message, StatusMessageType.Error);                
             }
         }
 
@@ -783,9 +777,7 @@ namespace GeomPad
         {
 
         }
-    }
-    public enum StatusTypeEnum
-    {
-        Information, Warning, Error
-    }
+
+        
+    }    
 }

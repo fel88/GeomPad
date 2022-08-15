@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using GeomPad.Helpers;
 using System.IO;
-using System.Globalization;
 using System.Xml.Linq;
 using OpenTK;
 
@@ -482,6 +478,11 @@ namespace GeomPad.Controls._2d
             dataModel.AddItem(lsh);
             lsh.Lines.Add(new Line2D() { Start = new Vector2d(0, 0), End = new Vector2d(100, 100) });
             lsh.Lines.Add(new Line2D() { Start = new Vector2d(100, 100), End = new Vector2d(100, 120) });
+
+        }
+
+        private void polylineToolStripMenuItem_Click(object sender, EventArgs e)
+        {
 
         }
     }

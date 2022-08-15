@@ -31,6 +31,20 @@ namespace GeomPad
 
             return area / 2.0;
         }
+        public static double signed_area(Vector2d[] polygon)
+        {
+            double area = 0.0;
+
+            int j = 1;
+            for (int i = 0; i < polygon.Length; i++, j++)
+            {
+                j = j % polygon.Length;
+
+                area += (polygon[j].X - polygon[i].X) * (polygon[j].Y + polygon[i].Y);
+            }
+
+            return area / 2.0;
+        }
         public static double signed_area(SvgPoint[] polygon)
         {
             double area = 0.0;

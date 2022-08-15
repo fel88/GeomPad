@@ -180,6 +180,7 @@
             this.polylineToolStripMenuItem.Name = "polylineToolStripMenuItem";
             this.polylineToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.polylineToolStripMenuItem.Text = "polyline";
+            this.polylineToolStripMenuItem.Click += new System.EventHandler(this.polylineToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 

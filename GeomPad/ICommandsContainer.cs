@@ -4,5 +4,4 @@
     {
         ICommand[] Commands { get; }
     }
-
 }

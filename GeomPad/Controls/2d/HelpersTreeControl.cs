@@ -139,7 +139,7 @@ namespace GeomPad.Controls._2d
 
 
             MeshHelper msh = new MeshHelper(trs.ToArray());
-            
+
             return msh;
         }
 
@@ -465,6 +465,61 @@ namespace GeomPad.Controls._2d
                 {
                     ph.Polygon.Points[i] = new SvgPoint(rand.Next(-100, 100), rand.Next(-100, 100));
                 }
+            }
+        }
+
+        private void polylineToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void linesSetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var lsh = new LinesSetHelper() { };
+            dataModel.AddItem(lsh);
+            lsh.Lines.Add(new Line2D() { Start = new Vector2d(0, 0), End = new Vector2d(100, 100) });
+            lsh.Lines.Add(new Line2D() { Start = new Vector2d(100, 100), End = new Vector2d(100, 120) });
+        }
+
+        private void meshToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            List<Vector2d[]> tr = new List<Vector2d[]>();
+            tr.Add(new Vector2d[] {
+                new Vector2d(5,5),
+                new Vector2d(15,15),
+                new Vector2d(20,45),
+            });
+            tr.Add(new Vector2d[] {
+                new Vector2d(55,35),
+                new Vector2d(15,15),
+                new Vector2d(20,45),
+            });
+            var msh = new MeshHelper(tr.ToArray()) { };
+            dataModel.AddItem(msh);
+        }
+
+        private void commandsToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            commandsToolStripMenuItem.DropDownItems.Clear();
+
+            if (dataModel.SelectedItem == null) return;
+            ////var focusedItem = treeListView1.FocusedItem;
+            var cc = dataModel.SelectedItem as ICommandsContainer;
+            if (cc == null) return;
+            /*List<HelperItem> all = new List<HelperItem>();
+            for (int i = 0; i < dataModel.SelectedItems.Count; i++)
+            {
+                all.Add(treeListView1.SelectedItems[i]);
+            }*/
+
+            foreach (var item in cc.Commands)
+            {
+                var ccc = new ToolStripMenuItem(item.Name);
+                commandsToolStripMenuItem.DropDownItems.Add(ccc);
+                ccc.Click += (s, ee) =>
+                {
+                    item.Process(cc as HelperItem, null, dataModel.ParentForm);
+                };
             }
         }
     }
