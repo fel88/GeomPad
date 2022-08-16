@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Text;
+using System.Xml.Linq;
 
 namespace GeomPad.Helpers
 {
@@ -22,6 +24,28 @@ namespace GeomPad.Helpers
         }
         public List<Vector2d> Points = new List<Vector2d>();
         public Pen Color { get; set; } = Pens.Black;
+        public override void AppendToXml(StringBuilder sb)
+        {
+            sb.AppendLine($"<polyline name=\"{Name}\" visible=\"{Visible}\" >");
+            foreach (var item in Points)
+            {
+                sb.AppendLine($"<point x=\"{item.X}\" y=\"{item.Y}\"/>");
+            }
+            sb.AppendLine($"</polyline>");
+        }
+
+        public override void ParseXml(XElement item)
+        {
+            if (item.Attribute("name") != null)
+                Name = item.Attribute("name").Value;
+
+            foreach (var pitem in item.Elements("point"))
+            {
+                var xx = StaticHelpers.ParseDouble(pitem.Attribute("x").Value);
+                var yy = StaticHelpers.ParseDouble(pitem.Attribute("y").Value);
+                Points.Add(new Vector2d(xx, yy));
+            }
+        }
 
         public override void Draw(IDrawingContext idc)
         {

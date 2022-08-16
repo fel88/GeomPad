@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using GeomPad.Helpers;
 using System.Globalization;
 using ClipperLib;
+using OpenTK;
 
 namespace GeomPad.Controls._2d
 {
@@ -35,49 +36,67 @@ namespace GeomPad.Controls._2d
         private void button1_Click(object sender, EventArgs e)
         {
             NFP p = new NFP();
-            if (!(dataModel.SelectedItem is PolygonHelper ph2)) { return; }
-
-            p.Points = ph2.Polygon.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
             var jType = (JoinType)comboBox1.SelectedIndex;
             double offset = double.Parse(textBox2.Text.Replace(",", "."), CultureInfo.InvariantCulture);
             double miterLimit = double.Parse(textBox3.Text.Replace(",", "."), CultureInfo.InvariantCulture);
             double curveTolerance = double.Parse(textBox4.Text.Replace(",", "."), CultureInfo.InvariantCulture);
-            var offs = ClipperHelper.offset(p, offset, jType, curveTolerance: curveTolerance, miterLimit: miterLimit);
-            //if (offs.Count() > 1) throw new NotImplementedException();
-            PolygonHelper ph = new PolygonHelper();
-            foreach (var item in ph2.Polygon.Childrens)
+            if ((dataModel.SelectedItem is PolygonHelper ph2))
             {
-                var offs2 = ClipperHelper.offset(item, -offset, jType, curveTolerance: curveTolerance, miterLimit: miterLimit);
-                var nfp1 = new NFP();
-                if (offs2.Any())
+                p.Points = ph2.Polygon.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+        
+                var offs = ClipperHelper.offset(p, offset, jType, curveTolerance: curveTolerance, miterLimit: miterLimit);
+                //if (offs.Count() > 1) throw new NotImplementedException();
+                PolygonHelper ph = new PolygonHelper();
+                foreach (var item in ph2.Polygon.Childrens)
                 {
-                    //if (offs2.Count() > 1) throw new NotImplementedException();
-                    foreach (var zitem in offs2)
+                    var offs2 = ClipperHelper.offset(item, -offset, jType, curveTolerance: curveTolerance, miterLimit: miterLimit);
+                    var nfp1 = new NFP();
+                    if (offs2.Any())
                     {
-                        nfp1.Points = zitem.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
-                        ph.Polygon.Childrens.Add(nfp1);
+                        //if (offs2.Count() > 1) throw new NotImplementedException();
+                        foreach (var zitem in offs2)
+                        {
+                            nfp1.Points = zitem.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+                            ph.Polygon.Childrens.Add(nfp1);
+                        }
                     }
                 }
-            }
 
-            if (offs.Any())
+                if (offs.Any())
+                {
+                    ph.Polygon.Points = offs.First().Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+                }
+
+                foreach (var item in offs.Skip(1))
+                {
+                    var nfp2 = new NFP();
+
+                    nfp2.Points = item.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+                    ph.Polygon.Childrens.Add(nfp2);
+
+                }
+
+                ph.OffsetX = ph2.OffsetX;
+                ph.OffsetY = ph2.OffsetY;
+                ph.Rotation = ph2.Rotation;
+                dataModel.AddItem(ph);
+            }
+            if ((dataModel.SelectedItem is PolylineHelper plh2))
             {
-                ph.Polygon.Points = offs.First().Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+                p.Points = plh2.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+                
+                var offs = ClipperHelper.offset(p, offset, jType, curveTolerance: curveTolerance, miterLimit: miterLimit);
+                
+                PolylineHelper ph = new PolylineHelper();              
+
+                if (offs.Any())
+                {
+                    ph.Points = offs.First().Points.Select(z => new Vector2d(z.X, z.Y)).ToList();
+                    ph.Points.Add(ph.Points[0]);
+                }
+                
+                dataModel.AddItem(ph);
             }
-
-            foreach (var item in offs.Skip(1))
-            {
-                var nfp2 = new NFP();
-
-                nfp2.Points = item.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
-                ph.Polygon.Childrens.Add(nfp2);
-
-            }
-
-            ph.OffsetX = ph2.OffsetX;
-            ph.OffsetY = ph2.OffsetY;
-            ph.Rotation = ph2.Rotation;
-            dataModel.AddItem(ph);
         }
 
         private void button8_Click(object sender, EventArgs e)
