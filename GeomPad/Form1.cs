@@ -111,6 +111,8 @@ namespace GeomPad
                 var items = GetAllItems();
                 foreach (var hitem in items)
                 {
+                    if (!hitem.Visible) continue;
+
                     if (hitem is PolygonHelper ph2)
                     {
                         var trans = ph2.GetTrasformed(ph2.Polygon);

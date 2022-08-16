@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Drawing;
 using System.Data;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using GeomPad.Helpers;
 using TriangleNet.Geometry;
@@ -40,57 +37,61 @@ namespace GeomPad.Controls._2d
         Random rand = new Random();
         private void button5_Click(object sender, EventArgs e)
         {
-
-            var poly2 = new TriangleNet.Geometry.Polygon();
-            var plh = dataModel.SelectedItem as PolygonHelper;
-
-            //foreach (var item in plh.Polygon.Points)
+            var poly2 = new Polygon();
+            if (dataModel.SelectedItem is PolygonHelper plh)
             {
-                var pn = plh.TransformedPoints();
+                var pn2 = plh.TransformedPoints();
+                if (StaticHelpers.signed_area(pn2) < 0) { pn2 = pn2.Reverse().ToArray(); }
+                var a2 = pn2.Select(z => new Vertex(z.X, z.Y, 0)).ToArray();
+
+                poly2.Add(new Contour(a2));
+
+                var rev = plh.Polygon.Childrens.ToArray();
+                rev = rev.Reverse().ToArray();
+                foreach (var item in rev)
+                {
+                    var pn = item.Points.Select(z => plh.Transform(z)).ToArray();
+                    var ar = StaticHelpers.signed_area(pn);
+                    /*if (StaticHelpers.signed_area(pn) > 0) 
+                    {
+                        pn = pn.Reverse().ToArray(); 
+                    }*/
+                    var a = pn.Select(z => new Vertex(z.X, z.Y, 0)).ToArray();
+                    var p0 = plh.Transform(item.Points[0]);
+                    PointF test = new PointF((float)p0.X, (float)p0.Y);
+                    var maxx = pn.Max(z => z.X);
+                    var minx = pn.Min(z => z.X);
+                    var maxy = pn.Max(z => z.Y);
+                    var miny = pn.Min(z => z.Y);
+
+                    var tx = rand.Next((int)(minx * 100), (int)(maxx * 100)) / 100f;
+                    var ty = rand.Next((int)(miny * 100), (int)(maxy * 100)) / 100f;
+                    while (true)
+                    {
+                        if (StaticHelpers.pnpoly(pn, test.X, test.Y))
+                        {
+                            break;
+                        }
+
+                        tx = rand.Next((int)(minx * 100),
+                           (int)(maxx * 100)) / 100f;
+                        ty = rand.Next((int)(miny * 100),
+                           (int)(maxy * 100)) / 100f;
+                        test = new PointF(tx, ty);
+                    }
+
+                    poly2.Add(new Contour(a), new TriangleNet.Geometry.Point(test.X, test.Y));
+                    //poly2.Add(new Contour(a), true);
+                }
+            }
+            else if (dataModel.SelectedItem is PolylineHelper plh2)
+            {
+                var pn = plh2.Points.ToArray();
                 if (StaticHelpers.signed_area(pn) < 0) { pn = pn.Reverse().ToArray(); }
                 var a = pn.Select(z => new Vertex(z.X, z.Y, 0)).ToArray();
 
                 poly2.Add(new Contour(a));
             }
-
-            var rev = plh.Polygon.Childrens.ToArray();
-            rev = rev.Reverse().ToArray();
-            foreach (var item in rev)
-            {
-                var pn = item.Points.Select(z => plh.Transform(z)).ToArray();
-                var ar = StaticHelpers.signed_area(pn);
-                /*if (StaticHelpers.signed_area(pn) > 0) 
-                {
-                    pn = pn.Reverse().ToArray(); 
-                }*/
-                var a = pn.Select(z => new Vertex(z.X, z.Y, 0)).ToArray();
-                var p0 = plh.Transform(item.Points[0]);
-                PointF test = new PointF((float)p0.X, (float)p0.Y);
-                var maxx = pn.Max(z => z.X);
-                var minx = pn.Min(z => z.X);
-                var maxy = pn.Max(z => z.Y);
-                var miny = pn.Min(z => z.Y);
-
-                var tx = rand.Next((int)(minx * 100), (int)(maxx * 100)) / 100f;
-                var ty = rand.Next((int)(miny * 100), (int)(maxy * 100)) / 100f;
-                while (true)
-                {
-                    if (StaticHelpers.pnpoly(pn, test.X, test.Y))
-                    {
-                        break;
-                    }
-
-                    tx = rand.Next((int)(minx * 100),
-                       (int)(maxx * 100)) / 100f;
-                    ty = rand.Next((int)(miny * 100),
-                       (int)(maxy * 100)) / 100f;
-                    test = new PointF(tx, ty);
-                }
-
-                poly2.Add(new Contour(a), new TriangleNet.Geometry.Point(test.X, test.Y));
-                //poly2.Add(new Contour(a), true);
-            }
-
             var trng = (new GenericMesher()).Triangulate(poly2, new ConstraintOptions(), new QualityOptions());
 
             var tr = trng.Triangles.Select(z => new Vector2d[] {
@@ -127,15 +128,26 @@ namespace GeomPad.Controls._2d
 
         private void button7_Click(object sender, EventArgs e)
         {
-            if (!(dataModel.SelectedItem is PolygonHelper ph2)) { return; }
-
             double clipperScale = 10000000;
-            var hull = DeepNest.simplifyFunction(new NFP() { Points = ph2.TransformedPoints() }, false, clipperScale);
-            PolygonHelper ph = new PolygonHelper();
-            ph.Polygon = hull;
-            ph.Name = "simplify";
+            if ((dataModel.SelectedItem is PolygonHelper ph2))
+            {
+                var hull = DeepNest.simplifyFunction(new NFP() { Points = ph2.TransformedPoints() }, false, clipperScale);
+                PolygonHelper ph = new PolygonHelper();
+                ph.Polygon = hull;
+                ph.Name = "simplify";
 
-            dataModel.AddItem(ph);
+                dataModel.AddItem(ph);
+            }
+            else if ((dataModel.SelectedItem is PolylineHelper plh2))
+            {
+                var hull = DeepNest.simplifyFunction(new NFP() { Points = plh2.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray() }, false, clipperScale);
+                PolylineHelper ph = new PolylineHelper();
+                ph.Points = hull.Points.Select(z => new Vector2d(z.X, z.Y)).ToList();
+                ph.Points.Add(ph.Points[0]);
+                ph.Name = "simplify";
+
+                dataModel.AddItem(ph);
+            }
         }
 
         private void button11_Click(object sender, EventArgs e)
@@ -167,13 +179,13 @@ namespace GeomPad.Controls._2d
 
         private void button9_Click(object sender, EventArgs e)
         {
-            
+
             if (!(dataModel.SelectedItem is PolygonHelper ph2)) { return; }
 
             var hull = DeepNest.getHull(ph2.TransformedNfp());
             PolygonHelper ph = new PolygonHelper();
-            ph.Polygon = hull;            
-            
+            ph.Polygon = hull;
+
             var box = ph.BoundingBox().Value;
             PolygonHelper ph3 = new PolygonHelper();
             ph3.Polygon = new NFP()
@@ -292,6 +304,12 @@ namespace GeomPad.Controls._2d
         private void button1_Click(object sender, EventArgs e)
         {
             //largest interior rectangle
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            //todo: hough lines
+
         }
     }
 }
