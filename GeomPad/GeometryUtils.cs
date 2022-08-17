@@ -9,6 +9,15 @@ namespace GeomPad
 {
     public class GeometryUtils
     {
+        public static Vector2d point_on_line(Vector2d a, Vector2d b, Vector2d p)
+        {
+            var ap = p - a;
+            var ab = b - a;
+
+            var result = a + Vector2d.Dot(ap, ab) / Vector2d.Dot(ab, ab) * ab;
+            return result;
+        }
+
         public static Vector2d[][] TriangulateWithHoles(Vector2d[][] points, Vector2d[][] holes, bool checkArea = true)
         {
             #region checker

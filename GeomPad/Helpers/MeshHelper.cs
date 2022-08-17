@@ -203,6 +203,7 @@ namespace GeomPad.Helpers
                 e3.AddHelper(plh);
             };
         }
+
         public class FilterOutsideTriangles : ICommand
         {
             public string Name => "filter outside triangles";

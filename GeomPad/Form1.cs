@@ -473,5 +473,33 @@ namespace GeomPad
         {
             StatusMessage(v, type);
         }
+
+        private void toolStripSplitButton1_ButtonClick(object sender, EventArgs e)
+        {
+            List<PointF> pp = new List<PointF>();
+            foreach (var item in Items)
+            {
+                var rect = item.BoundingBox();
+                if (rect == null) continue;
+                pp.Add(rect.Value.Location);
+                pp.Add(new PointF(rect.Value.Right, rect.Value.Bottom));
+            }
+            if (pp.Count == 0) return;
+            dc.FitToPoints(pp.ToArray(), 5);
+        }
+
+        private void fitSelectedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            List<PointF> pp = new List<PointF>();
+            foreach (var item in dataModel.SelectedItems)
+            {
+                var rect = item.BoundingBox();
+                if (rect == null) continue;
+                pp.Add(rect.Value.Location);
+                pp.Add(new PointF(rect.Value.Right, rect.Value.Bottom));
+            }
+            if (pp.Count == 0) return;
+            dc.FitToPoints(pp.ToArray(), 5);
+        }
     }
 }
