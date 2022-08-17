@@ -26,11 +26,14 @@ namespace GeomPad.Helpers
             DistSegment.DrawArrowCap = true;
             var pen = new Pen(Color.Red, 3);
             pen.DashPattern = new float[] { 3, 3 };
-            Segment1.Color = pen;
-            Segment2.Color = pen;
+            Segment1.Color = pen.Color;
+            Segment2.Color = pen.Color;
+            Segment2.Thickness = pen.Width;
+            Segment1.Thickness = pen.Width;
             Segment1.Draw(gr);
             Segment2.Draw(gr);
-            DistSegment.Color = new Pen(Color.Green, 3);
+            DistSegment.Color = Color.Green;
+            DistSegment.Thickness = 3;
             DistSegment.Draw(gr);
         }
 

@@ -52,7 +52,8 @@ namespace GeomPad.Helpers
             get => Point.Y + "";
             set => Point.Y = value.ParseFloat();
         }
-        public Pen Color { get; set; } = Pens.Black;
+        public Color Color { get; set; } = Color.Black;
+        public float Thickness { get; set; } = 1;
         public double Length { get => (Point - Point2).Length; }
         public Vector2d Dir { get => (Point2 - Point).Normalized(); }
         public bool ArrowZoomRelative { get; set; } = false;
@@ -66,11 +67,11 @@ namespace GeomPad.Helpers
 
             float r = 3 / dc.scale;
             Brush br = Brushes.Black;
-            Pen pen = Color;
+            Pen pen = new Pen(Color, Thickness);
             if (Selected)
             {
                 br = Brushes.Red;
-                pen = Pens.Red;
+                pen = new Pen(Color.Red, Thickness);
             }
             var tr1 = dc.Transform(Point.ToPointF());
             var tr2 = dc.Transform(Point2.ToPointF());
@@ -86,7 +87,7 @@ namespace GeomPad.Helpers
                 arrowLen /= dc.zoom;
 
             if (DrawArrowCap)
-            {                
+            {
                 var p11 = -Dir * arrowLen;
                 Matrix mtr = new Matrix();
                 mtr.RotateAt((float)ArrowAng, new PointF(0, 0));
@@ -114,13 +115,19 @@ namespace GeomPad.Helpers
 
         public override void AppendToXml(StringBuilder sb)
         {
-            sb.AppendLine($"<segmentHelper name=\"{Name}\" x1=\"{X}\" x2=\"{X2}\" y1=\"{Y}\" y2=\"{Y2}\"/>");
+            sb.AppendLine($"<segmentHelper name=\"{Name}\" x1=\"{X}\" x2=\"{X2}\" y1=\"{Y}\" y2=\"{Y2}\" thickness=\"{Thickness}\" color=\"{Color.ToArgb()}\" />");
         }
 
         public override void ParseXml(XElement item)
         {
             if (item.Attribute("name") != null)
                 Name = item.Attribute("name").Value;
+
+            if (item.Attribute("thickness") != null)
+                Thickness = StaticHelpers.ParseFloat(item.Attribute("thickness").Value);
+
+            if (item.Attribute("color") != null)
+                Color = Color.FromArgb(int.Parse(item.Attribute("thickness").Value));
 
             var x1 = double.Parse(item.Attribute("x1").Value);
             var x2 = double.Parse(item.Attribute("x2").Value);
@@ -131,7 +138,7 @@ namespace GeomPad.Helpers
             Point2 = new Vector2d(x2, y2);
         }
 
-        internal SegmentHelper Clone()
+        public override AbstractHelperItem Clone()
         {
             SegmentHelper ret = new SegmentHelper();
             ret.Point = Point;
@@ -144,8 +151,6 @@ namespace GeomPad.Helpers
             var temp = Point2;
             Point2 = Point;
             Point = temp;
-
         }
     }
-
 }

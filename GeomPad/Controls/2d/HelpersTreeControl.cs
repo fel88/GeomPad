@@ -522,5 +522,20 @@ namespace GeomPad.Controls._2d
                 };
             }
         }
+
+        private void cloneToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (dataModel.SelectedItems.Length == 0) return;
+            var hh = dataModel.SelectedItem;
+
+            if (hh is SegmentHelper sh)
+            {
+                dataModel.AddItem(new SegmentHelper() { X = sh.X, Y = sh.Y, X2 = sh.X2, Y2 = sh.Y2 });
+            }
+            else if (hh is PolylineHelper plh)
+            {
+                dataModel.AddItem(plh.Clone());                
+            }
+        }
     }
 }

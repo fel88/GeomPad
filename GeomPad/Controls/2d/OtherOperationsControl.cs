@@ -38,6 +38,7 @@ namespace GeomPad.Controls._2d
         private void button5_Click(object sender, EventArgs e)
         {
             var poly2 = new Polygon();
+            bool was = false;
             if (dataModel.SelectedItem is PolygonHelper plh)
             {
                 var pn2 = plh.TransformedPoints();
@@ -83,6 +84,7 @@ namespace GeomPad.Controls._2d
                     poly2.Add(new Contour(a), new TriangleNet.Geometry.Point(test.X, test.Y));
                     //poly2.Add(new Contour(a), true);
                 }
+                was = true;
             }
             else if (dataModel.SelectedItem is PolylineHelper plh2)
             {
@@ -91,15 +93,20 @@ namespace GeomPad.Controls._2d
                 var a = pn.Select(z => new Vertex(z.X, z.Y, 0)).ToArray();
 
                 poly2.Add(new Contour(a));
-            }
-            var trng = (new GenericMesher()).Triangulate(poly2, new ConstraintOptions(), new QualityOptions());
+                was = true;
 
-            var tr = trng.Triangles.Select(z => new Vector2d[] {
+            }
+            if (was)
+            {
+                var trng = (new GenericMesher()).Triangulate(poly2, new ConstraintOptions(), new QualityOptions());
+
+                var tr = trng.Triangles.Select(z => new Vector2d[] {
                   new Vector2d(z.GetVertex(0).X, z.GetVertex(0).Y),
                   new Vector2d(z.GetVertex(1).X, z.GetVertex(1).Y),
                   new Vector2d(z.GetVertex(2).X, z.GetVertex(2).Y)
             }).ToArray();
-            dataModel.AddItem(new MeshHelper(tr) { Name = "triangulate" });
+                dataModel.AddItem(new MeshHelper(tr) { Name = "triangulate" });
+            }
         }
 
         private void button17_Click(object sender, EventArgs e)
@@ -179,28 +186,39 @@ namespace GeomPad.Controls._2d
 
         private void button9_Click(object sender, EventArgs e)
         {
-
-            if (!(dataModel.SelectedItem is PolygonHelper ph2)) { return; }
-
-            var hull = DeepNest.getHull(ph2.TransformedNfp());
-            PolygonHelper ph = new PolygonHelper();
-            ph.Polygon = hull;
-
-            var box = ph.BoundingBox().Value;
-            PolygonHelper ph3 = new PolygonHelper();
-            ph3.Polygon = new NFP()
+            NFP hull = null;
+            if (dataModel.SelectedItem is PolygonHelper ph2)
             {
-                Points = new SvgPoint[] {
+                hull = DeepNest.getHull(ph2.TransformedNfp());
+            }
+            else if (dataModel.SelectedItem is PolylineHelper plh2)
+            {
+                NFP nfp = new NFP() { Points = plh2.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray() };
+                hull = DeepNest.getHull(nfp);
+            }
+
+            if (hull != null)
+            {
+                PolygonHelper ph = new PolygonHelper();
+                ph.Polygon = hull;
+
+                var box = ph.BoundingBox().Value;
+                PolygonHelper ph3 = new PolygonHelper();
+                ph3.Polygon = new NFP()
+                {
+                    Points = new SvgPoint[] {
                     new SvgPoint (box.Left,box.Top),
                     new SvgPoint (box.Left,box.Bottom),
                     new SvgPoint (box.Right,box.Bottom),
                     new SvgPoint (box.Right,box.Top),
             }
-            };
+                };
 
-            ph3.Name = "AABB";
-            dataModel.AddItem(ph3);
+                ph3.Name = "AABB";
+                dataModel.AddItem(ph3);
+            }
         }
+
         public void calcOrthogonalFor2Polygons(bool xAxis = true)
         {
             var hh = dataModel.SelectedItems.OfType<PolygonHelper>().ToArray();
@@ -272,10 +290,9 @@ namespace GeomPad.Controls._2d
                 dataModel.AddItem(new OrthogonalDist2Segments()
                 {
                     Name = $"{p1.Name} --> {p2.Name}",
-                    Segment1 = minss1.Clone(),
-                    Segment2 = minss2.Clone(),
-                    DistSegment = mins1
-                ,
+                    Segment1 = minss1.Clone() as SegmentHelper,
+                    Segment2 = minss2.Clone() as SegmentHelper,
+                    DistSegment = mins1,
                     RequiredOffset = reqDist
                 });
                 //p1.OffsetX += (mins1.Point.X > mins1.Point2.X ? 1 : -1) * mins1.Length;
@@ -292,24 +309,16 @@ namespace GeomPad.Controls._2d
         private void button16_Click(object sender, EventArgs e)
         {
             calcOrthogonalFor2Polygons();
-
         }
 
         private void button18_Click(object sender, EventArgs e)
         {
             calcOrthogonalFor2Polygons(false);
-
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
             //largest interior rectangle
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            //todo: hough lines
-
         }
     }
 }
