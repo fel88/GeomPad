@@ -723,6 +723,8 @@ namespace GeomPad
             foreach (var pitem in root.Elements("line"))
             {
                 LineHelper lh = new LineHelper();
+                if (pitem.Attribute("showCrosses") != null)
+                    lh.ShowCrosses = bool.Parse(pitem.Attribute("showCrosses").Value);
 
                 List<Vector3d> pnts = new List<Vector3d>();
                 foreach (var point in pitem.Descendants("point"))
