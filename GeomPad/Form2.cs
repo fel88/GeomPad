@@ -756,6 +756,21 @@ namespace GeomPad
                 }
                 ret.Add(mh);
             }
+            foreach (var pitem in doc.Descendants("cloud"))
+            {
+                PointCloudHelper mh = new PointCloudHelper(pitem);                
+                ret.Add(mh);
+            }
+            foreach (var pitem in doc.Descendants("plane"))
+            {
+                PlaneHelper mh = new PlaneHelper(pitem);
+                ret.Add(mh);
+            }
+            foreach (var pitem in doc.Descendants("spline"))
+            {
+                SplineHelper mh = new SplineHelper(pitem);
+                ret.Add(mh);
+            }
 
             return ret.ToArray();
         }
