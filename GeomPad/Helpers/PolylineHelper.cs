@@ -25,7 +25,28 @@ namespace GeomPad.Helpers
         }
         public int PointsCount => Points.Count;
         public bool DrawPoints { get; set; }
-        public ICommand[] Commands => new ICommand[] { new ApproxMajorLine(), new ApproxMajorLine(false) };
+        public ICommand[] Commands => new ICommand[] { new ApproxMajorLine(), new ApproxMajorLine(false), new ConvertToPolygon() };
+
+        public class ConvertToPolygon : ICommand
+        {
+            public ConvertToPolygon()
+            {
+
+            }
+
+            public string Name => "convert to polygon";
+
+            public Action<AbstractHelperItem, AbstractHelperItem[], IPadContainer> Process => (e, e2, e3) =>
+            {
+                PolygonHelper mh = new PolygonHelper();
+                var ee = e as PolylineHelper;
+                mh.Polygon = new NFP() { };
+                //check first and last points are equal?
+                mh.Polygon.Points = ee.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+                e3.AddHelper(mh);
+            };
+        }
+
         public class ApproxMajorLine : ICommand
         {
             public ApproxMajorLine(bool single = true)
@@ -80,7 +101,7 @@ namespace GeomPad.Helpers
                             }
                             meanDist /= cntr;
 
-                            if ((j - i) > 10 && meanDist > 0.5f && meanDist < koef && maxDist < koef && (int)(approx.Len/50) >= (int)(maxApproxDist/50) && meanDist<bestMeanDist)
+                            if ((j - i) > 10 && meanDist > 0.5f && meanDist < koef && maxDist < koef && (int)(approx.Len / 50) >= (int)(maxApproxDist / 50) && meanDist < bestMeanDist)
                             {
                                 bestMeanDist = meanDist;
                                 approxBest = approx;
