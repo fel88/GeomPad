@@ -19,7 +19,7 @@ namespace GeomPad
         Pad2DDataModel dataModel;
 
         Pad2DMainPanel dpanel;
-        List<AbstractHelperItem> Items => dataModel.Items;
+        List<IHelperItem> Items => dataModel.Items;
 
         public Form1()
         {
@@ -195,7 +195,7 @@ namespace GeomPad
             //gr.TranslateTransform(pictureBox1.Width / 2, pictureBox1.Height / 2);
             //gr.ScaleTransform(dc.scale, dc.scale);
 
-            var ord = Items.OrderBy(z => z.Z);
+            var ord = Items.OrderBy(z => z.ZIndex);
             if (bubbleUpSelected)
             {
                 ord = ord.ThenBy(z => z.Selected);
@@ -262,11 +262,11 @@ namespace GeomPad
             dpanel.view.PictureBox.Image = bmp;
         }
 
-        private AbstractHelperItem[] GetAllItems(AbstractHelperItem h = null, List<AbstractHelperItem> list = null)
+        private IHelperItem[] GetAllItems(IHelperItem h = null, List<IHelperItem> list = null)
         {
             if (list == null)
             {
-                list = new List<AbstractHelperItem>();
+                list = new List<IHelperItem>();
             }
 
             if (h != null)
@@ -290,7 +290,7 @@ namespace GeomPad
             return list.ToArray();
         }
 
-        HelperItem selected => dataModel.SelectedItem;
+        IHelperItem selected => dataModel.SelectedItem;
 
         public float zoom = 1;
 
@@ -357,7 +357,7 @@ namespace GeomPad
         {
             var em = e as MouseEventArgs;
             if (em.Button != MouseButtons.Right)
-            {
+            {                
                 Items.ForEach(z => z.Selected = false);
                 dataModel.ClearSelection();
             }

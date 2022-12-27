@@ -260,7 +260,7 @@ namespace GeomPad
                 }
             }
         }
-        
+
         public void SetStatus(string v, StatusMessageType type)
         {
             switch (type)
@@ -434,7 +434,7 @@ namespace GeomPad
             {
                 var ccc = new ToolStripMenuItem(item.Name);
                 commandsToolStripMenuItem.DropDownItems.Add(ccc);
-                ccc.Click += (s, ee) => { item.Process(cc as HelperItem, all.Except(new[] { cc as HelperItem }).ToArray(), this); };
+                ccc.Click += (s, ee) => { item.Process(new CommandContext(cc as HelperItem, all.Except(new[] { cc as HelperItem }).ToArray(), this)); };
             }
         }
 
@@ -758,7 +758,7 @@ namespace GeomPad
             }
             foreach (var pitem in doc.Descendants("cloud"))
             {
-                PointCloudHelper mh = new PointCloudHelper(pitem);                
+                PointCloudHelper mh = new PointCloudHelper(pitem);
                 ret.Add(mh);
             }
             foreach (var pitem in doc.Descendants("plane"))
@@ -782,11 +782,11 @@ namespace GeomPad
                 var hh = loadXml(Clipboard.GetText());
                 Helpers.AddRange(hh);
                 updateHelpersList();
-                SetStatus("succesfully loaded.", StatusMessageType.Info);                
+                SetStatus("succesfully loaded.", StatusMessageType.Info);
             }
             catch (Exception ex)
             {
-                SetStatus(ex.Message, StatusMessageType.Error);                
+                SetStatus(ex.Message, StatusMessageType.Error);
             }
         }
 
@@ -795,6 +795,6 @@ namespace GeomPad
 
         }
 
-        
-    }    
+
+    }
 }

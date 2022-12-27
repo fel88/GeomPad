@@ -36,14 +36,14 @@ namespace GeomPad.Helpers
 
             public string Name => "convert to polygon";
 
-            public Action<AbstractHelperItem, AbstractHelperItem[], IPadContainer> Process => (e, e2, e3) =>
+            public Action<ICommandContext> Process => (cc) =>
             {
                 PolygonHelper mh = new PolygonHelper();
-                var ee = e as PolylineHelper;
+                var ee = cc.Source as PolylineHelper;
                 mh.Polygon = new NFP() { };
                 //check first and last points are equal?
                 mh.Polygon.Points = ee.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
-                e3.AddHelper(mh);
+                cc.Parent.AddHelper(mh);
             };
         }
 
@@ -56,9 +56,9 @@ namespace GeomPad.Helpers
             bool _single;
             public string Name => "approx by major line (" + (_single ? "single" : "many") + ")";
 
-            public System.Action<AbstractHelperItem, AbstractHelperItem[], IPadContainer> Process => (e, e2, e3) =>
+            public System.Action<ICommandContext> Process => (cc) =>
             {
-                var ee = e as PolylineHelper;
+                var ee = cc.Source as PolylineHelper;
 
 
                 DoubleInputDialog did = new DoubleInputDialog();
@@ -146,7 +146,7 @@ namespace GeomPad.Helpers
                     }
                     else
                     {
-                        e3.SetStatus(DateTime.Now.ToLongTimeString() + ": not found", StatusMessageType.Warning);
+                        cc.Parent.SetStatus(DateTime.Now.ToLongTimeString() + ": not found", StatusMessageType.Warning);
                         break;
                     }
                     if (_single) break;

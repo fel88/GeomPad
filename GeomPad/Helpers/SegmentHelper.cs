@@ -8,13 +8,25 @@ using System.Xml.Linq;
 namespace GeomPad.Helpers
 {
     [XmlParse(XmlKey = "segmentHelper")]
-    public class SegmentHelper : HelperItem
+    public class SegmentHelper : HelperItem, ICommandsContainer
     {
         public Vector2d Point;
         public Vector2d Point2;
 
         public bool DrawArrowCap { get; set; }
         public bool DrawPoints { get; set; }
+
+        public class SegmentExpandAlongCommand : ICommand
+        {
+            public string Name => "expand along direction";
+
+            public Action<ICommandContext> Process => (cc) =>
+            {
+                var ln = cc.Source as SegmentHelper;
+                ln.Point += -ln.Dir * 100;
+                ln.Point2 += ln.Dir * 100;
+            };
+        }
 
         public override RectangleF? BoundingBox()
         {
@@ -60,6 +72,10 @@ namespace GeomPad.Helpers
 
         public double ArrowLen { get; set; } = 3;
         public int ArrowAng { get; set; } = 35;
+
+        public ICommand[] Commands => new ICommand[] { new SegmentExpandAlongCommand() };
+
+
         public override void Draw(IDrawingContext idc)
         {
             var dc = idc as DrawingContext;

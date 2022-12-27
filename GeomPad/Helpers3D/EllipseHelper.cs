@@ -84,9 +84,9 @@ namespace GeomPad.Helpers3D
         {
             public string Name => "fix aux point";
 
-            public Action<AbstractHelperItem, AbstractHelperItem[], IPadContainer> Process => (z, arr, cc) =>
+            public Action<ICommandContext> Process => (cc) =>
             {
-                var ln = (z as EllipseHelper);
+                var ln = cc.Source as EllipseHelper;
                 PlaneSurface ps = new PlaneSurface() { Normal = ln.Normal, Position = ln.Location };
                 var proj = ps.ProjPoint(ln.AuxPoint);
                 ln.AuxPoint = proj;

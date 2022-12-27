@@ -12,6 +12,7 @@ namespace GeomPad.Helpers
     [XmlParse(XmlKey = "polygonHelper")]
     public class PolygonHelper : HelperItem
     {
+        public PolygonHelper() { }
         public NFP Polygon = new NFP();
 
         public override void Shift(Vector2d vector)

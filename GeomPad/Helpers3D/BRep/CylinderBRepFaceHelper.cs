@@ -29,21 +29,21 @@ namespace GeomPad.Helpers3D.BRep
         {
             public string Name => "edit map";
 
-            public Action<AbstractHelperItem, AbstractHelperItem[], IPadContainer> Process => (z, arr, cc) =>
+            public Action<ICommandContext> Process => (cc) =>
             {
-                var tr = z as CylinderBRepFaceHelper;
+                var tr = cc.Source as CylinderBRepFaceHelper;
                 ProjectMapEditor pme = new ProjectMapEditor();
                 pme.Init(tr);
-                cc.OpenChildWindow(pme);
+                cc.Parent.OpenChildWindow(pme);
             };
         }
         public class CylinderBRepHelperSwitchNormal : ICommand
         {
             public string Name => "switch normal";
 
-            public Action<AbstractHelperItem, AbstractHelperItem[], IPadContainer> Process => (z, arr, cc) =>
+            public Action<ICommandContext> Process => (cc) =>
             {
-                var tr = z as CylinderBRepFaceHelper;
+                var tr = cc.Source as CylinderBRepFaceHelper;
                 if (tr.Mesh != null)
                     tr.Mesh.SwitchNormals();
             };

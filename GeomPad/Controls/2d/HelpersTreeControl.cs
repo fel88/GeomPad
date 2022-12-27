@@ -1,4 +1,5 @@
-﻿using GeomPad.Helpers;
+﻿using BrightIdeasSoftware;
+using GeomPad.Helpers;
 using OpenTK;
 using System;
 using System.Collections.Generic;
@@ -470,7 +471,7 @@ namespace GeomPad.Controls._2d
 
         private void polylineToolStripMenuItem_Click(object sender, EventArgs e)
         {
-
+            dataModel.AddItem(new PolylineHelper());
         }
 
         private void linesSetToolStripMenuItem_Click(object sender, EventArgs e)
@@ -483,34 +484,44 @@ namespace GeomPad.Controls._2d
 
         private void meshToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            List<Vector2d[]> tr = new List<Vector2d[]>();
-            tr.Add(new Vector2d[] {
+            List<Vector2d[]> tr = new List<Vector2d[]>
+            {
+                new Vector2d[] {
                 new Vector2d(5,5),
                 new Vector2d(15,15),
                 new Vector2d(20,45),
-            });
-            tr.Add(new Vector2d[] {
+            },
+                new Vector2d[] {
                 new Vector2d(55,35),
                 new Vector2d(15,15),
                 new Vector2d(20,45),
-            });
+            }
+            };
             var msh = new MeshHelper(tr.ToArray()) { };
             dataModel.AddItem(msh);
         }
 
         private void commandsToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
         {
+            var curp = treeListView1.PointToClient(contextMenuStrip1.Bounds.Location);
+            var tt = treeListView1.GetItemAt(curp.X, curp.Y) as OLVListItem;
+            if (tt == null)
+                return;
+
+            dataModel.SelectedItem = tt.RowObject as IHelperItem;
             commandsToolStripMenuItem.DropDownItems.Clear();
 
             if (dataModel.SelectedItem == null) return;
             ////var focusedItem = treeListView1.FocusedItem;
             var cc = dataModel.SelectedItem as ICommandsContainer;
-            if (cc == null) return;
-            /*List<HelperItem> all = new List<HelperItem>();
-            for (int i = 0; i < dataModel.SelectedItems.Count; i++)
+            if (cc == null)
+                return;
+
+            List<HelperItem> all = new List<HelperItem>();
+            for (int i = 0; i < treeListView1.SelectedObjects.Count; i++)
             {
-                all.Add(treeListView1.SelectedItems[i]);
-            }*/
+                all.Add(treeListView1.SelectedObjects[i] as HelperItem);
+            }
 
             foreach (var item in cc.Commands)
             {
@@ -518,7 +529,7 @@ namespace GeomPad.Controls._2d
                 commandsToolStripMenuItem.DropDownItems.Add(ccc);
                 ccc.Click += (s, ee) =>
                 {
-                    item.Process(cc as HelperItem, null, dataModel.ParentForm);
+                    item.Process(new CommandContext(cc as HelperItem, all.Except(new[] { cc as HelperItem }).ToArray(), dataModel.ParentForm));
                 };
             }
         }
@@ -534,7 +545,7 @@ namespace GeomPad.Controls._2d
             }
             else if (hh is PolylineHelper plh)
             {
-                dataModel.AddItem(plh.Clone());                
+                dataModel.AddItem(plh.Clone());
             }
         }
     }

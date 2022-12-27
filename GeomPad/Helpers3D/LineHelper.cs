@@ -100,9 +100,9 @@ namespace GeomPad.Helpers3D
         {
             public string Name => "expand along direction";
 
-            public Action<AbstractHelperItem, AbstractHelperItem[], IPadContainer> Process => (z, arr, cc) =>
+            public Action<ICommandContext> Process => (cc) =>
             {
-                var ln = (z as LineHelper);
+                var ln = cc.Source as LineHelper;
                 ln.Start += -ln.Dir * 100;
                 ln.End += ln.Dir * 100;
             };
@@ -112,9 +112,9 @@ namespace GeomPad.Helpers3D
         {
             public string Name => "switch start and end";
 
-            public Action<AbstractHelperItem, AbstractHelperItem[], IPadContainer> Process => (z, arr, cc) =>
+            public Action<ICommandContext> Process => (cc) =>
             {
-                var ln = (z as LineHelper);
+                var ln = cc.Source as LineHelper;
                 var t = ln.Start;
                 ln.Start = ln.End;
                 ln.End = t;

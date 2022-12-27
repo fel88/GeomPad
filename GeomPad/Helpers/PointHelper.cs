@@ -1,20 +1,60 @@
 ﻿using OpenTK;
+using System;
 using System.Drawing;
+using System.Linq;
 
 namespace GeomPad.Helpers
 {
-    public class PointHelper : HelperItem
+    public class PointHelper : HelperItem, ICommandsContainer
     {
         public Vector2d Point;
+        public ICommand[] Commands => new ICommand[] { new ProjectionPoint() };
+        public class ProjectionPoint : ICommand
+        {
+            public ProjectionPoint()
+            {
 
+            }
+
+            public string Name => "project point to line (polyline)";
+
+            public Action<ICommandContext> Process => (cc) =>
+            {
+                PointHelper mh = new PointHelper();
+                var ee = cc.Source as PointHelper;
+                if (cc.Operands.Length == 0)
+                {
+                    cc.Parent.SetStatus("no operands", StatusMessageType.Warning);
+                    return;
+                }
+
+                if (cc.Operands[0] is SegmentHelper sh)
+                {
+                    Line2D l2d = new Line2D()
+                    {
+                        Start = sh.Point,
+                        End = sh.Point2
+                    };
+
+                    var proj = l2d.GetProj(ee.Point);
+                    mh.Point = proj;
+                    cc.Parent.AddHelper(mh);
+
+                }
+                else
+                {
+                    cc.Parent.SetStatus("unknown operand", StatusMessageType.Warning);
+                }
+            };
+        }
         public string X
         {
-            get => Point.X + "";
+            get => Point.X.ToString();
             set => Point.X = value.ParseDouble();
         }
         public string Y
         {
-            get => Point.Y + "";
+            get => Point.Y.ToString();
             set => Point.Y = value.ParseDouble();
         }
 

@@ -23,21 +23,21 @@ namespace GeomPad.Helpers3D
         {
             public string Name => "split by ray";
 
-            public Action<AbstractHelperItem, AbstractHelperItem[], IPadContainer> Process => (z, arr, cc) =>
+            public Action<ICommandContext> Process => (cc) =>
             {
-                var tr = z as MeshHelper;
-                var ray = arr.First(t => t is LineHelper) as LineHelper;
+                var tr = cc.Source as MeshHelper;
+                var ray = cc.Operands.First(t => t is LineHelper) as LineHelper;
 
                 MouseRay mr = new MouseRay(ray.Start, ray.End);
                 var dd = Intersection.CheckIntersect(mr, tr.Mesh.Triangles.ToArray());
 
                 if (dd != null)
                 {
-                    cc.AddHelper(new PointHelper() { Position = dd.Point });
-                    cc.SetStatus("intersection found: " + dd.Point.ToString(), StatusMessageType.Info);
+                    cc.Parent.AddHelper(new PointHelper() { Position = dd.Point });
+                    cc.Parent.SetStatus("intersection found: " + dd.Point.ToString(), StatusMessageType.Info);
                 }
                 else
-                    cc.SetStatus("intersection not found.", StatusMessageType.Warning);
+                    cc.Parent.SetStatus("intersection not found.", StatusMessageType.Warning);
             };
         }
         public override void AppendToXml(StringBuilder sb)

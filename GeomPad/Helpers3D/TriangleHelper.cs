@@ -246,12 +246,12 @@ namespace GeomPad.Helpers3D
         {
             public string Name => "split by plane";
 
-            public Action<AbstractHelperItem, AbstractHelperItem[], IPadContainer> Process => (z, arr, cc) =>
+            public Action<ICommandContext> Process => (cc) =>
             {
-                var tr = z as TriangleHelper;
-                var pl = arr.First(t => t is PlaneHelper) as PlaneHelper;
+                var tr = cc.Source as TriangleHelper;
+                var pl = cc.Operands.First(t => t is PlaneHelper) as PlaneHelper;
                 var res = tr.SplitByPlane(pl);
-                cc.AddHelpers(res);
+                cc.Parent.AddHelpers(res);
             };
         }
     }

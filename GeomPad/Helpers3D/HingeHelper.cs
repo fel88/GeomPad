@@ -159,9 +159,9 @@ namespace GeomPad.Helpers3D
         {
             public string Name => "calc outter normal";
 
-            public Action<AbstractHelperItem, AbstractHelperItem[], IPadContainer> Process => (z, arr, cc) =>
+            public Action<ICommandContext> Process => (cc) =>
             {
-                var tr = z as HingeHelper;
+                var tr = cc.Source as HingeHelper;
                 tr.CalcConjugateNormal();
             };
         }

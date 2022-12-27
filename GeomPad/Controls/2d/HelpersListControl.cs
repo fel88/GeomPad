@@ -127,8 +127,8 @@ namespace GeomPad.Controls._2d
             if (dataModel.SelectedItems.Length == 0) return;
             for (int i = 0; i < dataModel.SelectedItems.Length; i++)
             {
-                var maxz = dataModel.Items.Max(z => z.Z);
-                dataModel.SelectedItems[i].Z = maxz + 1;
+                var maxz = dataModel.Items.Max(z => z.ZIndex);
+                dataModel.SelectedItems[i].ZIndex = maxz + 1;
             }
 
             dataModel.UpdateList();
@@ -451,8 +451,8 @@ namespace GeomPad.Controls._2d
             if (dataModel.SelectedItems.Length == 0) return;
             for (int i = 0; i < dataModel.SelectedItems.Length; i++)
             {
-                var minz = dataModel.Items.Min(z => z.Z);
-                dataModel.SelectedItems[i].Z = minz - 1;
+                var minz = dataModel.Items.Min(z => z.ZIndex);
+                dataModel.SelectedItems[i].ZIndex = minz - 1;
             }
         }
 
@@ -483,6 +483,7 @@ namespace GeomPad.Controls._2d
 
         private void polylineToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            dataModel.AddItem(new PolylineHelper());
 
         }
     }

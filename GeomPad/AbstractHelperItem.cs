@@ -1,19 +1,23 @@
-﻿using System;
+﻿using OpenTK;
+using System;
 using System.Drawing;
 using System.Text;
 
 namespace GeomPad
 {
-    public abstract class AbstractHelperItem
+    public abstract class AbstractHelperItem : IHelperItem
     {
-        public int Z { get; set; }
+        public int ZIndex { get; set; }
 
-        public Action Changed;
+        public Action Changed { get; set; }
+        public virtual void Shift(Vector2d vector) { }
+
         public abstract void Draw(IDrawingContext gr);
         bool _selected;
         public bool Selected
         {
-            get => _selected; set
+            get => _selected; 
+            set
             {
                 if (_selected != value)
                 {

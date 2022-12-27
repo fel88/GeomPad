@@ -8,8 +8,8 @@ namespace GeomPad.Controls._2d
 {
     public class Pad2DDataModel
     {
-        public List<AbstractHelperItem> Items = new List<AbstractHelperItem>();
-        public HelperItem SelectedItem;
+        public List<IHelperItem> Items = new List<IHelperItem>();
+        public IHelperItem SelectedItem;
         public HelperItem[] SelectedItems;
 
         public Form1 ParentForm;
@@ -102,7 +102,7 @@ namespace GeomPad.Controls._2d
             OnListUpdated?.Invoke();
         }
 
-        internal void RemoveItem(HelperItem helperItem)
+        internal void RemoveItem(IHelperItem helperItem)
         {
             Items.Remove(helperItem);
             OnListUpdated?.Invoke();

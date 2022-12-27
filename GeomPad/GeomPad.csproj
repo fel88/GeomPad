@@ -82,6 +82,7 @@
     </Compile>
     <Compile Include="AbstractFieldEditor.cs" />
     <Compile Include="AbstractHelperItem.cs" />
+    <Compile Include="CommandContext.cs" />
     <Compile Include="Controls\2d\HelpersTreeControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -215,7 +216,9 @@
     <Compile Include="Helpers\RectangleGenerator.cs" />
     <Compile Include="Helpers3D\HingeHelper.cs" />
     <Compile Include="DebugHelper.cs" />
+    <Compile Include="ICommandContext.cs" />
     <Compile Include="IDrawingContext.cs" />
+    <Compile Include="IHelperItem.cs" />
     <Compile Include="IPadContainer.cs" />
     <Compile Include="ICommand.cs" />
     <Compile Include="ICommandsContainer.cs" />
@@ -230,6 +233,7 @@
     <Compile Include="IntFieldEditor.cs" />
     <Compile Include="Helpers3D\Line3D.cs" />
     <Compile Include="Helpers3D\LineHelper.cs" />
+    <Compile Include="IPoint.cs" />
     <Compile Include="LineElement.cs" />
     <Compile Include="LocalContour.cs" />
     <Compile Include="Helpers3D\Math\Intersection.cs" />
@@ -262,6 +266,7 @@
     <Compile Include="Helpers\PolygonHelper.cs" />
     <Compile Include="Helpers3D\PolygonHelper.cs" />
     <Compile Include="PolygonPointEditorWrapper.cs" />
+    <Compile Include="PolylinePointEditorWrapper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helpers\SegmentHelper.cs" />

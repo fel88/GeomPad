@@ -192,15 +192,15 @@ namespace GeomPad.Helpers
 
             public string Name => "extract outside contour";
 
-            public System.Action<AbstractHelperItem, AbstractHelperItem[], IPadContainer> Process => (e, e2, e3) =>
+            public System.Action<ICommandContext> Process => (cc) =>
             {
-                var ee = e as MeshHelper;
+                var ee = cc.Source as MeshHelper;
                 var tr = ee.Mesh.ToList();
                 //mesh->contour
                 var plh = new PolylineHelper();
                 plh.Name = "extracted contour";
                 plh.Points = ExtractContour(tr).Select(z => z.ToVector2d()).ToList();
-                e3.AddHelper(plh);
+                cc.Parent.AddHelper(plh);
             };
         }
 
@@ -208,9 +208,10 @@ namespace GeomPad.Helpers
         {
             public string Name => "filter outside triangles";
 
-            public System.Action<AbstractHelperItem, AbstractHelperItem[], IPadContainer> Process => (e, e2, e3) =>
+            public System.Action<ICommandContext> Process => (cc) =>
             {
-                var ee = e as MeshHelper;
+
+                var ee = cc.Source as MeshHelper;
                 var tr = ee.Mesh.ToList();
 
                 DoubleInputDialog did = new DoubleInputDialog();

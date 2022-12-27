@@ -1,9 +1,8 @@
 ﻿using System.Drawing;
 
-
 namespace GeomPad
 {
-    public class PolygonPointEditorWrapper
+    public class PolygonPointEditorWrapper : IPoint
     {
         public PolygonPointEditorWrapper(NFP ph, int index)
         {
@@ -16,6 +15,4 @@ namespace GeomPad
         int _index;
         NFP _polygon;
     }
-
-
 }
