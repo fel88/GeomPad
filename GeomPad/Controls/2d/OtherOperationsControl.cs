@@ -215,6 +215,7 @@ namespace GeomPad.Controls._2d
                 };
 
                 ph3.Name = "AABB";
+                ph3.RecalcArea();
                 dataModel.AddItem(ph3);
             }
         }

@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
@@ -10,7 +11,7 @@ using System.Xml.Linq;
 namespace GeomPad.Helpers
 {
     [XmlParse(XmlKey = "polygonHelper")]
-    public class PolygonHelper : HelperItem
+    public class PolygonHelper : HelperItem, ICommandsContainer
     {
         public PolygonHelper() { }
         public NFP Polygon = new NFP();
@@ -22,6 +23,16 @@ namespace GeomPad.Helpers
             {
                 item.Shift(vector);
             }
+        }
+
+        public override AbstractHelperItem Clone()
+        {
+            PolygonHelper pl = new PolygonHelper();
+            pl.Name = "clone_" + Name;
+            pl.Polygon = Polygon.Clone();
+            pl.DrawPoints = DrawPoints;
+            pl.Fill = Fill;
+            return pl;
         }
 
         bool _fill = false;
@@ -263,6 +274,19 @@ namespace GeomPad.Helpers
             return new NFP() { Points = TransformedPoints() };
         }
         public double Area { get; set; }
+
+        public class AreaRecalcCommand : ICommand
+        {
+            public string Name => "recalc area";
+
+            public Action<ICommandContext> Process => (cc) =>
+            {
+                var ph = cc.Source as PolygonHelper;
+                ph.RecalcArea();
+            };
+        }
+
+        public ICommand[] Commands => new[] { new AreaRecalcCommand() };
 
         internal void RecalcArea()
         {

@@ -19,6 +19,31 @@ namespace GeomPad
                 Points[i].Y += vector.Y;
             }
         }
+
+        public  NFP Clone()
+        {
+            NFP newnfp = new NFP();
+            for (var i = 0; i < Length; i++)
+            {
+                newnfp.AddPoint(new SvgPoint(Points[i].X, Points[i].Y));
+            }
+
+            if (Childrens != null && Childrens.Count > 0)
+            {
+                newnfp.Childrens = new List<NFP>();
+                for (int i = 0; i < Childrens.Count; i++)
+                {
+                    var child = Childrens[i];
+                    NFP newchild = new NFP();
+                    for (var j = 0; j < child.Length; j++)
+                    {
+                        newchild.AddPoint(new SvgPoint(child[j].X, child[j].Y));
+                    }
+                    newnfp.Childrens.Add(newchild);
+                }
+            }            
+            return newnfp;
+        }
         public double SignedArea()
         {
             return StaticHelpers.signed_area(Points);

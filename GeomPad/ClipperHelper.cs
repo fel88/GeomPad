@@ -212,7 +212,7 @@ namespace GeomPad
                         nFP.Points[j].X *= -1;
                         nFP.Points[j].Y *= -1;
                         nFP.Points[j].X += pattern[0].X;
-                        nFP.Points[j].Y += pattern[0].Y; 
+                        nFP.Points[j].Y += pattern[0].Y;
                     }
                 }
 

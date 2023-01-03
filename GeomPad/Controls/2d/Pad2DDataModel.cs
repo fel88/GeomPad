@@ -53,14 +53,14 @@ namespace GeomPad.Controls._2d
             NFP p2 = new NFP();
 
 
-            p.Points = ar1[0].Polygon.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+            p.Points = ar1[0].TransformedPoints().Select(z => new SvgPoint(z.X, z.Y)).ToArray();
             foreach (var item in ar1[0].Polygon.Childrens)
             {
                 if (p.Childrens == null)
                     p.Childrens = new List<NFP>();
                 p.Childrens.Add(new NFP() { Points = item.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray() });
             }
-            p2.Points = ar1[1].Polygon.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+            p2.Points = ar1[1].TransformedPoints().Select(z => new SvgPoint(z.X, z.Y)).ToArray();
             foreach (var item in ar1[1].Polygon.Childrens)
             {
                 if (p2.Childrens == null)

@@ -43,7 +43,7 @@ namespace GeomPad.Controls._2d
             if ((dataModel.SelectedItem is PolygonHelper ph2))
             {
                 p.Points = ph2.Polygon.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
-        
+
                 var offs = ClipperHelper.offset(p, offset, jType, curveTolerance: curveTolerance, miterLimit: miterLimit);
                 //if (offs.Count() > 1) throw new NotImplementedException();
                 PolygonHelper ph = new PolygonHelper();
@@ -84,17 +84,17 @@ namespace GeomPad.Controls._2d
             if ((dataModel.SelectedItem is PolylineHelper plh2))
             {
                 p.Points = plh2.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
-                
+
                 var offs = ClipperHelper.offset(p, offset, jType, curveTolerance: curveTolerance, miterLimit: miterLimit);
-                
-                PolylineHelper ph = new PolylineHelper();              
+
+                PolylineHelper ph = new PolylineHelper();
 
                 if (offs.Any())
                 {
                     ph.Points = offs.First().Points.Select(z => new Vector2d(z.X, z.Y)).ToList();
                     ph.Points.Add(ph.Points[0]);
                 }
-                
+
                 dataModel.AddItem(ph);
             }
         }
@@ -105,7 +105,7 @@ namespace GeomPad.Controls._2d
 
             //if (!checkBox1.Checked)
             {
-                if (dataModel.SelectedItems.Length < 2) {dataModel.ParentForm. StatusMessage("there are no 2 polygon selected", StatusMessageType.Warning); return; }
+                if (dataModel.SelectedItems.Length < 2) { dataModel.ParentForm.StatusMessage("there are no 2 polygon selected", StatusMessageType.Warning); return; }
 
                 foreach (var item in dataModel.SelectedItems)
                 {
@@ -150,22 +150,23 @@ namespace GeomPad.Controls._2d
             }
 
 
-            dataModel.AddItem(ph);            
+            dataModel.AddItem(ph);
         }
-       
+
         private void button12_Click(object sender, EventArgs e)
         {
             var res = dataModel.GetPairOfSelectedNfps();
-            if (res == null) return;
-            NFP offs = null;
-            offs = ClipperHelper.MinkowskiSum(res[0], res[1], checkBox2.Checked, checkBox3.Checked);
+            if (res == null)
+                return;
+
+            NFP offs = ClipperHelper.MinkowskiSum(res[0], res[1], checkBox2.Checked, checkBox3.Checked);
             if (offs != null)
             {
                 PolygonHelper ph = new PolygonHelper();
                 //ph.Polygon.Points = offs.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
                 ph.Polygon = DeepNest.clone2(offs);
 
-                dataModel.AddItem(ph);                
+                dataModel.AddItem(ph);
             }
         }
     }

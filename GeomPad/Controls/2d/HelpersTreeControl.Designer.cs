@@ -114,7 +114,7 @@ namespace GeomPad.Controls._2d
             this.actionsToolStripMenuItem,
             this.commandsToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 186);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(135, 164);
             // 
             // addToolStripMenuItem
             // 
@@ -133,69 +133,69 @@ namespace GeomPad.Controls._2d
             this.toolStripSeparator2,
             this.groupToolStripMenuItem});
             this.addToolStripMenuItem.Name = "addToolStripMenuItem";
-            this.addToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.addToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.addToolStripMenuItem.Text = "add helper";
             // 
             // pointToolStripMenuItem1
             // 
             this.pointToolStripMenuItem1.Name = "pointToolStripMenuItem1";
-            this.pointToolStripMenuItem1.Size = new System.Drawing.Size(138, 22);
+            this.pointToolStripMenuItem1.Size = new System.Drawing.Size(139, 22);
             this.pointToolStripMenuItem1.Text = "point";
             this.pointToolStripMenuItem1.Click += new System.EventHandler(this.pointToolStripMenuItem1_Click);
             // 
             // polygonToolStripMenuItem1
             // 
             this.polygonToolStripMenuItem1.Name = "polygonToolStripMenuItem1";
-            this.polygonToolStripMenuItem1.Size = new System.Drawing.Size(138, 22);
+            this.polygonToolStripMenuItem1.Size = new System.Drawing.Size(139, 22);
             this.polygonToolStripMenuItem1.Text = "polygon";
             this.polygonToolStripMenuItem1.Click += new System.EventHandler(this.polygonToolStripMenuItem1_Click);
             // 
             // segmentToolStripMenuItem1
             // 
             this.segmentToolStripMenuItem1.Name = "segmentToolStripMenuItem1";
-            this.segmentToolStripMenuItem1.Size = new System.Drawing.Size(138, 22);
+            this.segmentToolStripMenuItem1.Size = new System.Drawing.Size(139, 22);
             this.segmentToolStripMenuItem1.Text = "segment";
             this.segmentToolStripMenuItem1.Click += new System.EventHandler(this.segmentToolStripMenuItem1_Click);
             // 
             // circleToolStripMenuItem
             // 
             this.circleToolStripMenuItem.Name = "circleToolStripMenuItem";
-            this.circleToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.circleToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.circleToolStripMenuItem.Text = "circle";
             this.circleToolStripMenuItem.Click += new System.EventHandler(this.circleToolStripMenuItem_Click);
             // 
             // rectangleToolStripMenuItem
             // 
             this.rectangleToolStripMenuItem.Name = "rectangleToolStripMenuItem";
-            this.rectangleToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.rectangleToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.rectangleToolStripMenuItem.Text = "rectangle";
             this.rectangleToolStripMenuItem.Click += new System.EventHandler(this.rectangleToolStripMenuItem_Click);
             // 
             // linesSetToolStripMenuItem
             // 
             this.linesSetToolStripMenuItem.Name = "linesSetToolStripMenuItem";
-            this.linesSetToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.linesSetToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.linesSetToolStripMenuItem.Text = "lines set";
             this.linesSetToolStripMenuItem.Click += new System.EventHandler(this.linesSetToolStripMenuItem_Click);
             // 
             // meshToolStripMenuItem
             // 
             this.meshToolStripMenuItem.Name = "meshToolStripMenuItem";
-            this.meshToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.meshToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.meshToolStripMenuItem.Text = "mesh";
             this.meshToolStripMenuItem.Click += new System.EventHandler(this.meshToolStripMenuItem_Click);
             // 
             // polylineToolStripMenuItem
             // 
             this.polylineToolStripMenuItem.Name = "polylineToolStripMenuItem";
-            this.polylineToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.polylineToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.polylineToolStripMenuItem.Text = "polyline";
             this.polylineToolStripMenuItem.Click += new System.EventHandler(this.polylineToolStripMenuItem_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(135, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(136, 6);
             // 
             // fromXmlToolStripMenuItem
             // 
@@ -203,7 +203,7 @@ namespace GeomPad.Controls._2d
             this.fileToolStripMenuItem,
             this.clipboardToolStripMenuItem});
             this.fromXmlToolStripMenuItem.Name = "fromXmlToolStripMenuItem";
-            this.fromXmlToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.fromXmlToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.fromXmlToolStripMenuItem.Text = "from xml";
             // 
             // fileToolStripMenuItem
@@ -222,46 +222,46 @@ namespace GeomPad.Controls._2d
             // dxfFromFileToolStripMenuItem
             // 
             this.dxfFromFileToolStripMenuItem.Name = "dxfFromFileToolStripMenuItem";
-            this.dxfFromFileToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.dxfFromFileToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.dxfFromFileToolStripMenuItem.Text = "dxf from file";
             this.dxfFromFileToolStripMenuItem.Click += new System.EventHandler(this.dxfFromFileToolStripMenuItem_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(135, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(136, 6);
             // 
             // groupToolStripMenuItem
             // 
             this.groupToolStripMenuItem.Name = "groupToolStripMenuItem";
-            this.groupToolStripMenuItem.Size = new System.Drawing.Size(138, 22);
+            this.groupToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.groupToolStripMenuItem.Text = "group";
             this.groupToolStripMenuItem.Click += new System.EventHandler(this.groupToolStripMenuItem_Click);
             // 
             // deleteToolStripMenuItem
             // 
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.deleteToolStripMenuItem.Text = "delete";
             this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
             // 
             // updateToolStripMenuItem
             // 
             this.updateToolStripMenuItem.Name = "updateToolStripMenuItem";
-            this.updateToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.updateToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.updateToolStripMenuItem.Text = "update";
             // 
             // clearToolStripMenuItem
             // 
             this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
-            this.clearToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.clearToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.clearToolStripMenuItem.Text = "clear";
             this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(131, 6);
             // 
             // orderToolStripMenuItem
             // 
@@ -269,20 +269,22 @@ namespace GeomPad.Controls._2d
             this.bringToFrontToolStripMenuItem,
             this.sendToBackToolStripMenuItem});
             this.orderToolStripMenuItem.Name = "orderToolStripMenuItem";
-            this.orderToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.orderToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.orderToolStripMenuItem.Text = "order";
             // 
             // bringToFrontToolStripMenuItem
             // 
             this.bringToFrontToolStripMenuItem.Name = "bringToFrontToolStripMenuItem";
-            this.bringToFrontToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.bringToFrontToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.bringToFrontToolStripMenuItem.Text = "bring to front";
+            this.bringToFrontToolStripMenuItem.Click += new System.EventHandler(this.bringToFrontToolStripMenuItem_Click);
             // 
             // sendToBackToolStripMenuItem
             // 
             this.sendToBackToolStripMenuItem.Name = "sendToBackToolStripMenuItem";
-            this.sendToBackToolStripMenuItem.Size = new System.Drawing.Size(145, 22);
+            this.sendToBackToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.sendToBackToolStripMenuItem.Text = "send to back";
+            this.sendToBackToolStripMenuItem.Click += new System.EventHandler(this.sendToBackToolStripMenuItem_Click);
             // 
             // actionsToolStripMenuItem
             // 
@@ -293,7 +295,7 @@ namespace GeomPad.Controls._2d
             this.extractChildsToolStripMenuItem,
             this.moveToToolStripMenuItem});
             this.actionsToolStripMenuItem.Name = "actionsToolStripMenuItem";
-            this.actionsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.actionsToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.actionsToolStripMenuItem.Text = "actions";
             // 
             // cloneToolStripMenuItem
@@ -333,7 +335,7 @@ namespace GeomPad.Controls._2d
             // commandsToolStripMenuItem
             // 
             this.commandsToolStripMenuItem.Name = "commandsToolStripMenuItem";
-            this.commandsToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.commandsToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
             this.commandsToolStripMenuItem.Text = "commands";
             this.commandsToolStripMenuItem.DropDownOpening += new System.EventHandler(this.commandsToolStripMenuItem_DropDownOpening);
             // 

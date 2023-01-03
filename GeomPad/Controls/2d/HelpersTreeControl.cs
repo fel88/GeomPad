@@ -269,20 +269,27 @@ namespace GeomPad.Controls._2d
             UpdateList();
         }
 
+        int lastSelectedIndex = -1;
         private void treeListView1_SelectedIndexChanged(object sender, EventArgs e)
         {
             dataModel.ClearSelection();
 
-            if (treeListView1.SelectedObjects.Count == 0)
-            {
+            if (treeListView1.SelectedObjects.Count == 0)            
                 return;
-            }
 
             var sel = treeListView1.SelectedObjects.OfType<HelperItem>().ToArray();
-            /*            for (int i = 0; i < treeListView1.SelectedObjects.Count; i++)
-                        {
-                            sel.Add(treeListView1.SelectedObjects.[i] as HelperItem);
-                        }*/
+            if (treeListView1.SelectedIndices.Count == 1)
+            {
+                lastSelectedIndex = treeListView1.SelectedIndices[0];
+            }
+            else if (treeListView1.SelectedIndices.Count == 2)
+            {
+                if (lastSelectedIndex == treeListView1.SelectedIndices[1])
+                {
+                    sel = sel.Reverse().ToArray();
+                }
+            }
+            
             dataModel.ChangeSelectedItems(sel.ToArray());
         }
 
@@ -546,6 +553,32 @@ namespace GeomPad.Controls._2d
             else if (hh is PolylineHelper plh)
             {
                 dataModel.AddItem(plh.Clone());
+            }
+            else if (hh is PolygonHelper pl)
+            {
+                dataModel.AddItem(pl.Clone());
+            }
+        }
+
+        private void bringToFrontToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (dataModel.SelectedItems.Length == 0) return;
+            for (int i = 0; i < dataModel.SelectedItems.Length; i++)
+            {
+                var maxz = dataModel.Items.Max(z => z.ZIndex);
+                dataModel.SelectedItems[i].ZIndex = maxz + 1;
+            }
+
+            dataModel.UpdateList();
+        }
+
+        private void sendToBackToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (dataModel.SelectedItems.Length == 0) return;
+            for (int i = 0; i < dataModel.SelectedItems.Length; i++)
+            {
+                var minz = dataModel.Items.Min(z => z.ZIndex);
+                dataModel.SelectedItems[i].ZIndex = minz - 1;
             }
         }
     }
