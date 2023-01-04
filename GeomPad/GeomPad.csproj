@@ -210,6 +210,7 @@
     <Compile Include="HelperItem.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="Helpers\Extensions.cs" />
+    <Compile Include="Helpers\Geometry.cs" />
     <Compile Include="Helpers\Group.cs" />
     <Compile Include="Helpers\Line2D.cs" />
     <Compile Include="Helpers\LinesSetHelper.cs" />
@@ -219,8 +220,8 @@
     <Compile Include="Helpers\RectangleGenerator.cs" />
     <Compile Include="Helpers3D\HingeHelper.cs" />
     <Compile Include="DebugHelper.cs" />
+    <Compile Include="Helpers\XmlParseAttribute.cs" />
     <Compile Include="ICommandContext.cs" />
-    <Compile Include="IPadContainer.cs" />
     <Compile Include="ICommand.cs" />
     <Compile Include="ICommandsContainer.cs" />
     <Compile Include="IEditFieldsContainer.cs" />
@@ -279,7 +280,6 @@
     </Compile>
     <Compile Include="ScriptRunInfo.cs" />
     <Compile Include="Simplify.cs" />
-    <Compile Include="StatusMessageType.cs" />
     <Compile Include="StatusTypeEnum.cs" />
     <Compile Include="StringFieldEditor.cs" />
     <Compile Include="Stuff.cs" />

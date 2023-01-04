@@ -1,5 +1,4 @@
-﻿using GeomPad.Helpers3D.BRep;
-using System;
+﻿using System;
 using System.Windows.Forms;
 
 namespace GeomPad

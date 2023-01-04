@@ -7,5 +7,6 @@ namespace GeomPad.Common
         IHelperItem SelectedItem { get; }
         IHelperItem[] SelectedItems { get; }
         List<IHelperItem> Items { get; }
+        void AddItem(IHelperItem pointHelper);        
     }
 }

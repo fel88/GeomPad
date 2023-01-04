@@ -273,12 +273,12 @@ namespace GeomPad.Helpers
             return new RectangleF((float)(minx + OffsetX), (float)(miny + OffsetY), maxx - minx, maxy - miny);
         }
 
-        internal void Translate(Vector2d c)
+        public void Translate(Vector2d c)
         {
             Polygon.Translate(-c);
         }
 
-        internal NFP TransformedNfp()
+        public NFP TransformedNfp()
         {
             return new NFP() { Points = TransformedPoints() };
         }
@@ -301,10 +301,5 @@ namespace GeomPad.Helpers
         {
             Area = Math.Abs(StaticHelpers.signed_area(Polygon.Points));
         }
-    }
-
-    public class XmlParseAttribute : Attribute
-    {
-        public string XmlKey { get; set; }
     }
 }

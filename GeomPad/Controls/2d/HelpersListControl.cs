@@ -8,6 +8,7 @@ using GeomPad.Helpers;
 using System.IO;
 using System.Xml.Linq;
 using OpenTK;
+using GeomPad.Common;
 
 namespace GeomPad.Controls._2d
 {

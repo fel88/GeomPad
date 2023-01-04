@@ -1,4 +1,5 @@
-﻿using GeomPad.Helpers3D;
+﻿using GeomPad.Common;
+using GeomPad.Helpers3D;
 using GeomPad.Helpers3D.BRep;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
@@ -153,7 +154,7 @@ namespace GeomPad
             glControl.Invalidate();
         }
 
-        List<AbstractHelperItem> Helpers = new List<AbstractHelperItem>();
+        List<IHelperItem> Helpers = new List<IHelperItem>();
 
 
         private void lineToolStripMenuItem_Click(object sender, EventArgs e)
@@ -516,13 +517,13 @@ namespace GeomPad
             updateHelpersList();
         }
 
-        public void AddHelper(AbstractHelperItem h)
+        public void AddHelper(IHelperItem h)
         {
             Helpers.Add(h);
             updateHelpersList();
         }
 
-        public void AddHelpers(AbstractHelperItem[] h)
+        public void AddHelpers(IHelperItem[] h)
         {
             Helpers.AddRange(h);
             updateHelpersList();

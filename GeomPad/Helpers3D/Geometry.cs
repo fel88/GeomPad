@@ -1,10 +1,16 @@
-﻿using OpenTK;
+﻿using GeomPad.Common;
+using GeomPad.Helpers;
+using OpenTK;
 using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 
 namespace GeomPad.Helpers3D
 {
     public static class Geometry
     {
+      
         public static Vector3d? Intersect3dCrossedLines(Line3D ln0, Line3D ln1)
         {
             var v0 = ln0.Start;

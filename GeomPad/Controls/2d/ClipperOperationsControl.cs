@@ -11,6 +11,7 @@ using GeomPad.Helpers;
 using System.Globalization;
 using ClipperLib;
 using OpenTK;
+using GeomPad.Common;
 
 namespace GeomPad.Controls._2d
 {
@@ -154,7 +155,7 @@ namespace GeomPad.Controls._2d
         }
 
         private void button12_Click(object sender, EventArgs e)
-        {
+        {         
             var res = dataModel.GetPairOfSelectedNfps();
             if (res == null)
                 return;

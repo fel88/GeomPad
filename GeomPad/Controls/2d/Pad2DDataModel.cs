@@ -3,16 +3,17 @@ using GeomPad.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace GeomPad.Controls._2d
 {
     public class Pad2DDataModel : IPad2DDataModel
-    {
+    {        
         public List<IHelperItem> Items { get; private set; } = new List<IHelperItem>();
         public IHelperItem SelectedItem { get; set; }
         public IHelperItem[] SelectedItems { get; set; }
 
-        public Form1 ParentForm;
+        public Form1 ParentForm;        
         public event Action OnListUpdated;
         public event Action<HelperItem> OnSelectedChanged;
 
@@ -52,7 +53,6 @@ namespace GeomPad.Controls._2d
             NFP p = new NFP();
             NFP p2 = new NFP();
 
-
             p.Points = ar1[0].TransformedPoints().Select(z => new SvgPoint(z.X, z.Y)).ToArray();
             foreach (var item in ar1[0].Polygon.Childrens)
             {
@@ -75,7 +75,7 @@ namespace GeomPad.Controls._2d
 
         }
 
-        internal void AddItem(AbstractHelperItem pointHelper)
+        public void AddItem(IHelperItem pointHelper)
         {
             Items.Add(pointHelper);
             pointHelper.Changed = () => { OnListUpdated?.Invoke(); };

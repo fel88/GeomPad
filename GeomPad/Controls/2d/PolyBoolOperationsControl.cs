@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using GeomPad.Helpers;
 using PolyBoolCS;
+using GeomPad.Common;
 
 namespace GeomPad.Controls._2d
 {

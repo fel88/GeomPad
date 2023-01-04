@@ -8,6 +8,7 @@ using GeomPad.Helpers;
 using TriangleNet.Geometry;
 using TriangleNet.Meshing;
 using OpenTK;
+using GeomPad.Common;
 
 namespace GeomPad.Controls._2d
 {
@@ -165,90 +166,26 @@ namespace GeomPad.Controls._2d
         }
 
         private void button10_Click(object sender, EventArgs e)
-        {
-            List<Vector2d> pnts = new List<Vector2d>();
-            foreach (var item in dataModel.SelectedItems)
-            {
-                if (!(item is PolygonHelper ph2)) 
-                    continue;
-
-                var hull = DeepNest.getHull(new NFP() { Points = ph2.TransformedPoints().ToArray() });
-                PolygonHelper ph = new PolygonHelper();
-                ph.Polygon = hull;
-                pnts.AddRange(hull.Points.Select(z => new Vector2d(z.X, z.Y)));
-            }
-
-            if (pnts.Count < 2) 
-                return;
-
-            var mar = GeometryUtil.GetMinimumBox(pnts.ToArray());
-            PolygonHelper ph3 = new PolygonHelper();
-
-            ph3.Polygon = new NFP()
-            {
-                Points = mar.Select(z => new SvgPoint(z.X, z.Y)).ToArray()
-            };
-
-            ph3.Name = "minRect";
-            dataModel.AddItem(ph3);
+        {            
+            var res = Geometry.ExtractMinAreaRect(dataModel.SelectedItems);
+            if (res != null)
+                dataModel.AddItem(res);            
         }
+
+
 
         private void button9_Click(object sender, EventArgs e)
         {
-            List<NFP> hulls = new List<NFP>();
-            NFP hull = null;
-            RectangleF? bbox = null;
-            foreach (var item in dataModel.SelectedItems)
-            {
-                if (item is PolygonHelper ph2)
-                {
-                    hull = DeepNest.getHull(ph2.TransformedNfp());
-                }
-                else if (item is PolylineHelper plh2)
-                {
-                    NFP nfp = new NFP() { Points = plh2.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray() };
-                    hull = DeepNest.getHull(nfp);
-                }
-
-                if (hull == null) continue;
-                hulls.Add(hull);
-                PolygonHelper ph = new PolygonHelper();
-                ph.Polygon = hull;
-
-                var box1 = ph.BoundingBox().Value;
-                if (bbox == null)
-                    bbox = box1;
-                else
-                    bbox = RectangleF.Union(bbox.Value, box1);
-            }
-
-            if (bbox == null)
-                return;
-
-            var box = bbox.Value;
-
-            PolygonHelper ph3 = new PolygonHelper();
-            ph3.Polygon = new NFP()
-            {
-                Points = new SvgPoint[] {
-                    new SvgPoint (box.Left,box.Top),
-                    new SvgPoint (box.Left,box.Bottom),
-                    new SvgPoint (box.Right,box.Bottom),
-                    new SvgPoint (box.Right,box.Top),
-            }
-            };
-
-            ph3.Name = "AABB";
-            ph3.RecalcArea();
-            dataModel.AddItem(ph3);
-
+            var aabb = Geometry.ExtractAABB(dataModel.SelectedItems);
+            if (aabb != null)
+                dataModel.AddItem(aabb);
         }
 
         public void calcOrthogonalFor2Polygons(bool xAxis = true)
         {
             var hh = dataModel.SelectedItems.OfType<PolygonHelper>().ToArray();
-            var p1 = hh[0] as PolygonHelper;
-            var p2 = hh[1] as PolygonHelper;
+            var p1 = hh[0];
+            var p2 = hh[1];
 
             List<SegmentHelper> s1 = new List<SegmentHelper>();
             List<SegmentHelper> s2 = new List<SegmentHelper>();

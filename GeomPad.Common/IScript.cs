@@ -1,7 +1,9 @@
-﻿namespace GeomPad.Common
+﻿using System.Net.NetworkInformation;
+
+namespace GeomPad.Common
 {
     public interface IScript
     {        
-        void Run(IPad2DDataModel model);
+        void Run(IPad2DDataModel model, IPadContainer padContainer);
     }
 }

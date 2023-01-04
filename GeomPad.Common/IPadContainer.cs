@@ -1,12 +1,12 @@
 ﻿using System.Windows.Forms;
 
-namespace GeomPad
+namespace GeomPad.Common
 {
     public interface IPadContainer
     {
         void OpenChildWindow(Form f);
-        void AddHelper(AbstractHelperItem h);
-        void AddHelpers(AbstractHelperItem[] h);
+        void AddHelper(IHelperItem h);
+        void AddHelpers(IHelperItem[] h);
         void SetStatus(string v, StatusMessageType type);
     }
 }

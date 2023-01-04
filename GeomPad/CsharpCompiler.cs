@@ -29,7 +29,7 @@ namespace GeomPad
             parameters.GenerateExecutable = false;
             parameters.IncludeDebugInformation = true;
             CompilerResults results = csc.CompileAssemblyFromSource(parameters, prog);
-
+            
             return results;
         }
     }

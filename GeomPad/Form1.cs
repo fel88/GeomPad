@@ -451,15 +451,16 @@ namespace GeomPad
 
         public void OpenChildWindow(Form f)
         {
-            throw new NotImplementedException();
+            f.MdiParent = MdiParent;
+            f.Show();
         }
 
-        public void AddHelper(AbstractHelperItem h)
+        public void AddHelper(IHelperItem h)
         {
             dataModel.AddItem(h);
         }
 
-        public void AddHelpers(AbstractHelperItem[] h)
+        public void AddHelpers(IHelperItem[] h)
         {
             throw new NotImplementedException();
         }
@@ -503,7 +504,7 @@ namespace GeomPad
         }
 
         private void editorToolStripMenuItem_Click(object sender, EventArgs e)
-        {   
+        {
             ScriptEditor2D ss = new ScriptEditor2D();
             ss.Init(dataModel);
             ss.MdiParent = MdiParent;
@@ -525,7 +526,7 @@ namespace GeomPad
         private void V_Click(object sender, EventArgs e)
         {
             var r = (sender as ToolStripMenuItem).Tag as ScriptRunInfo;
-            r.Script.Run(dataModel);
+            r.Script.Run(dataModel, this);
         }
     }
 }

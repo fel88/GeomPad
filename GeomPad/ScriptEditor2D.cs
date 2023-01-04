@@ -2,19 +2,15 @@
 using GeomPad.Controls._2d;
 using System;
 using System.CodeDom.Compiler;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GeomPad
 {
-
     public partial class ScriptEditor2D : Form
     {
         public ScriptEditor2D()
@@ -99,20 +95,41 @@ namespace GeomPad
                 SetStatus("compile script first", StatusTypeEnum.Warning);
                 return;
             }
-            var result = DialogHelpers.StringDialog("Enter name");
-            if (string.IsNullOrEmpty(result))
-                return;
-                        
-            Stuff.Scripts.Add(new ScriptRunInfo() { Script = lastCompiledScript, Name = result });
+            string result = null;
+            if (lastCompiledScript.GetType().GetCustomAttribute(typeof(ScriptAttribute)) != null)
+            {
+                var sat = lastCompiledScript.GetType().GetCustomAttribute(typeof(ScriptAttribute)) as ScriptAttribute;
+                result = sat.Name;
+            }
+            else
+            {
+                result = DialogHelpers.StringDialog("Enter name");
+                if (string.IsNullOrEmpty(result))
+                    return;
+            }
+
+            if (Stuff.Scripts.Any(z => z.Name == result))
+            {
+                if (GuiHelpers.Question($"Script with such name ({result}) already exists. Do you want to replace?", Text))
+                {
+                    Stuff.Scripts.First(z => z.Name == result).Script = lastCompiledScript;
+                }
+            }
+            else
+                Stuff.Scripts.Add(new ScriptRunInfo() { Script = lastCompiledScript, Name = result });
         }
 
         private void sample1ToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (!GuiHelpers.Question("Are you sure to load sample1?", Text))
+                return;
+
             richTextBox1.Lines = new[] { "using GeomPad.Common;" ,
+                "[Script(Name=\"sampleScript1\")]",
                 "class SampleScript1:IScript{" ,
                 "public void Run(IPad2DDataModel model){",
                 "",
-                "}",                
+                "}",
                 "}" };
         }
 

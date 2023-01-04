@@ -59,8 +59,8 @@
             this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
             this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(47, 22);
-            this.toolStripButton1.Text = "2d pad";
+            this.toolStripButton1.Size = new System.Drawing.Size(48, 22);
+            this.toolStripButton1.Text = "2D pad";
             this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
             // toolStripButton2
@@ -69,8 +69,8 @@
             this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
             this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(47, 22);
-            this.toolStripButton2.Text = "3d pad";
+            this.toolStripButton2.Size = new System.Drawing.Size(48, 22);
+            this.toolStripButton2.Text = "3D pad";
             this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
             // 
             // toolStripButton3
@@ -101,21 +101,21 @@
             // cascadeToolStripMenuItem
             // 
             this.cascadeToolStripMenuItem.Name = "cascadeToolStripMenuItem";
-            this.cascadeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.cascadeToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
             this.cascadeToolStripMenuItem.Text = "Cascade";
             this.cascadeToolStripMenuItem.Click += new System.EventHandler(this.cascadeToolStripMenuItem_Click);
             // 
             // verticalToolStripMenuItem
             // 
             this.verticalToolStripMenuItem.Name = "verticalToolStripMenuItem";
-            this.verticalToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.verticalToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
             this.verticalToolStripMenuItem.Text = "Vertical";
             this.verticalToolStripMenuItem.Click += new System.EventHandler(this.verticalToolStripMenuItem_Click);
             // 
             // horizontalToolStripMenuItem
             // 
             this.horizontalToolStripMenuItem.Name = "horizontalToolStripMenuItem";
-            this.horizontalToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.horizontalToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
             this.horizontalToolStripMenuItem.Text = "Horizontal";
             this.horizontalToolStripMenuItem.Click += new System.EventHandler(this.horizontalToolStripMenuItem_Click);
             // 
