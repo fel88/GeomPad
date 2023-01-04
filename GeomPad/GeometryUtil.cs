@@ -1,4 +1,5 @@
-﻿using OpenTK;
+﻿using GeomPad.Helpers;
+using OpenTK;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -80,6 +81,42 @@ namespace GeomPad
                          Math.Sin(angle) * (p.X - cx) + Math.Cos(angle) * (p.Y - cy) + cy);
         }
 
+        public static double GetMinimumBoxAngle(Vector2d[] vv)
+        {
+            var hull = DeepNest.getHull(new NFP() { Points = vv.Select(z => new SvgPoint(z.X, z.Y)).ToArray() });
+            double minArea = double.MaxValue;
+            
+            double ret = 0;
+            for (int i = 0; i < hull.Length; i++)
+            {
+                var p0 = hull.Points[i];
+                var p1 = hull.Points[(i + 1) % hull.Length];
+                var dx = p1.X - p0.X;
+                var dy = p1.Y - p0.Y;
+                var atan = Math.Atan2(dy, dx);
+
+                List<Vector2d> dd = new List<Vector2d>();
+                for (int j = 0; j < vv.Length; j++)
+                {
+                    var r = RotatePoint(new Vector2d(vv[j].X, vv[j].Y), 0, 0, -atan);
+                    dd.Add(r);
+                }
+                var maxx = dd.Max(z => z.X);
+                var maxy = dd.Max(z => z.Y);
+                var minx = dd.Min(z => z.X);
+                var miny = dd.Min(z => z.Y);
+
+                var area = (maxx - minx) * (maxy - miny);
+
+                if (area < minArea)
+                {
+                    minArea = area;                    
+                    ret = atan;
+                }
+            }
+
+            return -ret;
+        }
         public static Vector2d[] GetMinimumBox(Vector2d[] vv)
         {
             var hull = DeepNest.getHull(new NFP() { Points = vv.Select(z => new SvgPoint(z.X, z.Y)).ToArray() });
@@ -144,6 +181,12 @@ namespace GeomPad
             }
             return Math.Abs(a - b) < tolerance;
         }
+
+        public static double ToDegrees(double ang)
+        {
+            return ang * 180f / Math.PI;
+        }
+
         static double TOL = (float)Math.Pow(10, -9); // Floating point error is likely to be above 1 epsilon
                                                      // returns true if p lies on the line segment defined by AB, but not at any endpoints
                                                      // may need work!

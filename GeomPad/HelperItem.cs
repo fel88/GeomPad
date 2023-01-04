@@ -13,12 +13,7 @@ namespace GeomPad.Helpers
         {
             return null;
         }
-
-        public virtual void Shift(Vector2d vector)
-        {
-
-        }
-
+     
         public virtual void ParseXml(XElement item)
         {
 

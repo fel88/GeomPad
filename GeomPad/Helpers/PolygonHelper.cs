@@ -70,6 +70,9 @@ namespace GeomPad.Helpers
 
         public double OffsetX { get; set; }
         public double OffsetY { get; set; }
+        /// <summary>
+        /// Rotation angle (deg)
+        /// </summary>
         public double Rotation { get; set; }
 
         PointF transform(DrawingContext dc, SvgPoint p)
@@ -294,10 +297,21 @@ namespace GeomPad.Helpers
                 ph.RecalcArea();
             };
         }
+        public class AlignByMinimumRectangleCommand : ICommand
+        {
+            public string Name => "align by minimum rectangle";
 
-        public ICommand[] Commands => new[] { new AreaRecalcCommand() };
+            public Action<ICommandContext> Process => (cc) =>
+            {
+                var ph = cc.Source as PolygonHelper;
+                var ang = GeometryUtil.GetMinimumBoxAngle(ph.TransformedPoints().Select(z => new Vector2d(z.X, z.Y)).ToArray());
+                ph.Rotation = GeometryUtil.ToDegrees(ang);
+            };
+        }
 
-        internal void RecalcArea()
+        public ICommand[] Commands => new ICommand[] { new AreaRecalcCommand(), new AlignByMinimumRectangleCommand() };
+
+        public void RecalcArea()
         {
             Area = Math.Abs(StaticHelpers.signed_area(Polygon.Points));
         }

@@ -127,7 +127,7 @@ namespace GeomPad
             richTextBox1.Lines = new[] { "using GeomPad.Common;" ,
                 "[Script(Name=\"sampleScript1\")]",
                 "class SampleScript1:IScript{" ,
-                "public void Run(IPad2DDataModel model){",
+                "public void Run(IPad2DDataModel model, IPadContainer pad){",
                 "",
                 "}",
                 "}" };

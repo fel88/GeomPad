@@ -1,5 +1,7 @@
-﻿using GeomPad.Common;
+﻿using ClipperLib;
+using GeomPad.Common;
 using OpenTK;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
@@ -85,6 +87,66 @@ namespace GeomPad.Helpers
             ph3.Name = "AABB";
             ph3.RecalcArea();
             return ph3;
+        }
+        public static PolylineHelper Offset(PolylineHelper plh2, double offset, JoinType jType, double curveTolerance, double miterLimit)
+        {
+            NFP p = new NFP();
+
+            p.Points = plh2.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+
+            var offs = ClipperHelper.offset(p, offset, jType, curveTolerance: curveTolerance, miterLimit: miterLimit);
+
+            PolylineHelper ph = new PolylineHelper();
+
+            if (offs.Any())
+            {
+                ph.Points = offs.First().Points.Select(z => new Vector2d(z.X, z.Y)).ToList();
+                ph.Points.Add(ph.Points[0]);
+            }
+            return ph;
+        }
+        public static PolygonHelper Offset(PolygonHelper ph2, double offset, JoinType jType, double curveTolerance, double miterLimit)
+        {
+            NFP p = new NFP();
+            p.Points = ph2.Polygon.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+
+            var offs = ClipperHelper.offset(p, offset, jType, curveTolerance: curveTolerance, miterLimit: miterLimit);
+            //if (offs.Count() > 1) throw new NotImplementedException();
+            PolygonHelper ph = new PolygonHelper();
+            foreach (var item in ph2.Polygon.Childrens)
+            {
+                var offs2 = ClipperHelper.offset(item, -offset, jType, curveTolerance: curveTolerance, miterLimit: miterLimit);
+                var nfp1 = new NFP();
+                if (offs2.Any())
+                {
+                    //if (offs2.Count() > 1) throw new NotImplementedException();
+                    foreach (var zitem in offs2)
+                    {
+                        nfp1.Points = zitem.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+                        ph.Polygon.Childrens.Add(nfp1);
+                    }
+                }
+            }
+
+            if (offs.Any())
+            {
+                ph.Polygon.Points = offs.First().Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+            }
+
+            foreach (var item in offs.Skip(1))
+            {
+                var nfp2 = new NFP();
+
+                nfp2.Points = item.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray();
+                ph.Polygon.Childrens.Add(nfp2);
+
+            }
+
+            ph.OffsetX = ph2.OffsetX;
+            ph.OffsetY = ph2.OffsetY;
+            ph.Rotation = ph2.Rotation;
+            return ph;
+
         }
     }
 }

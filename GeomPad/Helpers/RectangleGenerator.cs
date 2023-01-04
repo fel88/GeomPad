@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace GeomPad.Helpers
+﻿namespace GeomPad.Helpers
 {
     public class RectangleGenerator : PolygonHelper
     {
@@ -10,10 +8,12 @@ namespace GeomPad.Helpers
             Name = $"rect{Index++}";
             _update();
         }
+
         double _width = 100;
         double _height = 50;
         double _x;
         double _y;
+
         public double Width { get => _width; set { _width = value; _update(); } }
         public double Height { get => _height; set { _height = value; _update(); } }
         public double X { get => _x; set { _x = value; _update(); } }
@@ -21,12 +21,13 @@ namespace GeomPad.Helpers
 
         void _update()
         {
-            List<SvgPoint> pnts = new List<SvgPoint>();
-            pnts.Add(new SvgPoint(X, Y));
-            pnts.Add(new SvgPoint(X + Width, Y));
-            pnts.Add(new SvgPoint(X + Width, Y + Height));
-            pnts.Add(new SvgPoint(X, Y + Height));
-            Polygon.Points = pnts.ToArray();
+            Polygon.Points = new[]
+            {
+                new SvgPoint(X, Y),
+                new SvgPoint(X + Width, Y),
+                new SvgPoint(X + Width, Y + Height),
+                new SvgPoint(X, Y + Height)
+            };
         }
     }
 }
