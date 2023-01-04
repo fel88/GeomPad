@@ -5,6 +5,7 @@ using System.Text;
 using System.Xml.Linq;
 using System.Linq;
 using System.Globalization;
+using GeomPad.Common;
 
 namespace GeomPad.Helpers3D
 {

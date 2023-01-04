@@ -1,4 +1,5 @@
-﻿using GeomPad.Helpers3D;
+﻿using GeomPad.Common;
+using GeomPad.Helpers3D;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System;

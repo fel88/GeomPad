@@ -1,16 +1,16 @@
-﻿using GeomPad.Helpers;
+﻿using GeomPad.Common;
+using GeomPad.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms;
 
 namespace GeomPad.Controls._2d
 {
-    public class Pad2DDataModel
+    public class Pad2DDataModel : IPad2DDataModel
     {
-        public List<IHelperItem> Items = new List<IHelperItem>();
-        public IHelperItem SelectedItem;
-        public HelperItem[] SelectedItems;
+        public List<IHelperItem> Items { get; private set; } = new List<IHelperItem>();
+        public IHelperItem SelectedItem { get; set; }
+        public IHelperItem[] SelectedItems { get; set; }
 
         public Form1 ParentForm;
         public event Action OnListUpdated;
@@ -72,7 +72,7 @@ namespace GeomPad.Controls._2d
         public void ClearSelection()
         {
             Items.ForEach(z => z.ClearSelection());
-            
+
         }
 
         internal void AddItem(AbstractHelperItem pointHelper)
@@ -81,7 +81,7 @@ namespace GeomPad.Controls._2d
             pointHelper.Changed = () => { OnListUpdated?.Invoke(); };
             OnListUpdated?.Invoke();
         }
-        
+
         internal void AddItems(HelperItem[] pointHelper)
         {
             Items.AddRange(pointHelper);
@@ -89,7 +89,7 @@ namespace GeomPad.Controls._2d
             {
                 item.Changed = () => { OnListUpdated?.Invoke(); };
             }
-            
+
             OnListUpdated?.Invoke();
         }
 
@@ -98,7 +98,7 @@ namespace GeomPad.Controls._2d
             foreach (var item in helperItems)
             {
                 Items.Remove(item);
-            }            
+            }
             OnListUpdated?.Invoke();
         }
 
@@ -110,15 +110,15 @@ namespace GeomPad.Controls._2d
 
         internal void ChangeSelectedItems(HelperItem[] helperItem)
         {
-            
+
             for (int i = 0; i < helperItem.Length; i++)
             {
                 helperItem[i].Selected = true;
             }
-            
-            SelectedItem = helperItem[0];            
-            SelectedItems = helperItem;     
-            OnSelectedChanged?.Invoke(helperItem[0]);                   
+
+            SelectedItem = helperItem[0];
+            SelectedItems = helperItem;
+            OnSelectedChanged?.Invoke(helperItem[0]);
         }
 
         internal void UpdateList()
@@ -126,4 +126,6 @@ namespace GeomPad.Controls._2d
             OnListUpdated?.Invoke();
         }
     }
+
+   
 }

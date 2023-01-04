@@ -7,6 +7,7 @@ using System.Text;
 using System.Xml.Linq;
 using System.Globalization;
 using System;
+using GeomPad.Common;
 
 namespace GeomPad.Helpers3D
 {

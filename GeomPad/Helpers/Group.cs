@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using GeomPad.Common;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace GeomPad.Helpers

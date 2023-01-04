@@ -166,13 +166,22 @@ namespace GeomPad.Controls._2d
 
         private void button10_Click(object sender, EventArgs e)
         {
-            if (!(dataModel.SelectedItem is PolygonHelper ph2)) { return; }
+            List<Vector2d> pnts = new List<Vector2d>();
+            foreach (var item in dataModel.SelectedItems)
+            {
+                if (!(item is PolygonHelper ph2)) 
+                    continue;
 
-            var hull = DeepNest.getHull(new NFP() { Points = ph2.TransformedPoints().ToArray() });
-            PolygonHelper ph = new PolygonHelper();
-            ph.Polygon = hull;
+                var hull = DeepNest.getHull(new NFP() { Points = ph2.TransformedPoints().ToArray() });
+                PolygonHelper ph = new PolygonHelper();
+                ph.Polygon = hull;
+                pnts.AddRange(hull.Points.Select(z => new Vector2d(z.X, z.Y)));
+            }
 
-            var mar = GeometryUtil.GetMinimumBox(hull.Points.Select(z => new Vector2d(z.X, z.Y)).ToArray());
+            if (pnts.Count < 2) 
+                return;
+
+            var mar = GeometryUtil.GetMinimumBox(pnts.ToArray());
             PolygonHelper ph3 = new PolygonHelper();
 
             ph3.Polygon = new NFP()
@@ -186,38 +195,53 @@ namespace GeomPad.Controls._2d
 
         private void button9_Click(object sender, EventArgs e)
         {
+            List<NFP> hulls = new List<NFP>();
             NFP hull = null;
-            if (dataModel.SelectedItem is PolygonHelper ph2)
+            RectangleF? bbox = null;
+            foreach (var item in dataModel.SelectedItems)
             {
-                hull = DeepNest.getHull(ph2.TransformedNfp());
-            }
-            else if (dataModel.SelectedItem is PolylineHelper plh2)
-            {
-                NFP nfp = new NFP() { Points = plh2.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray() };
-                hull = DeepNest.getHull(nfp);
-            }
+                if (item is PolygonHelper ph2)
+                {
+                    hull = DeepNest.getHull(ph2.TransformedNfp());
+                }
+                else if (item is PolylineHelper plh2)
+                {
+                    NFP nfp = new NFP() { Points = plh2.Points.Select(z => new SvgPoint(z.X, z.Y)).ToArray() };
+                    hull = DeepNest.getHull(nfp);
+                }
 
-            if (hull != null)
-            {
+                if (hull == null) continue;
+                hulls.Add(hull);
                 PolygonHelper ph = new PolygonHelper();
                 ph.Polygon = hull;
 
-                var box = ph.BoundingBox().Value;
-                PolygonHelper ph3 = new PolygonHelper();
-                ph3.Polygon = new NFP()
-                {
-                    Points = new SvgPoint[] {
+                var box1 = ph.BoundingBox().Value;
+                if (bbox == null)
+                    bbox = box1;
+                else
+                    bbox = RectangleF.Union(bbox.Value, box1);
+            }
+
+            if (bbox == null)
+                return;
+
+            var box = bbox.Value;
+
+            PolygonHelper ph3 = new PolygonHelper();
+            ph3.Polygon = new NFP()
+            {
+                Points = new SvgPoint[] {
                     new SvgPoint (box.Left,box.Top),
                     new SvgPoint (box.Left,box.Bottom),
                     new SvgPoint (box.Right,box.Bottom),
                     new SvgPoint (box.Right,box.Top),
             }
-                };
+            };
 
-                ph3.Name = "AABB";
-                ph3.RecalcArea();
-                dataModel.AddItem(ph3);
-            }
+            ph3.Name = "AABB";
+            ph3.RecalcArea();
+            dataModel.AddItem(ph3);
+
         }
 
         public void calcOrthogonalFor2Polygons(bool xAxis = true)
@@ -320,6 +344,11 @@ namespace GeomPad.Controls._2d
         private void button1_Click(object sender, EventArgs e)
         {
             //largest interior rectangle
+        }
+
+        private void groupBox3_Enter(object sender, EventArgs e)
+        {
+
         }
     }
 }

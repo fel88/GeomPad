@@ -1,4 +1,5 @@
-﻿using OpenTK;
+﻿using GeomPad.Common;
+using OpenTK;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -116,6 +117,8 @@ namespace GeomPad.Helpers
         }
 
         public bool DrawPoints { get; set; } = false;
+        public bool Dashed { get; set; } = false;
+        public float PenWidth { get; set; } = 1;
         public override void Draw(IDrawingContext idc)
         {
             var dc = idc as DrawingContext;
@@ -130,6 +133,11 @@ namespace GeomPad.Helpers
                 pen = Pens.Red;
             }
 
+            if (Dashed)
+            {
+                pen = new Pen(pen.Color, PenWidth);
+                pen.DashPattern = new float[] { 5, 5 };
+            }
             GraphicsPath gp = new GraphicsPath();
             if (Fill && Polygon.Points.Length >= 3)
             {
@@ -157,6 +165,7 @@ namespace GeomPad.Helpers
                 var tr2 = transform(dc, Polygon.Points[j]);
                 dc.gr.DrawLine(pen, tr1, tr2);
             }
+
             foreach (var ch in Polygon.Childrens)
             {
                 if (DrawPoints)

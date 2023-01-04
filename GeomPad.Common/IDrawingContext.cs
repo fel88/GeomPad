@@ -1,4 +1,4 @@
-﻿namespace GeomPad
+﻿namespace GeomPad.Common
 {
     public interface IDrawingContext
     {

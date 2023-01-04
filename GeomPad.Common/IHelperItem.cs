@@ -1,9 +1,9 @@
-﻿using System.Drawing;
-using System.Text;
+﻿using OpenTK;
 using System;
-using OpenTK;
+using System.Drawing;
+using System.Text;
 
-namespace GeomPad
+namespace GeomPad.Common
 {
     public interface IHelperItem
     {

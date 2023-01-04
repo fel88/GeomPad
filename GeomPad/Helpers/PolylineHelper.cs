@@ -1,4 +1,5 @@
-﻿using GeomPad.Dialogs;
+﻿using GeomPad.Common;
+using GeomPad.Dialogs;
 using OpenTK;
 using System;
 using System.Collections.Generic;

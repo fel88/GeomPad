@@ -1,4 +1,5 @@
-﻿using GeomPad.Controls._2d;
+﻿using GeomPad.Common;
+using GeomPad.Controls._2d;
 using GeomPad.Helpers;
 using OpenTK;
 using System;
@@ -47,11 +48,15 @@ namespace GeomPad
             toolStripButton3.BackgroundImage = new Bitmap(1, 1);
             toolStripButton3.BackColor = Color.Transparent;
 
-            Recreate();
-            SizeChanged += Form1_SizeChanged;
-
             dc.Init(dpanel.view.PictureBox);
+            dpanel.view.PictureBox.Paint += PictureBox_Paint;
             Load += Form1_Load;
+        }
+
+        private void PictureBox_Paint(object sender, PaintEventArgs e)
+        {
+            dc.gr = e.Graphics;
+            Render();
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -67,23 +72,6 @@ namespace GeomPad
 
         MessageFilter mf = null;
 
-        private void Form1_SizeChanged(object sender, EventArgs e)
-        {
-            Recreate();
-        }
-
-        void Recreate()
-        {
-            bmp = new Bitmap(Width, Height);
-            gr = Graphics.FromImage(bmp);
-            dc.gr = gr;
-            gr.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-        }
-
-        Bitmap bmp;
-        Graphics gr;
-
-
         bool drawAxis => dataModel.drawAxis;
 
         DrawingContext dc => dataModel.dc;
@@ -91,8 +79,15 @@ namespace GeomPad
         bool bubbleUpSelected => dataModel.bubbleUpSelected;
         private void timer1_Tick(object sender, EventArgs e)
         {
+            dpanel.view.PictureBox.Invalidate();
+        }
+
+        public void Render()
+        {
+            var gr = dc.gr;
             dc.UpdateDrag();
             gr.Clear(Color.White);
+            gr.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 
             var pos = dpanel.view.PictureBox.PointToClient(Cursor.Position);
             var back = dc.BackTransform(pos);
@@ -259,9 +254,9 @@ namespace GeomPad
             {
                 gr.DrawString($"{mh.TianglesCount} triangles", SystemFonts.DefaultFont, Brushes.Black, 5, 40);
             }
-            dpanel.view.PictureBox.Image = bmp;
-        }
 
+            //dpanel.view.PictureBox.Image = bmp;
+        }
         private IHelperItem[] GetAllItems(IHelperItem h = null, List<IHelperItem> list = null)
         {
             if (list == null)
@@ -357,7 +352,7 @@ namespace GeomPad
         {
             var em = e as MouseEventArgs;
             if (em.Button != MouseButtons.Right)
-            {                
+            {
                 Items.ForEach(z => z.Selected = false);
                 dataModel.ClearSelection();
             }
@@ -500,6 +495,37 @@ namespace GeomPad
             }
             if (pp.Count == 0) return;
             dc.FitToPoints(pp.ToArray(), 5);
+        }
+
+        private void toolStripButton1_Click_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void editorToolStripMenuItem_Click(object sender, EventArgs e)
+        {   
+            ScriptEditor2D ss = new ScriptEditor2D();
+            ss.Init(dataModel);
+            ss.MdiParent = MdiParent;
+            ss.Show();
+        }
+
+        private void runToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            runToolStripMenuItem.DropDownItems.Clear();
+            foreach (var item in Stuff.Scripts)
+            {
+                var v = new ToolStripMenuItem(item.Name) { Tag = item };
+                v.Click += V_Click;
+                runToolStripMenuItem.DropDownItems.Add(v);
+            }
+
+        }
+
+        private void V_Click(object sender, EventArgs e)
+        {
+            var r = (sender as ToolStripMenuItem).Tag as ScriptRunInfo;
+            r.Script.Run(dataModel);
         }
     }
 }
