@@ -1,6 +1,8 @@
 ﻿using GeomPad.Common;
+using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -8,7 +10,7 @@ using System.Xml.Linq;
 
 namespace GeomPad.Helpers3D
 {
-    public class MeshHelper : HelperItem, IEditFieldsContainer, ICommandsContainer
+    public class MeshHelper : HelperItem, IEditFieldsContainer, ICommandsContainer, IFitAllable
     {
         public Mesh Mesh = new Mesh();
 
@@ -41,28 +43,34 @@ namespace GeomPad.Helpers3D
                     cc.Parent.SetStatus("intersection not found.", StatusMessageType.Warning);
             };
         }
+
         public override void AppendToXml(StringBuilder sb)
         {
 
         }
+
         public bool DrawFill { get; set; } = true;
+        public bool DrawWireframe { get; set; } = true;
+
         public Color Color = Color.Orange;
         public override void Draw(IDrawingContext ctx)
         {
             if (!Visible) return;
             GL.Color3(Color.Blue);
 
-            GL.LineWidth(1);
-            foreach (var item in Mesh.Triangles)
+            if (DrawWireframe)
             {
-                GL.Begin(PrimitiveType.LineLoop);
-                foreach (var vv in item.Vertices)
+                GL.LineWidth(1);
+                foreach (var item in Mesh.Triangles)
                 {
-                    GL.Vertex3(vv.Position);
+                    GL.Begin(PrimitiveType.LineLoop);
+                    foreach (var vv in item.Vertices)
+                    {
+                        GL.Vertex3(vv.Position);
+                    }
+                    GL.End();
                 }
-                GL.End();
             }
-
 
             GL.Color3(Color);
             if (Selected)
@@ -81,6 +89,17 @@ namespace GeomPad.Helpers3D
                     }
                 }
                 GL.End();
+            }
+        }
+
+        public IEnumerable<Vector3d> GetPoints()
+        {
+            foreach (var item in Mesh.Triangles)
+            {
+                foreach (var vert in item.Vertices)
+                {
+                    yield return vert.Position;
+                }
             }
         }
     }

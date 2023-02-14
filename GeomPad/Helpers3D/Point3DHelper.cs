@@ -6,13 +6,14 @@ using System.Xml.Linq;
 using System.Linq;
 using System.Globalization;
 using GeomPad.Common;
+using System.Collections.Generic;
 
 namespace GeomPad.Helpers3D
 {
-    public class PointHelper : HelperItem
+    public class PointHelper : HelperItem, IFitAllable
     {
         [EditField]
-        public Vector3d Position;        
+        public Vector3d Position;
 
         public PointHelper() { }
         public PointHelper(XElement item)
@@ -30,13 +31,18 @@ namespace GeomPad.Helpers3D
         {
             sb.AppendLine($"<point position=\"{Position.X};{Position.Y};{Position.Z}\" drawSize=\"{DrawSize}\"/>");
         }
-                
+
         public override void Draw(IDrawingContext ctx)
         {
             if (!Visible) return;
             GL.Color3(Color.Blue);
             if (Selected) GL.Color3(Color.Red);
             DrawHelpers.DrawCross(Position, DrawSize);
+        }
+
+        public IEnumerable<Vector3d> GetPoints()
+        {
+            return new[] { Position };
         }
     }
 }

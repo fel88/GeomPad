@@ -2,6 +2,7 @@
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -10,7 +11,7 @@ using System.Xml.Linq;
 
 namespace GeomPad.Helpers3D
 {
-    public class LineHelper : HelperItem, ICommandsContainer
+    public class LineHelper : HelperItem, ICommandsContainer, IFitAllable
     {
         [EditField]
         public Vector3d Start;
@@ -97,6 +98,12 @@ namespace GeomPad.Helpers3D
         {
             sb.AppendLine($"<line name=\"{Name}\" start=\"{Start.X};{Start.Y};{Start.Z}\" end=\"{End.X};{End.Y};{End.Z}\" drawSize=\"{DrawSize}\" showCrosses=\"{ShowCrosses}\"/>");
         }
+
+        public IEnumerable<Vector3d> GetPoints()
+        {
+            return new[] { Start, End };
+        }
+
         public class Line3DExpandAlongCommand : ICommand
         {
             public string Name => "expand along direction";

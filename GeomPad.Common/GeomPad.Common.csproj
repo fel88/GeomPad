@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IFitAllable.cs" />
     <Compile Include="IHelperItem.cs" />
     <Compile Include="IDrawingContext.cs" />
     <Compile Include="IPad2DDataModel.cs" />

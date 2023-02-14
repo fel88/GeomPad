@@ -534,29 +534,28 @@ namespace GeomPad
             List<Vector3d> pp = new List<Vector3d>();
             foreach (var item in Helpers)
             {
-                if (item is LineHelper l1)
+                if (item is IFitAllable f)
                 {
-                    pp.Add(l1.Start);
-                    pp.Add(l1.End);
-                }
-                if (item is PointHelper l2)
-                {
-                    pp.Add(l2.Position);
-                }
+                    pp.AddRange(f.GetPoints());
+                }                
+                else
                 if (item is TriangleHelper l3)
                 {
                     pp.Add(l3.V0);
                     pp.Add(l3.V1);
                     pp.Add(l3.V2);
                 }
+                else
                 if (item is ArcDividerHelper arc)
                 {
                     pp.AddRange(arc.GetPointsD());
                 }
+                else
                 if (item is EllipseHelper elp)
                 {
                     pp.AddRange(elp.GetPointsD());
                 }
+                else
                 if (item is HingeHelper hinge)
                 {
                     pp.Add(hinge.EdgePoint0);
@@ -564,14 +563,17 @@ namespace GeomPad
                     pp.Add(hinge.AuxPoint0);
                     pp.Add(hinge.AuxPoint1);
                 }
+                else
                 if (item is PointCloudHelper phc)
                 {
                     pp.AddRange(phc.Cloud.Points);
                 }
+                else
                 if (item is SplineHelper sph)
                 {
                     pp.AddRange(sph.Poles);
                 }
+                else
                 if (item is AbstractBRepFaceHelper bh)
                 {
                     if (bh.Mesh != null)
