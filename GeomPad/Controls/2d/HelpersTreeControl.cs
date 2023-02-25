@@ -9,6 +9,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -391,12 +392,9 @@ namespace GeomPad.Controls._2d
             }
         }
 
-        private void dxfFromFileToolStripMenuItem_Click(object sender, EventArgs e)
+        void ImportDxf(string file)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "dxf files (*.dxf)|*.dxf";
-            if (ofd.ShowDialog() != DialogResult.OK) return;
-            var r = DxfParser.LoadDxf(ofd.FileName);
+            var r = DxfParser.LoadDxf(file);
 
             List<NFP> nfps = new List<NFP>();
             foreach (var rr in r)
@@ -430,12 +428,26 @@ namespace GeomPad.Controls._2d
             {
                 if (item.Parent != null) continue;
                 PolygonHelper phh = new PolygonHelper();
-                phh.Name = new FileInfo(ofd.FileName).Name;
+                phh.Name = new FileInfo(file).Name;
                 ret.Add(phh);
                 phh.Polygon = item;
             }
 
             dataModel.AddItems(ret.ToArray());
+        }
+
+        private void dxfFromFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Multiselect = true;
+            ofd.Filter = "dxf files (*.dxf)|*.dxf";
+            if (ofd.ShowDialog() != DialogResult.OK) 
+                return;
+
+            for (int i = 0; i < ofd.FileNames.Length; i++)
+            {
+                ImportDxf(ofd.FileNames[i]);
+            }           
         }
 
         private void polygonToolStripMenuItem1_Click(object sender, EventArgs e)
