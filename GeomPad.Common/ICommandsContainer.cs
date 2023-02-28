@@ -1,4 +1,6 @@
-﻿namespace GeomPad
+﻿using System.Windows.Input;
+
+namespace GeomPad.Common
 {
     public interface ICommandsContainer
     {

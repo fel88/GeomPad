@@ -105,7 +105,7 @@ namespace GeomPad
             return Math.Sqrt(Math.Pow(p.X - p2.X, 2) + Math.Pow(p.Y - p2.Y, 2));
         }
 
-        internal static bool ShowQuestion(string v, string title)
+        public static bool ShowQuestion(string v, string title)
         {
             return MessageBox.Show(v, title, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
         }

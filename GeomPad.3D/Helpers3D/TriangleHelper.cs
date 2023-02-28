@@ -227,7 +227,7 @@ namespace GeomPad.Helpers3D
             return ret.ToArray();
         }
 
-        internal HelperItem[] GetLines()
+        public HelperItem[] GetLines()
         {
             List<HelperItem> ret = new List<HelperItem>();
             ret.Add(new LineHelper() { Start = V0, End = V1 });
@@ -236,13 +236,14 @@ namespace GeomPad.Helpers3D
             return ret.ToArray();
         }
 
-        internal PlaneHelper GetPlane()
+        public PlaneHelper GetPlane()
         {
             var n0 = V2 - V0;
             var n1 = V1 - V0;
             var normal = Vector3d.Cross(n0, n1).Normalized();
             return (new PlaneHelper() { Position = V0, Normal = normal });
         }
+
         public class TriangleHelperSplitByPlaneCommand : ICommand
         {
             public string Name => "split by plane";

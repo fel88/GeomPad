@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 using System.Xml.Linq;
 
 namespace GeomPad.Helpers3D
@@ -20,7 +21,24 @@ namespace GeomPad.Helpers3D
         {
 
         }
-        public ICommand[] Commands => new[] { new MeshHelperSplitByRayCommand() };
+        public ICommand[] Commands => new ICommand[] { new MeshHelperSplitByRayCommand(), new ExportMeshToObjCommand() };
+        public class ExportMeshToObjCommand : ICommand
+        {
+            public string Name => "export to .obj";
+
+            public Action<ICommandContext> Process => (cc) =>
+            {
+                SaveFileDialog sfd = new SaveFileDialog();
+                sfd.Filter = "obj models|*.obj";
+                if (sfd.ShowDialog() != DialogResult.OK)
+                    return;
+
+                StringBuilder sb = new StringBuilder();                
+                //todo
+
+                cc.Parent.SetStatus("exported: " + sfd.FileName, StatusMessageType.Info);
+            };
+        }
 
         public class MeshHelperSplitByRayCommand : ICommand
         {

@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>GeomPad</RootNamespace>
     <AssemblyName>GeomPad</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
@@ -81,8 +81,6 @@
     <Compile Include="AboutBox1.Designer.cs">
       <DependentUpon>AboutBox1.cs</DependentUpon>
     </Compile>
-    <Compile Include="AbstractFieldEditor.cs" />
-    <Compile Include="AbstractHelperItem.cs" />
     <Compile Include="CommandContext.cs" />
     <Compile Include="Controls\2d\HelpersTreeControl.cs">
       <SubType>UserControl</SubType>
@@ -136,12 +134,6 @@
       <DependentUpon>PolyBoolOperationsControl.cs</DependentUpon>
     </Compile>
     <Compile Include="CsharpCompiler.cs" />
-    <Compile Include="CylinderProjectionPointEditorToolPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="CylinderProjectionPointEditorToolPanel.Designer.cs">
-      <DependentUpon>CylinderProjectionPointEditorToolPanel.cs</DependentUpon>
-    </Compile>
     <Compile Include="DialogHelpers.cs" />
     <Compile Include="Dialogs\DoubleInputDialog.cs">
       <SubType>Form</SubType>
@@ -149,56 +141,21 @@
     <Compile Include="Dialogs\DoubleInputDialog.Designer.cs">
       <DependentUpon>DoubleInputDialog.cs</DependentUpon>
     </Compile>
-    <Compile Include="GeometryUtils.cs" />
     <Compile Include="GeomExtensions.cs" />
-    <Compile Include="GeomPadException.cs" />
-    <Compile Include="GuiExtensions.cs" />
     <Compile Include="GuiHelpers.cs" />
-    <Compile Include="Helpers3D\BRep\AbstractBRepFaceHelper.cs" />
-    <Compile Include="Helpers3D\ArcDividerHelper.cs" />
-    <Compile Include="BoolFieldEditor.cs" />
-    <Compile Include="Camera.cs" />
     <Compile Include="CameraViewManager.cs" />
     <Compile Include="ComboBoxItem.cs" />
     <Compile Include="DefaultCameraViewManager.cs" />
-    <Compile Include="DrawHelpers.cs" />
     <Compile Include="DxfParser.cs" />
-    <Compile Include="EditFieldAttribute.cs" />
-    <Compile Include="Helpers3D\BRep\ProjectMapEditor.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Helpers3D\BRep\ProjectMapEditor.Designer.cs">
-      <DependentUpon>ProjectMapEditor.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Helpers3D\BRep\CylinderBRepFaceHelper.cs" />
-    <Compile Include="Helpers3D\BRep\ProjectPolygon.cs" />
-    <Compile Include="Helpers3D\EllipseHelper.cs" />
-    <Compile Include="EventWrapperGlControl.cs" />
-    <Compile Include="FieldEditor.cs" />
     <Compile Include="Form2.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form2.Designer.cs">
       <DependentUpon>Form2.cs</DependentUpon>
     </Compile>
-    <Compile Include="Helpers3D\Geometry.cs" />
-    <Compile Include="Helpers3D\HelperItem.cs" />
-    <Compile Include="Helpers3D\Math\IntersectInfo.cs" />
-    <Compile Include="Helpers3D\Math\Model.cs" />
-    <Compile Include="Helpers3D\Math\Plane.cs" />
-    <Compile Include="Helpers3D\Mesh.cs" />
-    <Compile Include="Helpers3D\MeshHelper.cs" />
-    <Compile Include="Helpers3D\NURBS.cs" />
-    <Compile Include="Helpers3D\PointCloudHelper.cs" />
-    <Compile Include="Helpers3D\RationalBSplinePoint.cs" />
-    <Compile Include="Helpers3D\SplineHelper.cs" />
-    <Compile Include="Helpers3D\TriangleInfo.cs" />
-    <Compile Include="Helpers3D\VertexInfo.cs" />
     <Compile Include="Helpers\CircleGenerator.cs" />
     <Compile Include="ClipperHelper.cs" />
     <Compile Include="DeepNest.cs" />
-    <Compile Include="DrawingContext.cs" />
-    <Compile Include="EventWrapperPictureBox.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -208,7 +165,6 @@
     <Compile Include="GeometryUtil.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="HelperItem.cs" />
-    <Compile Include="Helpers.cs" />
     <Compile Include="Helpers\Extensions.cs" />
     <Compile Include="Helpers\Geometry.cs" />
     <Compile Include="Helpers\Group.cs" />
@@ -218,55 +174,36 @@
     <Compile Include="Helpers\OrthogonalDist2Segments.cs" />
     <Compile Include="Helpers\PolylineHelper.cs" />
     <Compile Include="Helpers\RectangleGenerator.cs" />
-    <Compile Include="Helpers3D\HingeHelper.cs" />
-    <Compile Include="DebugHelper.cs" />
     <Compile Include="Helpers\XmlParseAttribute.cs" />
-    <Compile Include="ICommandContext.cs" />
-    <Compile Include="ICommand.cs" />
-    <Compile Include="ICommandsContainer.cs" />
-    <Compile Include="IEditFieldsContainer.cs" />
-    <Compile Include="IName.cs" />
     <Compile Include="InfoPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="InfoPanel.Designer.cs">
       <DependentUpon>InfoPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="IntFieldEditor.cs" />
-    <Compile Include="Helpers3D\Line3D.cs" />
-    <Compile Include="Helpers3D\LineHelper.cs" />
     <Compile Include="IPoint.cs" />
     <Compile Include="LineElement.cs" />
     <Compile Include="LocalContour.cs" />
-    <Compile Include="Helpers3D\Math\Intersection.cs" />
     <Compile Include="mdi.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="mdi.Designer.cs">
       <DependentUpon>mdi.cs</DependentUpon>
     </Compile>
-    <Compile Include="MessageFilter.cs" />
     <Compile Include="MinkowskiWrapper.cs" />
-    <Compile Include="MouseRay.cs" />
     <Compile Include="NFP.cs" />
     <Compile Include="Helpers\PointHelper.cs" />
     <Compile Include="Controls\2d\Pad2DDataModel.cs" />
     <Compile Include="Controls\2d\Pad2DMainPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Plane.cs" />
-    <Compile Include="Helpers3D\PlaneHelper.cs" />
-    <Compile Include="Helpers3D\Point3DHelper.cs" />
-    <Compile Include="PlyLoader.cs" />
     <Compile Include="PointEditorToolPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="PointEditorToolPanel.Designer.cs">
       <DependentUpon>PointEditorToolPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="PolyBool.cs" />
     <Compile Include="Helpers\PolygonHelper.cs" />
-    <Compile Include="Helpers3D\PolygonHelper.cs" />
     <Compile Include="PolygonPointEditorWrapper.cs" />
     <Compile Include="PolylinePointEditorWrapper.cs" />
     <Compile Include="Program.cs" />
@@ -281,26 +218,13 @@
     <Compile Include="ScriptRunInfo.cs" />
     <Compile Include="Simplify.cs" />
     <Compile Include="StatusTypeEnum.cs" />
-    <Compile Include="StringFieldEditor.cs" />
     <Compile Include="Stuff.cs" />
-    <Compile Include="SvgPoint.cs" />
     <Compile Include="TextBoxCaption.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="TextBoxCaption.Designer.cs">
       <DependentUpon>TextBoxCaption.cs</DependentUpon>
     </Compile>
-    <Compile Include="Helpers3D\TriangleHelper.cs" />
-    <Compile Include="ToolHeader.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ToolPanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="ToolPanel.Designer.cs">
-      <DependentUpon>ToolPanel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="VectorFieldEditor.cs" />
     <Compile Include="VectorSetValuesDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -334,9 +258,6 @@
     <EmbeddedResource Include="Controls\2d\PolyBoolOperationsControl.resx">
       <DependentUpon>PolyBoolOperationsControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="CylinderProjectionPointEditorToolPanel.resx">
-      <DependentUpon>CylinderProjectionPointEditorToolPanel.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Dialogs\DoubleInputDialog.resx">
       <DependentUpon>DoubleInputDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -345,9 +266,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Form2.resx">
       <DependentUpon>Form2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Helpers3D\BRep\ProjectMapEditor.resx">
-      <DependentUpon>ProjectMapEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="InfoPanel.resx">
       <DependentUpon>InfoPanel.cs</DependentUpon>
@@ -374,9 +292,6 @@
     <EmbeddedResource Include="TextBoxCaption.resx">
       <DependentUpon>TextBoxCaption.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="ToolPanel.resx">
-      <DependentUpon>ToolPanel.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="VectorSetValuesDialog.resx">
       <DependentUpon>VectorSetValuesDialog.cs</DependentUpon>
     </EmbeddedResource>
@@ -399,6 +314,10 @@
     <ProjectReference Include="..\clipper\clipperLib.csproj">
       <Project>{9b062971-a88e-4a3d-b3c9-12b78d15fa66}</Project>
       <Name>clipperLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GeomPad.3D\GeomPad.3D.csproj">
+      <Project>{ec24ca38-5a94-48bd-ad73-f6b5c4a17b1b}</Project>
+      <Name>GeomPad.3D</Name>
     </ProjectReference>
     <ProjectReference Include="..\GeomPad.Common\GeomPad.Common.csproj">
       <Project>{4ce2103c-8a84-495c-a2da-5b523825c6ea}</Project>

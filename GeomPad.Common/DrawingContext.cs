@@ -123,7 +123,7 @@ namespace GeomPad
             MouseDown?.Invoke(tt.X, tt.Y, e.Button);
         }
 
-        internal void ResetView()
+        public void ResetView()
         {
             zoom = 1;
             sx = 0;

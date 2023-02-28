@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Triangle", "Triangle\Triang
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeomPad.Common", "GeomPad.Common\GeomPad.Common.csproj", "{4CE2103C-8A84-495C-A2DA-5B523825C6EA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeomPad.3D", "GeomPad.3D\GeomPad.3D.csproj", "{EC24CA38-5A94-48BD-AD73-F6B5C4A17B1B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{4CE2103C-8A84-495C-A2DA-5B523825C6EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4CE2103C-8A84-495C-A2DA-5B523825C6EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4CE2103C-8A84-495C-A2DA-5B523825C6EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC24CA38-5A94-48BD-AD73-F6B5C4A17B1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC24CA38-5A94-48BD-AD73-F6B5C4A17B1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC24CA38-5A94-48BD-AD73-F6B5C4A17B1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC24CA38-5A94-48BD-AD73-F6B5C4A17B1B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

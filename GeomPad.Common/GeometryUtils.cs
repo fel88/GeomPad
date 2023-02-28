@@ -17,6 +17,14 @@ namespace GeomPad
             var result = a + Vector2d.Dot(ap, ab) / Vector2d.Dot(ab, ab) * ab;
             return result;
         }
+        public static Vector3d point_on_line(Vector3d a, Vector3d b, Vector3d p)
+        {
+            var ap = p - a;
+            var ab = b - a;
+
+            var result = a + Vector3d.Dot(ap, ab) / Vector3d.Dot(ab, ab) * ab;
+            return result;
+        }
 
         public static Vector2d[][] TriangulateWithHoles(Vector2d[][] points, Vector2d[][] holes, bool checkArea = true)
         {

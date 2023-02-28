@@ -99,10 +99,7 @@ namespace GeomPad
                 Top += e.Location.Y - pivot.Y;
             }
         }
-
-
-
-        internal void SetControl(UserControl pointEditorToolPanel)
+        public void SetControl(UserControl pointEditorToolPanel)
         {
             panel2.Controls.Add(pointEditorToolPanel);
         }

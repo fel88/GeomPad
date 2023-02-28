@@ -133,7 +133,7 @@ namespace GeomPad.Helpers3D
             GL.End();
         }
 
-        internal Vector3d[] GetPointsD()
+        public Vector3d[] GetPointsD()
         {
             PlaneSurface ps = new PlaneSurface() { Normal = Normal, Position = Location };
             if (!ps.IsOnPlane(AuxPoint)) return new Vector3d[] { };

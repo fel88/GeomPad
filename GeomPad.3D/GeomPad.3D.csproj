@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{EC24CA38-5A94-48BD-AD73-F6B5C4A17B1B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GeomPad._3D</RootNamespace>
+    <AssemblyName>GeomPad.3D</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="OpenTK, Version=3.3.3.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.3.3.3\lib\net20\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK.GLControl, Version=3.3.3.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.GLControl.3.3.3\lib\net20\OpenTK.GLControl.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ClusterInfo.cs" />
+    <Compile Include="CylinderProjectionPointEditorToolPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CylinderProjectionPointEditorToolPanel.Designer.cs">
+      <DependentUpon>CylinderProjectionPointEditorToolPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DrawHelpers.cs" />
+    <Compile Include="DumbClusterSpaceInfo.cs" />
+    <Compile Include="Helpers3D\ArcDividerHelper.cs" />
+    <Compile Include="Helpers3D\BRep\AbstractBRepFaceHelper.cs" />
+    <Compile Include="Helpers3D\BRep\CylinderBRepFaceHelper.cs" />
+    <Compile Include="Helpers3D\BRep\ProjectMapEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Helpers3D\BRep\ProjectMapEditor.Designer.cs">
+      <DependentUpon>ProjectMapEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers3D\BRep\ProjectPolygon.cs" />
+    <Compile Include="Helpers3D\EllipseHelper.cs" />
+    <Compile Include="Helpers3D\Geometry.cs" />
+    <Compile Include="Helpers3D\HelperItem.cs" />
+    <Compile Include="Helpers3D\HingeHelper.cs" />
+    <Compile Include="Helpers3D\Line3D.cs" />
+    <Compile Include="Helpers3D\LineHelper.cs" />
+    <Compile Include="Helpers3D\Math\IntersectInfo.cs" />
+    <Compile Include="Helpers3D\Math\Intersection.cs" />
+    <Compile Include="Helpers3D\Math\Model.cs" />
+    <Compile Include="Helpers3D\Math\Plane.cs" />
+    <Compile Include="Helpers3D\Mesh.cs" />
+    <Compile Include="Helpers3D\MeshHelper.cs" />
+    <Compile Include="Helpers3D\NURBS.cs" />
+    <Compile Include="Helpers3D\PlaneHelper.cs" />
+    <Compile Include="Helpers3D\PointCloudHelper.cs" />
+    <Compile Include="Helpers3D\PointHelper.cs" />
+    <Compile Include="Helpers3D\PolygonHelper.cs" />
+    <Compile Include="Helpers3D\RationalBSplinePoint.cs" />
+    <Compile Include="Helpers3D\SplineHelper.cs" />
+    <Compile Include="Helpers3D\TriangleHelper.cs" />
+    <Compile Include="Helpers3D\TriangleInfo.cs" />
+    <Compile Include="Helpers3D\VectorHelper.cs" />
+    <Compile Include="Helpers3D\VertexInfo.cs" />
+    <Compile Include="IMeshLoader.cs" />
+    <Compile Include="OffLoader.cs" />
+    <Compile Include="PlaneSurface.cs" />
+    <Compile Include="PlyLoader.cs" />
+    <Compile Include="PointIndexer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SpaceInfo.cs" />
+    <Compile Include="StlLoader.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CylinderProjectionPointEditorToolPanel.resx">
+      <DependentUpon>CylinderProjectionPointEditorToolPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Helpers3D\BRep\ProjectMapEditor.resx">
+      <DependentUpon>ProjectMapEditor.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="OpenTK.dll.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GeomPad.Common\GeomPad.Common.csproj">
+      <Project>{4ce2103c-8a84-495c-a2da-5b523825c6ea}</Project>
+      <Name>GeomPad.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

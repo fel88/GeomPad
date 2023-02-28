@@ -6,6 +6,7 @@ using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -39,7 +40,18 @@ namespace GeomPad
             glControl.Dock = DockStyle.Fill;
             infoPanel.Dock = DockStyle.Bottom;
             panel1.Controls.Add(infoPanel);
+
+            glControl.MouseDoubleClick += GlControl_MouseDoubleClick;
         }
+
+        private void GlControl_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (pickedPoint != null)
+            {
+                camera1.CamTo = pickedPoint.Value;
+            }
+        }
+
         InfoPanel infoPanel = new InfoPanel();
         public CameraViewManager ViewManager;
         Camera camera1 = new Camera() { IsOrtho = true };
@@ -55,6 +67,55 @@ namespace GeomPad
             }
 
             Redraw();
+        }
+
+        Vector3d? pickedPoint = null;
+        void PickUpdate()
+        {
+            var pos = glControl.PointToClient(Cursor.Position);
+            camera1.UpdateMatricies(glControl);
+            MouseRay.UpdateMatrices();
+
+            var ray = new MouseRay(pos.X, pos.Y);
+            double? minDist = null;
+            Vector3d? p = null;
+
+            foreach (var item in Helpers.OfType<IFitAllable>())
+            {
+                if (!item.Visible)
+                    continue;
+
+                foreach (var pitem in item.GetPoints())
+                {
+                    var d = dist(pitem, ray.Start, ray.End);
+                    if (d > 20)
+                        continue;
+
+                    if (minDist == null || d < minDist.Value)
+                    {
+                        minDist = d;
+                        p = pitem;
+                    }
+                }
+            }
+            pickedPoint = p;
+            if (minDist != null)
+            {
+                toolStripStatusLabel3.Text = $"picked point: {p.Value.X} {p.Value.Y} {p.Value.Z}";
+
+                GL.Color3(Color.Green);
+                GL.Disable(EnableCap.DepthTest);
+                GL.PointSize(10);
+                GL.Begin(PrimitiveType.Points);
+                GL.Vertex3(p.Value);
+                GL.End();
+                GL.Enable(EnableCap.DepthTest);
+            }
+        }
+
+        private double dist(Vector3d pitem, Vector3d start, Vector3d end)
+        {
+            return (GeometryUtils.point_on_line(start, end, pitem) - pitem).Length;
         }
 
         void Redraw()
@@ -145,6 +206,7 @@ namespace GeomPad
             {
                 item.Draw(null);
             }
+            PickUpdate();
 
             glControl.SwapBuffers();
         }
@@ -534,10 +596,13 @@ namespace GeomPad
             List<Vector3d> pp = new List<Vector3d>();
             foreach (var item in Helpers)
             {
+                if (!item.Visible)
+                    continue;
+
                 if (item is IFitAllable f)
                 {
                     pp.AddRange(f.GetPoints());
-                }                
+                }
                 else
                 if (item is TriangleHelper l3)
                 {
@@ -798,6 +863,48 @@ namespace GeomPad
 
         }
 
+        private void impoertMeshToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "All mesh formats|*.obj;*.off;*.stl";
+            if (ofd.ShowDialog() != DialogResult.OK)
+                return;
 
+            var ext = Path.GetExtension(ofd.FileName).ToLower();
+            IMeshLoader loader = null;
+            if (ext == ".off")
+            {
+                loader = new OffLoader();
+            }
+            else if (ext == ".stl")
+            {
+                loader = new StlLoader();
+            }
+            else if (ext == ".obj")
+            {
+
+            }
+
+            AddHelper(loader.Load(ofd.FileName));
+        }
+
+        private void cloneToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (listView1.SelectedItems.Count == 0)
+                return;
+
+            var h = listView1.SelectedItems[0].Tag as HelperItem;
+            var hh = h.Clone();
+            hh.Name = h.Name + "_cloned";
+            AddHelper(hh);
+        }
+
+        private void vectorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Helpers.Add(new VectorHelper() { Start = new Vector3d(), Dir = new Vector3d(1, 0, 0) });
+            updateHelpersList();
+        }
+
+        
     }
 }
