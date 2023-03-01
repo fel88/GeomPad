@@ -22,7 +22,11 @@ namespace GeomPad.Helpers3D
         {
 
         }
-        public ICommand[] Commands => new ICommand[] { new MeshHelperSplitByRayCommand(), new ExportMeshToObjCommand() };
+        public ICommand[] Commands => new ICommand[] {
+            new MeshHelperSplitByRayCommand(),
+            new ExportMeshToObjCommand(),
+            new SplitByPlaneCommand()
+        };
         public class ExportMeshToObjCommand : ICommand
         {
             public string Name => "export to .obj";
@@ -98,8 +102,8 @@ namespace GeomPad.Helpers3D
                     var th = new TriangleHelper()
                     {
                         V0 = item.Vertices[0].Position,
-                        V1 = item.Vertices[0].Position,
-                        V2 = item.Vertices[0].Position
+                        V1 = item.Vertices[1].Position,
+                        V2 = item.Vertices[2].Position
                     };
 
                     var res = th.SplitByPlane(pl);
@@ -108,6 +112,54 @@ namespace GeomPad.Helpers3D
                         continue;
 
                     res = res.Where(z => z is TriangleHelper).ToArray();
+
+                    if (res.Length == 0)
+                        continue;
+
+                    toDel.Add(item);
+                    List<TriangleHelper> toAdd = new List<TriangleHelper>();
+                    foreach (var ttt in res.OfType<TriangleHelper>())
+                    {
+                        var vv1 = ttt.Vertices.Where(z => !pl.IsOnPlane(z)).ToArray();
+                        if (pl.SideOfPlane(vv1[0]) >= 0)
+                        {
+                            toAdd.Add(ttt);
+                        }
+                    }
+
+                    foreach (var zitem in toAdd)
+                    {
+                        var t1 = new TriangleInfo() { Vertices = new VertexInfo[3] };
+
+                        toAdd2.Add(t1);
+                        for (int i = 0; i < 3; i++)
+                        {
+                            t1.Vertices[i] = new VertexInfo();
+                        }
+                        t1.Vertices[0].Position = zitem.V0;
+                        t1.Vertices[1].Position = zitem.V1;
+                        t1.Vertices[2].Position = zitem.V2;
+                    }
+                }
+                tr.Mesh.Triangles.AddRange(toAdd2);
+
+                foreach (var ttt in tr.Mesh.Triangles)
+                {
+                    var vv1 = ttt.Vertices.Where(z => !pl.IsOnPlane(z.Position)).ToArray();
+                    if (vv1.Length == 0)
+                    {
+                        toDel.Add(ttt);
+                        continue;
+                    }
+
+                    if (pl.SideOfPlane(vv1[0].Position) < 0)
+                    {
+                        toDel.Add(ttt);
+                    }
+                }
+                foreach (var item in toDel)
+                {
+                    tr.Mesh.Triangles.Remove(item);
                 }
             };
         }

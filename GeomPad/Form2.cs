@@ -105,7 +105,7 @@ namespace GeomPad
             {
                 toolStripStatusLabel3.Text = $"picked point: {p.Value.X} {p.Value.Y} {p.Value.Z}";
 
-                GL.Color3(Color.Green);
+                GL.Color3(Color.Blue);
                 GL.Disable(EnableCap.DepthTest);
                 GL.PointSize(10);
                 GL.Begin(PrimitiveType.Points);
@@ -208,7 +208,9 @@ namespace GeomPad
             {
                 item.Draw(null);
             }
-            PickUpdate();
+
+            if (pickEnabled)
+                PickUpdate();
 
             glControl.SwapBuffers();
         }
