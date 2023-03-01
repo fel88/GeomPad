@@ -4,6 +4,7 @@ using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
@@ -28,14 +29,56 @@ namespace GeomPad.Helpers3D
 
             public Action<ICommandContext> Process => (cc) =>
             {
+                var tr = cc.Source as MeshHelper;
+
                 SaveFileDialog sfd = new SaveFileDialog();
                 sfd.Filter = "obj models|*.obj";
                 if (sfd.ShowDialog() != DialogResult.OK)
                     return;
 
+                const float tolerance = 1e-8f;
                 StringBuilder sb = new StringBuilder();
-                //todo
+                List<Vector3d> vvv = new List<Vector3d>();
+                foreach (var item in tr.Mesh.Triangles)
+                {
+                    foreach (var v in item.Vertices)
+                    {
+                        if (vvv.Any(z => (z - v.Position).Length < tolerance))
+                            continue;
 
+                        vvv.Add(v.Position);
+                        sb.AppendLine($"v {v.Position.X} {v.Position.Y} {v.Position.Z}".Replace(",", "."));
+                    }
+                }
+                int counter = 1;
+                foreach (var item in tr.Mesh.Triangles)
+                {
+                    if (item.Vertices.Length != 3)
+                        continue;
+
+                    List<int> indc = new List<int>();
+
+                    foreach (var vitem in item.Vertices)
+                    {
+                        for (int k = 0; k < vvv.Count; k++)
+                        {
+                            if ((vvv[k] - vitem.Position).Length < tolerance)
+                            {
+                                indc.Add(k + 1);
+                            }
+                            else
+                                continue;
+                        }
+                    }
+                    if (indc.GroupBy(z => z).Any(z => z.Count() > 1))
+                    {
+                        continue;
+                        //throw duplicate face vertex
+                    }
+                    sb.AppendLine($"f {indc[0]} {indc[1]} {indc[2]}");
+                }
+
+                File.WriteAllText(sfd.FileName, sb.ToString());
                 cc.Parent.SetStatus("exported: " + sfd.FileName, StatusMessageType.Info);
             };
         }
