@@ -11,7 +11,7 @@ using GeomPad.Common;
 
 namespace GeomPad.Helpers3D
 {
-    public class TriangleHelper : HelperItem, IEditFieldsContainer, ICommandsContainer
+    public class TriangleHelper : HelperItem, IEditFieldsContainer, ICommandsContainer, IFitAllable
     {
         [EditField]
         public Vector3d V0;
@@ -107,9 +107,15 @@ namespace GeomPad.Helpers3D
 
         internal HelperItem[] SplitByPlane(PlaneHelper pl)
         {
+            if (Vertices.Count(z => pl.IsOnPlane(z)) >= 2)
+            {
+                return null;
+            }
             var pl0 = GetPlane();
             var ln = pl0.Intersect(pl);
-            if (ln == null) return null;
+            if (ln == null) 
+                return null;
+
             var lns = GetLines().Cast<LineHelper>();
             List<Vector3d> pp = new List<Vector3d>();
             foreach (var item in lns)
@@ -126,7 +132,7 @@ namespace GeomPad.Helpers3D
                 bool good = true;
                 for (int i = 0; i < pnts3.Count; i++)
                 {
-                    if ((pnts[i].Position - item.Position).Length < 1e-6)
+                    if ((pnts3[i].Position - item.Position).Length < 1e-6)
                     {
                         good = false;
                         break;
@@ -242,6 +248,11 @@ namespace GeomPad.Helpers3D
             var n1 = V1 - V0;
             var normal = Vector3d.Cross(n0, n1).Normalized();
             return (new PlaneHelper() { Position = V0, Normal = normal });
+        }
+
+        public IEnumerable<Vector3d> GetPoints()
+        {
+            return Vertices;
         }
 
         public class TriangleHelperSplitByPlaneCommand : ICommand

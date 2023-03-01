@@ -1,6 +1,7 @@
 ﻿using GeomPad.Common;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
@@ -121,6 +122,9 @@ namespace GeomPad.Helpers3D
                 vvv.Add(v1);
             }
 
+            if (vvv.Count == 0)
+                return null;
+
             var pnt = vvv.OrderBy(z => z.Length).First();
 
 
@@ -146,6 +150,23 @@ namespace GeomPad.Helpers3D
         public override void AppendToXml(StringBuilder sb)
         {
             sb.AppendLine($"<plane position=\"{Position.X};{Position.Y};{Position.Z}\" normal=\"{Normal.X};{Normal.Y};{Normal.Z}\" drawSize=\"{DrawSize}\"/>");
+        }
+
+        public bool IsOnPlane(Vector3d p, float eps = 1e-6f)
+        {
+            var k = GetKoefs();
+            return Math.Abs((k[0] * p.X + k[1] * p.Y) + k[2] * p.Z + k[3]) < eps;
+        }
+
+        public int SideOfPlane(Vector3d p)
+        {
+            PlaneSurface ps = new PlaneSurface();
+            ps.Normal = Normal;
+            ps.Position = Position;
+            var proj = ps.ProjPoint(p);
+            var v0 = (p - proj).Normalized();
+            var dot = Vector3d.Dot(Normal, v0);
+            return Math.Sign(dot);
         }
     }
 }

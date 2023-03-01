@@ -33,12 +33,42 @@ namespace GeomPad.Helpers3D
                 if (sfd.ShowDialog() != DialogResult.OK)
                     return;
 
-                StringBuilder sb = new StringBuilder();                
+                StringBuilder sb = new StringBuilder();
                 //todo
 
                 cc.Parent.SetStatus("exported: " + sfd.FileName, StatusMessageType.Info);
             };
         }
+
+        public class SplitByPlaneCommand : ICommand
+        {
+            public string Name => "split by plane";
+
+            public Action<ICommandContext> Process => (cc) =>
+            {
+                var tr = cc.Source as MeshHelper;
+                var pl = cc.Operands.First(t => t is PlaneHelper) as PlaneHelper;
+                List<TriangleInfo> toDel = new List<TriangleInfo>();
+                List<TriangleInfo> toAdd2 = new List<TriangleInfo>();
+                foreach (var item in tr.Mesh.Triangles)
+                {
+                    var th = new TriangleHelper()
+                    {
+                        V0 = item.Vertices[0].Position,
+                        V1 = item.Vertices[0].Position,
+                        V2 = item.Vertices[0].Position
+                    };
+
+                    var res = th.SplitByPlane(pl);
+
+                    if (res == null)
+                        continue;
+
+                    res = res.Where(z => z is TriangleHelper).ToArray();
+                }
+            };
+        }
+
 
         public class MeshHelperSplitByRayCommand : ICommand
         {
@@ -70,7 +100,7 @@ namespace GeomPad.Helpers3D
         public bool DrawFill { get; set; } = true;
         public bool DrawWireframe { get; set; } = true;
 
-        public Color Color = Color.Orange;
+        public Color Color { get; set; } = Color.Orange;
         public override void Draw(IDrawingContext ctx)
         {
             if (!Visible) return;

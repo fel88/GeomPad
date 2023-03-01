@@ -92,6 +92,7 @@
     <Compile Include="Helpers3D\VectorHelper.cs" />
     <Compile Include="Helpers3D\VertexInfo.cs" />
     <Compile Include="IMeshLoader.cs" />
+    <Compile Include="ObjLoader.cs" />
     <Compile Include="OffLoader.cs" />
     <Compile Include="PlaneSurface.cs" />
     <Compile Include="PlyLoader.cs" />

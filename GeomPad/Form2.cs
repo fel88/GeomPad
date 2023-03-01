@@ -42,6 +42,8 @@ namespace GeomPad
             panel1.Controls.Add(infoPanel);
 
             glControl.MouseDoubleClick += GlControl_MouseDoubleClick;
+
+            updatePickColorButton();
         }
 
         private void GlControl_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -445,8 +447,8 @@ namespace GeomPad
                     case "triangle":
                         Helpers.Add(new TriangleHelper(item));
                         break;
-                    case "polygon":
-                        Helpers.Add(new PolygonHelper(item));
+                    case "polyline":
+                        Helpers.Add(new PolylineHelper(item));
                         break;
                     case "ellipse":
                         Helpers.Add(new EllipseHelper(item));
@@ -570,7 +572,7 @@ namespace GeomPad
 
         private void polygonToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var ph = new PolygonHelper() { };
+            var ph = new PolylineHelper() { };
             Helpers.Add(ph);
             ph.Verticies.Add(new Vector3d(0, 0, 0));
             ph.Verticies.Add(new Vector3d(6, 2, 0));
@@ -882,7 +884,7 @@ namespace GeomPad
             }
             else if (ext == ".obj")
             {
-
+                loader = new ObjLoader();
             }
 
             AddHelper(loader.Load(ofd.FileName));
@@ -905,6 +907,17 @@ namespace GeomPad
             updateHelpersList();
         }
 
-        
+        bool pickEnabled = true;
+        private void toolStripButton4_Click(object sender, EventArgs e)
+        {
+            pickEnabled = !pickEnabled;
+            updatePickColorButton();
+        }
+
+        void updatePickColorButton()
+        {
+            toolStripButton4.BackColor = pickEnabled ? Color.LightGreen : SystemColors.Control;
+            toolStripButton4.ForeColor = pickEnabled ? Color.White : Color.Black;
+        }
     }
 }

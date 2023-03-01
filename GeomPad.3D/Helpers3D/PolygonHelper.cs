@@ -10,12 +10,12 @@ using System.Xml.Linq;
 
 namespace GeomPad.Helpers3D
 {
-    public class PolygonHelper : HelperItem, IEditFieldsContainer
+    public class PolylineHelper : HelperItem, IEditFieldsContainer
     {
 
         public List<Vector3d> Verticies = new List<Vector3d>();
-        public PolygonHelper() { }
-        public PolygonHelper(XElement item)
+        public PolylineHelper() { }
+        public PolylineHelper(XElement item)
         {
             Verticies.Clear();
             foreach (var vitem in item.Elements("vertex"))
@@ -29,13 +29,13 @@ namespace GeomPad.Helpers3D
 
         public override void AppendToXml(StringBuilder sb)
         {
-            sb.AppendLine($"<polygon>");
+            sb.AppendLine($"<polyline>");
             foreach (var item in Verticies)
             {
                 sb.AppendLine($"<vertex pos=\"{item.X};{item.Y};{item.Z}\"/>");
             }
 
-            sb.AppendLine($"</polygon>");
+            sb.AppendLine($"</polyline>");
         }
 
         public override void Draw(IDrawingContext ctx)
