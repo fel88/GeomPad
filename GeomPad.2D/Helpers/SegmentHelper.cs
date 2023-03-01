@@ -1,4 +1,5 @@
 ﻿using GeomPad.Common;
+using GeomPad;
 using OpenTK;
 using System;
 using System.Drawing;
@@ -163,7 +164,7 @@ namespace GeomPad.Helpers
             return ret;
         }
 
-        internal void Reverse()
+        public void Reverse()
         {
             var temp = Point2;
             Point2 = Point;

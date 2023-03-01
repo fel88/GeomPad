@@ -38,7 +38,7 @@ namespace GeomPad.Helpers
 
         bool _fill = false;
         public bool Fill { get => _fill; set { _fill = value; Changed?.Invoke(); } }
-        internal Vector2d CenterOfMass()
+        public Vector2d CenterOfMass()
         {
             var b = BoundingBox().Value;
             return new Vector2d(b.X + OffsetX + b.Width / 2, b.Y + OffsetY + b.Height / 2);

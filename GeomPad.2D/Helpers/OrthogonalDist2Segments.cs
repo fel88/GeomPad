@@ -14,7 +14,7 @@ namespace GeomPad.Helpers
 
 
         public bool Horizontal { get; set; } = true;
-        public double RequiredOffset { get; internal set; }
+        public double RequiredOffset { get; set; }
 
         public override void Draw(IDrawingContext gr)
         {

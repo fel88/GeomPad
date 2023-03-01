@@ -8,15 +8,16 @@ namespace GeomPad
 {
     public static class StaticHelpers
     {
-        public static double ParseDouble(string z)
+        public static double ParseDouble(this string z)
         {
             return double.Parse(z.Replace(",", "."), CultureInfo.InvariantCulture);
         }
         
-        public static float ParseFloat(string z)
+        public static float ParseFloat(this string z)
         {
             return float.Parse(z.Replace(",", "."), CultureInfo.InvariantCulture);
         }
+
         public static double signed_area(PointF[] polygon)
         {
             double area = 0.0;

@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeomPad.Common", "GeomPad.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeomPad.3D", "GeomPad.3D\GeomPad.3D.csproj", "{EC24CA38-5A94-48BD-AD73-F6B5C4A17B1B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GeomPad.2D", "GeomPad.2D\GeomPad.2D.csproj", "{C6EAC625-BE9D-4EEA-9764-17FEEBB52260}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{EC24CA38-5A94-48BD-AD73-F6B5C4A17B1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EC24CA38-5A94-48BD-AD73-F6B5C4A17B1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EC24CA38-5A94-48BD-AD73-F6B5C4A17B1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6EAC625-BE9D-4EEA-9764-17FEEBB52260}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6EAC625-BE9D-4EEA-9764-17FEEBB52260}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6EAC625-BE9D-4EEA-9764-17FEEBB52260}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6EAC625-BE9D-4EEA-9764-17FEEBB52260}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

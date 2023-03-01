@@ -91,16 +91,14 @@ namespace GeomPad
                 return Points[ind];
             }
         }
+
         public void AddPoint(SvgPoint point)
         {
             var list = Points.ToList();
             list.Add(point);
             Points = list.ToArray();
         }
-
-
-
-        internal void Translate(Vector2d c)
+        public void Translate(Vector2d c)
         {
             for (int i = 0; i < Points.Length; i++)
             {

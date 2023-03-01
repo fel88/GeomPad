@@ -135,12 +135,6 @@
     </Compile>
     <Compile Include="CsharpCompiler.cs" />
     <Compile Include="DialogHelpers.cs" />
-    <Compile Include="Dialogs\DoubleInputDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Dialogs\DoubleInputDialog.Designer.cs">
-      <DependentUpon>DoubleInputDialog.cs</DependentUpon>
-    </Compile>
     <Compile Include="GeomExtensions.cs" />
     <Compile Include="GuiHelpers.cs" />
     <Compile Include="CameraViewManager.cs" />
@@ -153,28 +147,12 @@
     <Compile Include="Form2.Designer.cs">
       <DependentUpon>Form2.cs</DependentUpon>
     </Compile>
-    <Compile Include="Helpers\CircleGenerator.cs" />
-    <Compile Include="ClipperHelper.cs" />
-    <Compile Include="DeepNest.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="GeometryUtil.cs" />
-    <Compile Include="Helper.cs" />
-    <Compile Include="HelperItem.cs" />
-    <Compile Include="Helpers\Extensions.cs" />
-    <Compile Include="Helpers\Geometry.cs" />
-    <Compile Include="Helpers\Group.cs" />
-    <Compile Include="Helpers\Line2D.cs" />
-    <Compile Include="Helpers\LinesSetHelper.cs" />
-    <Compile Include="Helpers\MeshHelper.cs" />
-    <Compile Include="Helpers\OrthogonalDist2Segments.cs" />
-    <Compile Include="Helpers\PolylineHelper.cs" />
-    <Compile Include="Helpers\RectangleGenerator.cs" />
-    <Compile Include="Helpers\XmlParseAttribute.cs" />
     <Compile Include="InfoPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -191,8 +169,6 @@
       <DependentUpon>mdi.cs</DependentUpon>
     </Compile>
     <Compile Include="MinkowskiWrapper.cs" />
-    <Compile Include="NFP.cs" />
-    <Compile Include="Helpers\PointHelper.cs" />
     <Compile Include="Controls\2d\Pad2DDataModel.cs" />
     <Compile Include="Controls\2d\Pad2DMainPanel.cs">
       <SubType>Component</SubType>
@@ -203,12 +179,10 @@
     <Compile Include="PointEditorToolPanel.Designer.cs">
       <DependentUpon>PointEditorToolPanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="Helpers\PolygonHelper.cs" />
     <Compile Include="PolygonPointEditorWrapper.cs" />
     <Compile Include="PolylinePointEditorWrapper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Helpers\SegmentHelper.cs" />
     <Compile Include="ScriptEditor2D.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -216,7 +190,6 @@
       <DependentUpon>ScriptEditor2D.cs</DependentUpon>
     </Compile>
     <Compile Include="ScriptRunInfo.cs" />
-    <Compile Include="Simplify.cs" />
     <Compile Include="StatusTypeEnum.cs" />
     <Compile Include="Stuff.cs" />
     <Compile Include="TextBoxCaption.cs">
@@ -257,9 +230,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\2d\PolyBoolOperationsControl.resx">
       <DependentUpon>PolyBoolOperationsControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Dialogs\DoubleInputDialog.resx">
-      <DependentUpon>DoubleInputDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
@@ -314,6 +284,10 @@
     <ProjectReference Include="..\clipper\clipperLib.csproj">
       <Project>{9b062971-a88e-4a3d-b3c9-12b78d15fa66}</Project>
       <Name>clipperLib</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GeomPad.2D\GeomPad.2D.csproj">
+      <Project>{c6eac625-be9d-4eea-9764-17feebb52260}</Project>
+      <Name>GeomPad.2D</Name>
     </ProjectReference>
     <ProjectReference Include="..\GeomPad.3D\GeomPad.3D.csproj">
       <Project>{ec24ca38-5a94-48bd-ad73-f6b5c4a17b1b}</Project>
