@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using System;
 
 namespace GeomPad
 {
@@ -26,6 +27,36 @@ namespace GeomPad
             {
                 GL.End();
             }
+        }
+
+        internal static void DrawCube(Vector3d pos, float g)
+        {
+            GL.Begin(PrimitiveType.Lines);
+            for (int i = -1; i <= 1; i += 2)
+            {
+                GL.Vertex3(pos.X - g, pos.Y - g, pos.Z + g * i);
+                GL.Vertex3(pos.X - g, pos.Y + g, pos.Z + g * i);
+                GL.Vertex3(pos.X + g, pos.Y - g, pos.Z + g * i);
+                GL.Vertex3(pos.X + g, pos.Y + g, pos.Z + g * i);
+
+                GL.Vertex3(pos.X - g, pos.Y - g, pos.Z + g * i);
+                GL.Vertex3(pos.X + g, pos.Y - g, pos.Z + g * i);
+                GL.Vertex3(pos.X - g, pos.Y + g, pos.Z + g * i);
+                GL.Vertex3(pos.X + g, pos.Y + g, pos.Z + g * i);
+            }
+            for (int i = -1; i <= 1; i += 2)
+            {
+                GL.Vertex3(pos.X - g, pos.Y + g * i, pos.Z - g);
+                GL.Vertex3(pos.X - g, pos.Y + g * i, pos.Z + g);
+                GL.Vertex3(pos.X + g, pos.Y + g * i, pos.Z - g);
+                GL.Vertex3(pos.X + g, pos.Y + g * i, pos.Z + g);
+
+                GL.Vertex3(pos.X - g, pos.Y + g * i, pos.Z - g);
+                GL.Vertex3(pos.X + g, pos.Y + g * i, pos.Z - g);
+                GL.Vertex3(pos.X - g, pos.Y + g * i, pos.Z + g);
+                GL.Vertex3(pos.X + g, pos.Y + g * i, pos.Z + g);
+            }
+            GL.End();
         }
     }
 }

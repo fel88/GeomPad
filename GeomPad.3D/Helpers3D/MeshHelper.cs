@@ -25,7 +25,8 @@ namespace GeomPad.Helpers3D
         public ICommand[] Commands => new ICommand[] {
             new MeshHelperSplitByRayCommand(),
             new ExportMeshToObjCommand(),
-            new SplitByPlaneCommand()
+            new SplitByPlaneCommand(),
+            new SplitSectionByPlaneCommand()
         };
         public class ExportMeshToObjCommand : ICommand
         {
@@ -84,6 +85,75 @@ namespace GeomPad.Helpers3D
 
                 File.WriteAllText(sfd.FileName, sb.ToString());
                 cc.Parent.SetStatus("exported: " + sfd.FileName, StatusMessageType.Info);
+            };
+        }
+
+        public class SplitSectionByPlaneCommand : ICommand
+        {
+            public string Name => "section by plane";
+
+            public Action<ICommandContext> Process => (cc) =>
+            {
+                var tr = cc.Source as MeshHelper;
+                var pl = cc.Operands.First(t => t is PlaneHelper) as PlaneHelper;
+                List<Line3D> lines = new List<Line3D>();
+                foreach (var item in tr.Mesh.Triangles)
+                {
+                    var pp = item.Vertices.Where(z => pl.IsOnPlane(z.Position)).ToArray();
+                    if (pp.Length == 2)
+                    {
+                        lines.Add(new Line3D() { Start = pp[0].Position, End = pp[1].Position });
+                    }
+                }
+
+                PolylineHelper ret = new PolylineHelper();
+                List<Line3D> contour = new List<Line3D>();
+                contour.Add(lines.First());
+                lines.RemoveAt(0);
+                float eps = 1e-3f;
+                while (lines.Any())
+                {
+                    Line3D todel = null;
+                    foreach (var line in lines)
+                    {
+                        var l1 = (contour.Last().End - line.Start).Length;
+                        var l2 = (contour.Last().End - line.End).Length;
+
+                        if (l1 < eps)
+                        {
+                            contour.Add(new Line3D() { Start = line.Start, End = line.End });
+                            todel = line;
+                            break;
+                        }
+                        else
+                        if (l2 < eps)
+                        {
+                            contour.Add(new Line3D() { Start = line.End, End = line.Start });
+                            todel = line;
+                            break;
+                        }
+                    }
+                    if (todel != null)
+                    {
+                        lines.Remove(todel);
+                    }
+                    else
+                    {
+                        ret.Verticies.AddRange(contour.Select(z => z.End));
+                        cc.Parent.AddHelper(ret);
+                        contour = new List<Line3D>();
+                        ret = new PolylineHelper();
+                        contour.Add(lines.First());
+                        lines.RemoveAt(0);
+                    }
+
+                }
+                if (contour.Any())
+                {
+                    ret.Verticies.AddRange(contour.Select(z => z.End));
+                    cc.Parent.AddHelper(ret);
+                }
+
             };
         }
 

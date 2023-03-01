@@ -115,6 +115,16 @@ namespace GeomPad
             }
         }
 
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.Decimal)
+            {
+                if (pickedPoint != null)
+                    camera1.CamTo = pickedPoint.Value;
+            }
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
         private double dist(Vector3d pitem, Vector3d start, Vector3d end)
         {
             return (GeometryUtils.point_on_line(start, end, pitem) - pitem).Length;

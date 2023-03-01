@@ -10,9 +10,8 @@ using System.Xml.Linq;
 
 namespace GeomPad.Helpers3D
 {
-    public class PolylineHelper : HelperItem, IEditFieldsContainer
+    public class PolylineHelper : HelperItem, IEditFieldsContainer, IFitAllable
     {
-
         public List<Vector3d> Verticies = new List<Vector3d>();
         public PolylineHelper() { }
         public PolylineHelper(XElement item)
@@ -25,7 +24,7 @@ namespace GeomPad.Helpers3D
                     CultureInfo.InvariantCulture)).ToArray();
                 Verticies.Add(new Vector3d(pos[0], pos[1], pos[2]));
             }
-        }        
+        }
 
         public override void AppendToXml(StringBuilder sb)
         {
@@ -38,10 +37,15 @@ namespace GeomPad.Helpers3D
             sb.AppendLine($"</polyline>");
         }
 
+        public bool DrawCubes { get; set; } = false;
+        public float DrawCubeSize { get; set; } = 0.03f;
         public override void Draw(IDrawingContext ctx)
         {
-            if (!Visible) return;
-            if (Verticies.Count < 3) return;
+            if (!Visible)
+                return;
+
+            //if (Verticies.Count < 3) return;
+
             GL.Color3(Color.Blue);
             if (Selected)
             {
@@ -55,6 +59,12 @@ namespace GeomPad.Helpers3D
             GL.End();
             GL.Color3(Color.Orange);
 
+            if (DrawCubes)
+                foreach (var item in Verticies)
+                {
+                    DrawHelpers.DrawCube(item, DrawCubeSize);
+                }
+
             /*GL.Begin(PrimitiveType.Triangles);
             foreach (var item in Verticies)
             {
@@ -63,6 +73,10 @@ namespace GeomPad.Helpers3D
             GL.End();*/
         }
 
+        public IEnumerable<Vector3d> GetPoints()
+        {
+            return Verticies;
+        }
 
         internal HelperItem[] Triangulate()
         {

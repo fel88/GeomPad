@@ -37,11 +37,13 @@ namespace GeomPad
             textBox3.Text = $"{Vector.Y}";
             textBox4.Text = $"{Vector.Z}";
         }
+
+        char splitter = ';';
         private void button1_Click(object sender, EventArgs e)
         {
             try
             {
-                var ar = textBox1.Text.Split(new char[] { ';', '{', '}', '(', ')', ' ' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
+                var ar = textBox1.Text.Split(new char[] { splitter, '{', '}', '(', ')', ' ' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
                 var vals = ar.Select(z => double.Parse(z.Replace(",", "."), CultureInfo.InvariantCulture)).ToArray();
                 Vector = new Vector3d(vals[0], vals[1], vals[2]);
                 updLabels();
@@ -90,6 +92,11 @@ namespace GeomPad
             {
                 (sender as TextBox).SetErrorStyle();
             }
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            splitter = comboBox1.Text[0];
         }
     }
 }

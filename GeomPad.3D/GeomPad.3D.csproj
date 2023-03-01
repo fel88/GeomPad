@@ -84,7 +84,7 @@
     <Compile Include="Helpers3D\PlaneHelper.cs" />
     <Compile Include="Helpers3D\PointCloudHelper.cs" />
     <Compile Include="Helpers3D\PointHelper.cs" />
-    <Compile Include="Helpers3D\PolygonHelper.cs" />
+    <Compile Include="Helpers3D\PolylineHelper.cs" />
     <Compile Include="Helpers3D\RationalBSplinePoint.cs" />
     <Compile Include="Helpers3D\SplineHelper.cs" />
     <Compile Include="Helpers3D\TriangleHelper.cs" />
