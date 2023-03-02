@@ -292,18 +292,29 @@ namespace GeomPad.Helpers3D
             }
             if (DrawFill)
             {
+                if (!FlatShading)
+                    GL.Enable(EnableCap.Lighting);
+
                 GL.Begin(PrimitiveType.Triangles);
 
                 foreach (var item in Mesh.Triangles)
                 {
                     foreach (var vv in item.Vertices)
                     {
+                        if (!FlatShading)
+                            GL.Normal3(vv.Normal);
+
                         GL.Vertex3(vv.Position);
                     }
                 }
                 GL.End();
+
+                if (!FlatShading)
+                    GL.Disable(EnableCap.Lighting);
             }
         }
+
+        public bool FlatShading { get; set; } = true;
 
         public IEnumerable<Vector3d> GetPoints()
         {
