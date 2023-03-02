@@ -1,14 +1,16 @@
 #  :straight_ruler: GeomPad  
 **Status:** WIP
 
+Supported mesh formats: OBJ/STL/OFF
+
+![image](https://user-images.githubusercontent.com/15663687/222509167-f7e62583-ca14-42da-bbf6-44d5cb25016e.png)
+
 
 2D:
 
-<img width="70%" src="imgs/1.png"/>
+<img width="50%" src="imgs/1.png"/><img width="50%" src="imgs/2.png"/>
 
-3D:
 
-<img width="70%" src="imgs/2.png"/>
 
 # Based on: 
 * polybooljs (https://github.com/velipso/polybooljs)
