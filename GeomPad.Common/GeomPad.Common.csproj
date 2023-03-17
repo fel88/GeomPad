@@ -88,6 +88,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScriptAttribute.cs" />
     <Compile Include="ScriptSampler.cs" />
+    <Compile Include="Simplify.cs" />
     <Compile Include="StaticHelpers.cs" />
     <Compile Include="StatusMessageType.cs" />
     <Compile Include="StringFieldEditor.cs" />

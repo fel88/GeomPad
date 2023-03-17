@@ -10,7 +10,7 @@ using System.Xml.Linq;
 
 namespace GeomPad.Helpers3D
 {
-    public class PolylineHelper : HelperItem, IEditFieldsContainer, IFitAllable
+    public class PolylineHelper : HelperItem, IEditFieldsContainer, IPointsProvider
     {
         public List<Vector3d> Verticies = new List<Vector3d>();
         public PolylineHelper() { }

@@ -82,7 +82,7 @@ namespace GeomPad
             double? minDist = null;
             Vector3d? p = null;
 
-            foreach (var item in Helpers.OfType<IFitAllable>())
+            foreach (var item in Helpers.OfType<IPointsProvider>())
             {
                 if (!item.Visible)
                     continue;
@@ -230,8 +230,7 @@ namespace GeomPad
             glControl.Invalidate();
         }
 
-        List<IHelperItem> Helpers = new List<IHelperItem>();
-
+        public List<IHelperItem> Helpers = new List<IHelperItem>();
 
         private void lineToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -613,7 +612,7 @@ namespace GeomPad
                 if (!item.Visible)
                     continue;
 
-                if (item is IFitAllable f)
+                if (item is IPointsProvider f)
                 {
                     pp.AddRange(f.GetPoints());
                 }
@@ -930,6 +929,32 @@ namespace GeomPad
         {
             toolStripButton4.BackColor = pickEnabled ? Color.LightGreen : SystemColors.Control;
             toolStripButton4.ForeColor = pickEnabled ? Color.White : Color.Black;
+        }
+
+        private void editorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ScriptEditor2D ss = new ScriptEditor2D();
+            //ss.Init(dataModel);
+            ss.MdiParent = MdiParent;
+            ss.Show();
+        }
+
+        private void runToolStripMenuItem_DropDownOpening(object sender, EventArgs e)
+        {
+            runToolStripMenuItem.DropDownItems.Clear();
+            foreach (var item in Stuff.Scripts)
+            {
+                var v = new ToolStripMenuItem(item.Name) { Tag = item };
+                v.Click += V_Click;
+                runToolStripMenuItem.DropDownItems.Add(v);
+            }
+
+        }
+
+        private void V_Click(object sender, EventArgs e)
+        {
+            var r = (sender as ToolStripMenuItem).Tag as ScriptRunInfo;
+            r.Script.Run(null, this);
         }
     }
 }

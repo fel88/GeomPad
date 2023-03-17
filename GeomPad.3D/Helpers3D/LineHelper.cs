@@ -11,7 +11,7 @@ using System.Xml.Linq;
 
 namespace GeomPad.Helpers3D
 {
-    public class LineHelper : HelperItem, ICommandsContainer, IFitAllable
+    public class LineHelper : HelperItem, ICommandsContainer, IPointsProvider
     {
         [EditField]
         public Vector3d Start;

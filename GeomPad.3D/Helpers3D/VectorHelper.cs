@@ -6,7 +6,7 @@ using System.Drawing;
 
 namespace GeomPad.Helpers3D
 {
-    public class VectorHelper : HelperItem, IFitAllable
+    public class VectorHelper : HelperItem, IPointsProvider
     {
         [EditField]
         public Vector3d Start;

@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace GeomPad.Helpers3D
 {
-    public class PointHelper : HelperItem, IFitAllable
+    public class PointHelper : HelperItem, IPointsProvider
     {
         [EditField]
         public Vector3d Position;

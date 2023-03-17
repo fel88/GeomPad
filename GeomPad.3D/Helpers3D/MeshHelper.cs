@@ -12,7 +12,7 @@ using System.Xml.Linq;
 
 namespace GeomPad.Helpers3D
 {
-    public class MeshHelper : HelperItem, IEditFieldsContainer, ICommandsContainer, IFitAllable
+    public class MeshHelper : HelperItem, IEditFieldsContainer, ICommandsContainer, IPointsProvider
     {
         public Mesh Mesh = new Mesh();
 
@@ -26,7 +26,7 @@ namespace GeomPad.Helpers3D
             new MeshHelperSplitByRayCommand(),
             new ExportMeshToObjCommand(),
             new SplitByPlaneCommand(),
-            new SplitSectionByPlaneCommand()
+            new SliceByPlaneCommand()
         };
         public class ExportMeshToObjCommand : ICommand
         {
@@ -88,73 +88,161 @@ namespace GeomPad.Helpers3D
             };
         }
 
-        public class SplitSectionByPlaneCommand : ICommand
+        public IHelperItem[] SliceByPlane(PlaneHelper pl)
         {
-            public string Name => "section by plane";
+            List<IHelperItem> rets = new List<IHelperItem>();
+            var tr = this;            
+
+            List<Line3D> lines = new List<Line3D>();
+            foreach (var item in tr.Mesh.Triangles)
+            {
+                var pp = item.Vertices.Where(z => pl.IsOnPlane(z.Position)).ToArray();
+                if (pp.Length == 2)
+                {
+                    lines.Add(new Line3D() { Start = pp[0].Position, End = pp[1].Position });
+                }
+            }
+
+            PolylineHelper ret = new PolylineHelper();
+            List<Line3D> contour = new List<Line3D>();
+            contour.Add(lines.First());
+            lines.RemoveAt(0);
+            float eps = 1e-3f;
+            while (lines.Any())
+            {
+                Line3D todel = null;
+                foreach (var line in lines)
+                {
+                    var l1 = (contour.Last().End - line.Start).Length;
+                    var l2 = (contour.Last().End - line.End).Length;
+
+                    if (l1 < eps)
+                    {
+                        contour.Add(new Line3D() { Start = line.Start, End = line.End });
+                        todel = line;
+                        break;
+                    }
+                    else
+                    if (l2 < eps)
+                    {
+                        contour.Add(new Line3D() { Start = line.End, End = line.Start });
+                        todel = line;
+                        break;
+                    }
+                }
+                if (todel != null)
+                {
+                    lines.Remove(todel);
+                }
+                else
+                {
+                    ret.Verticies.AddRange(contour.Select(z => z.End));
+                    rets.Add(ret);
+                    contour = new List<Line3D>();
+                    ret = new PolylineHelper();
+                    contour.Add(lines.First());
+                    lines.RemoveAt(0);
+                }
+
+            }
+            if (contour.Any())
+            {
+                ret.Verticies.AddRange(contour.Select(z => z.End));
+                rets.Add(ret);
+            }
+            return rets.ToArray();
+        }
+
+        public class SliceByPlaneCommand : ICommand
+        {
+            public string Name => "slice by plane";
 
             public Action<ICommandContext> Process => (cc) =>
             {
                 var tr = cc.Source as MeshHelper;
                 var pl = cc.Operands.First(t => t is PlaneHelper) as PlaneHelper;
-                List<Line3D> lines = new List<Line3D>();
-                foreach (var item in tr.Mesh.Triangles)
-                {
-                    var pp = item.Vertices.Where(z => pl.IsOnPlane(z.Position)).ToArray();
-                    if (pp.Length == 2)
-                    {
-                        lines.Add(new Line3D() { Start = pp[0].Position, End = pp[1].Position });
-                    }
-                }
-
-                PolylineHelper ret = new PolylineHelper();
-                List<Line3D> contour = new List<Line3D>();
-                contour.Add(lines.First());
-                lines.RemoveAt(0);
-                float eps = 1e-3f;
-                while (lines.Any())
-                {
-                    Line3D todel = null;
-                    foreach (var line in lines)
-                    {
-                        var l1 = (contour.Last().End - line.Start).Length;
-                        var l2 = (contour.Last().End - line.End).Length;
-
-                        if (l1 < eps)
-                        {
-                            contour.Add(new Line3D() { Start = line.Start, End = line.End });
-                            todel = line;
-                            break;
-                        }
-                        else
-                        if (l2 < eps)
-                        {
-                            contour.Add(new Line3D() { Start = line.End, End = line.Start });
-                            todel = line;
-                            break;
-                        }
-                    }
-                    if (todel != null)
-                    {
-                        lines.Remove(todel);
-                    }
-                    else
-                    {
-                        ret.Verticies.AddRange(contour.Select(z => z.End));
-                        cc.Parent.AddHelper(ret);
-                        contour = new List<Line3D>();
-                        ret = new PolylineHelper();
-                        contour.Add(lines.First());
-                        lines.RemoveAt(0);
-                    }
-
-                }
-                if (contour.Any())
-                {
-                    ret.Verticies.AddRange(contour.Select(z => z.End));
-                    cc.Parent.AddHelper(ret);
-                }
-
+                tr.SplitByPlane(pl);
+                var rr = tr.SliceByPlane(pl);
+                cc.Parent.AddHelpers(rr);
             };
+        }
+
+        public void SplitByPlane(PlaneHelper pl)
+        {
+            var tr = this;
+            List<TriangleInfo> toDel = new List<TriangleInfo>();
+            List<TriangleInfo> toDelStrict = new List<TriangleInfo>();
+
+            List<TriangleInfo> toAdd2 = new List<TriangleInfo>();
+            foreach (var item in tr.Mesh.Triangles)
+            {
+                var th = new TriangleHelper()
+                {
+                    V0 = item.Vertices[0].Position,
+                    V1 = item.Vertices[1].Position,
+                    V2 = item.Vertices[2].Position
+                };
+
+                var res = th.SplitByPlane(pl);
+
+                if (res == null)
+                    continue;
+
+                res = res.Where(z => z is TriangleHelper).ToArray();
+
+                if (res.Length == 0)
+                    continue;
+
+                toDel.Add(item);
+                toDelStrict.Add(item);
+                List<TriangleHelper> toAdd = new List<TriangleHelper>();
+                foreach (var ttt in res.OfType<TriangleHelper>())
+                {
+                    var vv1 = ttt.Vertices.Where(z => !pl.IsOnPlane(z)).ToArray();
+                    if (pl.SideOfPlane(vv1[0]) >= 0)
+                    {
+                        toAdd.Add(ttt);
+                    }
+                }
+
+                foreach (var zitem in toAdd)
+                {
+                    var t1 = new TriangleInfo() { Vertices = new VertexInfo[3] };
+
+                    toAdd2.Add(t1);
+                    for (int i = 0; i < 3; i++)
+                    {
+                        t1.Vertices[i] = new VertexInfo();
+                    }
+                    t1.Vertices[0].Position = zitem.V0;
+                    t1.Vertices[1].Position = zitem.V1;
+                    t1.Vertices[2].Position = zitem.V2;
+                }
+            }
+            tr.Mesh.Triangles.AddRange(toAdd2);
+
+            foreach (var ttt in tr.Mesh.Triangles)
+            {
+                var vv1 = ttt.Vertices.Where(z => !pl.IsOnPlane(z.Position)).ToArray();
+                if (vv1.Length == 0)
+                {
+                    toDel.Add(ttt);
+                    continue;
+                }
+
+                if (pl.SideOfPlane(vv1[0].Position) < 0)
+                {
+                    toDel.Add(ttt);
+                }
+            }
+            foreach (var item in toDel)
+            {
+                tr.Mesh.Triangles.Remove(item);
+            }
+            foreach (var item in toDelStrict)
+            {
+                tr.Mesh.Triangles.Remove(item);
+            }
         }
 
         public class SplitByPlaneCommand : ICommand
@@ -165,72 +253,7 @@ namespace GeomPad.Helpers3D
             {
                 var tr = cc.Source as MeshHelper;
                 var pl = cc.Operands.First(t => t is PlaneHelper) as PlaneHelper;
-                List<TriangleInfo> toDel = new List<TriangleInfo>();
-                List<TriangleInfo> toAdd2 = new List<TriangleInfo>();
-                foreach (var item in tr.Mesh.Triangles)
-                {
-                    var th = new TriangleHelper()
-                    {
-                        V0 = item.Vertices[0].Position,
-                        V1 = item.Vertices[1].Position,
-                        V2 = item.Vertices[2].Position
-                    };
-
-                    var res = th.SplitByPlane(pl);
-
-                    if (res == null)
-                        continue;
-
-                    res = res.Where(z => z is TriangleHelper).ToArray();
-
-                    if (res.Length == 0)
-                        continue;
-
-                    toDel.Add(item);
-                    List<TriangleHelper> toAdd = new List<TriangleHelper>();
-                    foreach (var ttt in res.OfType<TriangleHelper>())
-                    {
-                        var vv1 = ttt.Vertices.Where(z => !pl.IsOnPlane(z)).ToArray();
-                        if (pl.SideOfPlane(vv1[0]) >= 0)
-                        {
-                            toAdd.Add(ttt);
-                        }
-                    }
-
-                    foreach (var zitem in toAdd)
-                    {
-                        var t1 = new TriangleInfo() { Vertices = new VertexInfo[3] };
-
-                        toAdd2.Add(t1);
-                        for (int i = 0; i < 3; i++)
-                        {
-                            t1.Vertices[i] = new VertexInfo();
-                        }
-                        t1.Vertices[0].Position = zitem.V0;
-                        t1.Vertices[1].Position = zitem.V1;
-                        t1.Vertices[2].Position = zitem.V2;
-                    }
-                }
-                tr.Mesh.Triangles.AddRange(toAdd2);
-
-                foreach (var ttt in tr.Mesh.Triangles)
-                {
-                    var vv1 = ttt.Vertices.Where(z => !pl.IsOnPlane(z.Position)).ToArray();
-                    if (vv1.Length == 0)
-                    {
-                        toDel.Add(ttt);
-                        continue;
-                    }
-
-                    if (pl.SideOfPlane(vv1[0].Position) < 0)
-                    {
-                        toDel.Add(ttt);
-                    }
-                }
-                foreach (var item in toDel)
-                {
-                    tr.Mesh.Triangles.Remove(item);
-                }
+                tr.SplitByPlane(pl);
             };
         }
 
