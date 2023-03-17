@@ -125,7 +125,5 @@ namespace GeomPad.Controls._2d
         {
             OnListUpdated?.Invoke();
         }
-    }
-
-   
+    }   
 }

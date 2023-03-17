@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace GeomPad.Common
 {
@@ -6,7 +7,8 @@ namespace GeomPad.Common
     {
         void OpenChildWindow(Form f);
         void AddHelper(IHelperItem h);
-        void AddHelpers(IHelperItem[] h);
+        void UpdateHelpersList();
+        void AddHelpers(IEnumerable<IHelperItem> h);
         void SetStatus(string v, StatusMessageType type);
     }
 }

@@ -18,10 +18,38 @@ namespace GeomPad.Helpers3D
 
         public MeshHelper() { }
 
-        public MeshHelper(XElement item)
+        public MeshHelper(XElement elem)
         {
-
+            Mesh = new Mesh();
+            foreach (var item in elem.Elements("triangle"))
+            {
+                List<Vector3d> pnts = new List<Vector3d>();
+                foreach (var point in item.Descendants("vertex"))
+                {
+                    var x = point.Attribute("x").Value.ParseDouble();
+                    var y = point.Attribute("y").Value.ParseDouble();
+                    var z = point.Attribute("z").Value.ParseDouble();
+                    pnts.Add(new Vector3d(x, y, z));
+                }
+                Mesh.Triangles.Add(new TriangleInfo() { Vertices = pnts.Select(z => new VertexInfo() { Position = z }).ToArray() });
+            }
         }
+        public override void AppendToXml(StringBuilder sb)
+        {
+            sb.AppendLine($"<mesh >");
+            foreach (var item in Mesh.Triangles)
+            {
+                sb.AppendLine($"<triangle>");
+                foreach (var vv in item.Vertices)
+                {
+                    sb.AppendLine($"<vertex x=\"{vv.Position.X}\" y=\"{vv.Position.Y}\" z=\"{vv.Position.Z}\"/>");
+                }
+                sb.AppendLine($"</triangle>");
+
+            }
+            sb.AppendLine($"</mesh >");
+        }
+
         public ICommand[] Commands => new ICommand[] {
             new MeshHelperSplitByRayCommand(),
             new ExportMeshToObjCommand(),
@@ -91,8 +119,8 @@ namespace GeomPad.Helpers3D
         public IHelperItem[] SliceByPlane(PlaneHelper pl)
         {
             List<IHelperItem> rets = new List<IHelperItem>();
-            var tr = this;            
-
+            var tr = this;
+            tr.SplitByPlane(pl);
             List<Line3D> lines = new List<Line3D>();
             foreach (var item in tr.Mesh.Triangles)
             {
@@ -103,8 +131,12 @@ namespace GeomPad.Helpers3D
                 }
             }
 
+            if (lines.Count == 0)
+                return new IHelperItem[] { };
+
             PolylineHelper ret = new PolylineHelper();
             List<Line3D> contour = new List<Line3D>();
+
             contour.Add(lines.First());
             lines.RemoveAt(0);
             float eps = 1e-3f;
@@ -161,7 +193,7 @@ namespace GeomPad.Helpers3D
             {
                 var tr = cc.Source as MeshHelper;
                 var pl = cc.Operands.First(t => t is PlaneHelper) as PlaneHelper;
-                tr.SplitByPlane(pl);
+
                 var rr = tr.SliceByPlane(pl);
                 cc.Parent.AddHelpers(rr);
             };
@@ -278,11 +310,6 @@ namespace GeomPad.Helpers3D
                 else
                     cc.Parent.SetStatus("intersection not found.", StatusMessageType.Warning);
             };
-        }
-
-        public override void AppendToXml(StringBuilder sb)
-        {
-
         }
 
         public bool DrawFill { get; set; } = true;

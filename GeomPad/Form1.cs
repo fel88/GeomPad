@@ -408,6 +408,10 @@ namespace GeomPad
             dataModel.UpdateList();
         }
 
+        public void UpdateHelpersList()
+        {
+            dataModel.UpdateList();
+        }
 
         private void toolStripButton2_Click_1(object sender, EventArgs e)
         {
@@ -460,7 +464,7 @@ namespace GeomPad
             dataModel.AddItem(h);
         }
 
-        public void AddHelpers(IHelperItem[] h)
+        public void AddHelpers(IEnumerable<IHelperItem> h)
         {
             throw new NotImplementedException();
         }

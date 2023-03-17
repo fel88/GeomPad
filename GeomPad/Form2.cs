@@ -245,6 +245,11 @@ namespace GeomPad
             updateHelpersList();
         }
 
+        public void UpdateHelpersList()
+        {
+            updateHelpersList();
+        }
+
         void updateHelpersList()
         {
             listView1.Items.Clear();
@@ -421,7 +426,9 @@ namespace GeomPad
         {
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.Filter = "scenes (*.xml)|*.xml";
-            if (sfd.ShowDialog() != DialogResult.OK) return;
+            if (sfd.ShowDialog() != DialogResult.OK) 
+                return;
+
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("<?xml version=\"1.0\"?>");
             sb.AppendLine("<root>");
@@ -438,7 +445,10 @@ namespace GeomPad
         private void loadToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            if (ofd.ShowDialog() != DialogResult.OK) return;
+            ofd.Filter = "scenes (*.xml)|*.xml";
+            if (ofd.ShowDialog() != DialogResult.OK) 
+                return;
+
             var doc = XDocument.Load(ofd.FileName);
             var root = doc.Descendants("root").First();
             Helpers.Clear();
@@ -466,6 +476,9 @@ namespace GeomPad
                         break;
                     case "cloud":
                         Helpers.Add(new PointCloudHelper(item));
+                        break;
+                    case "mesh":
+                        Helpers.Add(new MeshHelper(item));
                         break;
                 }
             }
@@ -595,13 +608,13 @@ namespace GeomPad
         public void AddHelper(IHelperItem h)
         {
             Helpers.Add(h);
-            updateHelpersList();
+            //updateHelpersList();
         }
 
-        public void AddHelpers(IHelperItem[] h)
+        public void AddHelpers(IEnumerable<IHelperItem> h)
         {
             Helpers.AddRange(h);
-            updateHelpersList();
+            //updateHelpersList();
         }
 
         private void toolStripButton1_Click(object sender, EventArgs e)
@@ -822,19 +835,7 @@ namespace GeomPad
             }
             foreach (var pitem in doc.Descendants("mesh"))
             {
-                MeshHelper mh = new MeshHelper();
-                foreach (var item in pitem.Elements("triangle"))
-                {
-                    List<Vector3d> pnts = new List<Vector3d>();
-                    foreach (var point in item.Descendants("vertex"))
-                    {
-                        var x = point.Attribute("x").Value.ParseDouble();
-                        var y = point.Attribute("y").Value.ParseDouble();
-                        var z = point.Attribute("z").Value.ParseDouble();
-                        pnts.Add(new Vector3d(x, y, z));
-                    }
-                    mh.Mesh.Triangles.Add(new TriangleInfo() { Vertices = pnts.Select(z => new VertexInfo() { Position = z }).ToArray() });
-                }
+                MeshHelper mh = new MeshHelper(pitem);
                 ret.Add(mh);
             }
             foreach (var pitem in doc.Descendants("cloud"))
