@@ -69,26 +69,41 @@
     </Compile>
     <Compile Include="Helpers3D\BRep\ProjectPolygon.cs" />
     <Compile Include="Helpers3D\EllipseHelper.cs" />
+    <Compile Include="Helpers3D\FaceItem.cs" />
+    <Compile Include="Helpers3D\FaceItem2.cs" />
+    <Compile Include="Helpers3D\FaceVertex.cs" />
+    <Compile Include="Helpers3D\FxShader.cs" />
     <Compile Include="Helpers3D\Geometry.cs" />
     <Compile Include="Helpers3D\HelperItem.cs" />
     <Compile Include="Helpers3D\HingeHelper.cs" />
+    <Compile Include="Helpers3D\IShader.cs" />
     <Compile Include="Helpers3D\Line3D.cs" />
     <Compile Include="Helpers3D\LineHelper.cs" />
+    <Compile Include="Helpers3D\Material.cs" />
+    <Compile Include="Helpers3D\MaterialStuff.cs" />
     <Compile Include="Helpers3D\Math\IntersectInfo.cs" />
     <Compile Include="Helpers3D\Math\Intersection.cs" />
     <Compile Include="Helpers3D\Math\Model.cs" />
     <Compile Include="Helpers3D\Math\Plane.cs" />
     <Compile Include="Helpers3D\Mesh.cs" />
+    <Compile Include="Helpers3D\MeshGpuHelper.cs" />
     <Compile Include="Helpers3D\MeshHelper.cs" />
+    <Compile Include="Helpers3D\Model3DrawShader.cs" />
     <Compile Include="Helpers3D\NURBS.cs" />
+    <Compile Include="Helpers3D\ObjVolume.cs" />
     <Compile Include="Helpers3D\PlaneHelper.cs" />
     <Compile Include="Helpers3D\PointCloudHelper.cs" />
     <Compile Include="Helpers3D\PointHelper.cs" />
     <Compile Include="Helpers3D\PolylineHelper.cs" />
     <Compile Include="Helpers3D\RationalBSplinePoint.cs" />
+    <Compile Include="Helpers3D\ResourceFile.cs" />
     <Compile Include="Helpers3D\SplineHelper.cs" />
+    <Compile Include="Helpers3D\TempVertex.cs" />
+    <Compile Include="Helpers3D\TextureDescriptor.cs" />
     <Compile Include="Helpers3D\TriangleHelper.cs" />
     <Compile Include="Helpers3D\TriangleInfo.cs" />
+    <Compile Include="Helpers3D\VaoModel.cs" />
+    <Compile Include="Helpers3D\VaoModelItem.cs" />
     <Compile Include="Helpers3D\VectorHelper.cs" />
     <Compile Include="Helpers3D\VertexInfo.cs" />
     <Compile Include="IMeshLoader.cs" />
@@ -112,6 +127,10 @@
   <ItemGroup>
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
+    <EmbeddedResource Include="shaders\model3.fs" />
+    <EmbeddedResource Include="shaders\model3.vs" />
+    <EmbeddedResource Include="shaders\model.fs" />
+    <EmbeddedResource Include="shaders\model.vs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GeomPad.Common\GeomPad.Common.csproj">

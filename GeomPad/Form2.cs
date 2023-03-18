@@ -900,6 +900,7 @@ namespace GeomPad
             }
 
             AddHelper(loader.Load(ofd.FileName));
+            updateHelpersList();
         }
 
         private void cloneToolStripMenuItem_Click(object sender, EventArgs e)
@@ -956,6 +957,40 @@ namespace GeomPad
         {
             var r = (sender as ToolStripMenuItem).Tag as ScriptRunInfo;
             r.Script.Run(null, this);
+        }
+
+        private void improtGrpuMeshToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "All mesh formats|*.obj;*.off;*.stl";
+            if (ofd.ShowDialog() != DialogResult.OK)
+                return;
+
+            var ext = Path.GetExtension(ofd.FileName).ToLower();
+            IMeshLoader loader = null;
+            if (ext == ".off")
+            {
+                loader = new OffLoader();
+            }
+            else if (ext == ".stl")
+            {
+                loader = new StlLoader();
+            }
+            else if (ext == ".obj")
+            {
+                loader = new ObjLoader();
+            }
+            var model = loader.Load(ofd.FileName);
+            var g = new MeshGpuHelper(model);
+            g.Camera = camera1;
+            AddHelper(g);
+            updateHelpersList();
+        }
+
+        private void clearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Helpers.Clear();
+            updateHelpersList();
         }
     }
 }

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using static System.Windows.Forms.AxHost;
 
 namespace GeomPad.Helpers3D
 {
@@ -202,12 +203,13 @@ namespace GeomPad.Helpers3D
         public void SplitByPlane(PlaneHelper pl)
         {
             var tr = this;
-            List<TriangleInfo> toDel = new List<TriangleInfo>();
-            List<TriangleInfo> toDelStrict = new List<TriangleInfo>();
+            List<int> toDel = new List<int>();
+            List<int> toDelStrict = new List<int>();
 
             List<TriangleInfo> toAdd2 = new List<TriangleInfo>();
-            foreach (var item in tr.Mesh.Triangles)
+            for (int i1 = 0; i1 < tr.Mesh.Triangles.Count; i1++)
             {
+                TriangleInfo item = tr.Mesh.Triangles[i1];
                 var th = new TriangleHelper()
                 {
                     V0 = item.Vertices[0].Position,
@@ -225,8 +227,8 @@ namespace GeomPad.Helpers3D
                 if (res.Length == 0)
                     continue;
 
-                toDel.Add(item);
-                toDelStrict.Add(item);
+                toDel.Add(i1);
+                toDelStrict.Add(i1);
                 List<TriangleHelper> toAdd = new List<TriangleHelper>();
                 foreach (var ttt in res.OfType<TriangleHelper>())
                 {
@@ -253,28 +255,28 @@ namespace GeomPad.Helpers3D
             }
             tr.Mesh.Triangles.AddRange(toAdd2);
 
-            foreach (var ttt in tr.Mesh.Triangles)
+            for (int i = 0; i < tr.Mesh.Triangles.Count; i++)
             {
+                TriangleInfo ttt = tr.Mesh.Triangles[i];
                 var vv1 = ttt.Vertices.Where(z => !pl.IsOnPlane(z.Position)).ToArray();
                 if (vv1.Length == 0)
                 {
-                    toDel.Add(ttt);
+                    toDel.Add(i);
                     continue;
                 }
 
                 if (pl.SideOfPlane(vv1[0].Position) < 0)
                 {
-                    toDel.Add(ttt);
+                    toDel.Add(i);
                 }
             }
-            foreach (var item in toDel)
+            var ar = toDel.Union(toDelStrict).Distinct().ToArray();
+            Array.Sort(ar);
+            Array.Reverse(ar);
+            foreach (var item in ar)
             {
-                tr.Mesh.Triangles.Remove(item);
-            }
-            foreach (var item in toDelStrict)
-            {
-                tr.Mesh.Triangles.Remove(item);
-            }
+                tr.Mesh.Triangles.RemoveAt(item);
+            }            
         }
 
         public class SplitByPlaneCommand : ICommand
