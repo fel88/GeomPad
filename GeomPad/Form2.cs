@@ -42,8 +42,17 @@ namespace GeomPad
             panel1.Controls.Add(infoPanel);
 
             glControl.MouseDoubleClick += GlControl_MouseDoubleClick;
+            glControl.MouseUp += GlControl_MouseUp;
 
             updatePickColorButton();
+        }
+
+        private void GlControl_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                selectedTriangle = pickedTriangle;
+            }
         }
 
         private void GlControl_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -71,6 +80,9 @@ namespace GeomPad
             Redraw();
         }
 
+        TriangleInfo pickedTriangle = null;
+        TriangleInfo selectedTriangle = null;
+        IHelperItem pickedHelper = null;
         Vector3d? pickedPoint = null;
         void PickUpdate()
         {
@@ -80,8 +92,9 @@ namespace GeomPad
 
             var ray = new MouseRay(pos.X, pos.Y);
             double? minDist = null;
+            double? minDist2 = null;
             Vector3d? p = null;
-
+            pickedTriangle = null;
             foreach (var item in Helpers.OfType<IPointsProvider>())
             {
                 if (!item.Visible)
@@ -100,19 +113,64 @@ namespace GeomPad
                     }
                 }
             }
+
+            foreach (var item in Helpers.OfType<ITrianglesProvider>())
+            {
+                if (!item.Visible)
+                    continue;
+
+                foreach (var pitem in item.GetTriangles())
+                {
+                    var inter = Intersection.CheckIntersect(ray, new TriangleInfo[] { pitem });
+
+                    if (inter == null)
+                        continue;
+
+                    var d = inter.Distance;
+
+                    if (minDist2 == null || d < minDist2.Value)
+                    {
+                        minDist2 = d;
+                        //p = inter.Point;
+                        pickedTriangle = inter.Target;
+                        pickedHelper = item as IHelperItem;
+                    }
+                }
+            }
             pickedPoint = p;
+            GL.Disable(EnableCap.DepthTest);
+
+            if (selectedTriangle != null)
+            {
+                GL.Color3(Color.LightBlue);
+                GL.Begin(PrimitiveType.Triangles);
+                foreach (var item in selectedTriangle.Vertices)
+                {
+                    GL.Vertex3(item.Position);
+                }
+                GL.End();
+            }
             if (minDist != null)
             {
                 toolStripStatusLabel3.Text = $"picked point: {p.Value.X} {p.Value.Y} {p.Value.Z}";
 
+                if (pickedTriangle != null)
+                {
+                    GL.Color3(Color.Red);
+                    GL.Begin(PrimitiveType.Triangles);
+                    foreach (var item in pickedTriangle.Vertices)
+                    {
+                        GL.Vertex3(item.Position);
+                    }
+                    GL.End();
+                }
                 GL.Color3(Color.Blue);
-                GL.Disable(EnableCap.DepthTest);
                 GL.PointSize(10);
                 GL.Begin(PrimitiveType.Points);
                 GL.Vertex3(p.Value);
                 GL.End();
-                GL.Enable(EnableCap.DepthTest);
             }
+            GL.Enable(EnableCap.DepthTest);
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
@@ -426,7 +484,7 @@ namespace GeomPad
         {
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.Filter = "scenes (*.xml)|*.xml";
-            if (sfd.ShowDialog() != DialogResult.OK) 
+            if (sfd.ShowDialog() != DialogResult.OK)
                 return;
 
             StringBuilder sb = new StringBuilder();
@@ -446,7 +504,7 @@ namespace GeomPad
         {
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Filter = "scenes (*.xml)|*.xml";
-            if (ofd.ShowDialog() != DialogResult.OK) 
+            if (ofd.ShowDialog() != DialogResult.OK)
                 return;
 
             var doc = XDocument.Load(ofd.FileName);
@@ -991,6 +1049,20 @@ namespace GeomPad
         {
             Helpers.Clear();
             updateHelpersList();
+        }
+
+        private void extractTriangleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (selectedTriangle == null)
+                return;
+
+            AddHelper(new TriangleHelper()
+            {
+                V0 = selectedTriangle.Vertices[0].Position,
+                V1 = selectedTriangle.Vertices[1].Position,
+                V2 = selectedTriangle.Vertices[2].Position,
+            });
+            UpdateHelpersList();
         }
     }
 }

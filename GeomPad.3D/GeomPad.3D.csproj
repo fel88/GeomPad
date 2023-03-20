@@ -77,6 +77,7 @@
     <Compile Include="Helpers3D\HelperItem.cs" />
     <Compile Include="Helpers3D\HingeHelper.cs" />
     <Compile Include="Helpers3D\IShader.cs" />
+    <Compile Include="Helpers3D\ITrianglesProvider.cs" />
     <Compile Include="Helpers3D\Line3D.cs" />
     <Compile Include="Helpers3D\LineHelper.cs" />
     <Compile Include="Helpers3D\Material.cs" />

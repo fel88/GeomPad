@@ -250,8 +250,13 @@ namespace GeomPad.Helpers3D
             byte[] processed = new byte[pnts.Length];
             r.Add(pnts[0]);
             processed[0] = 1;
+            int cntr = 0;
             while (r.Count < pnts.Length)
             {
+                cntr++;
+                if (cntr > 30)                
+                    throw new Exception("looped");
+                
                 for (int i = 0; i < pnts.Length; i++)
                 {
                     if (processed[i] == 1)

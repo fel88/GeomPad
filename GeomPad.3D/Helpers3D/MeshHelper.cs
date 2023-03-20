@@ -3,6 +3,7 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -13,7 +14,7 @@ using static System.Windows.Forms.AxHost;
 
 namespace GeomPad.Helpers3D
 {
-    public class MeshHelper : HelperItem, IEditFieldsContainer, ICommandsContainer, IPointsProvider
+    public class MeshHelper : HelperItem, IEditFieldsContainer, ICommandsContainer, IPointsProvider, ITrianglesProvider
     {
         public Mesh Mesh = new Mesh();
 
@@ -24,15 +25,22 @@ namespace GeomPad.Helpers3D
             Mesh = new Mesh();
             foreach (var item in elem.Elements("triangle"))
             {
-                List<Vector3d> pnts = new List<Vector3d>();
+                List<VertexInfo> pnts = new List<VertexInfo>();
                 foreach (var point in item.Descendants("vertex"))
                 {
                     var x = point.Attribute("x").Value.ParseDouble();
                     var y = point.Attribute("y").Value.ParseDouble();
                     var z = point.Attribute("z").Value.ParseDouble();
-                    pnts.Add(new Vector3d(x, y, z));
+
+                    var nx = point.Attribute("nx").Value.ParseDouble();
+                    var ny = point.Attribute("ny").Value.ParseDouble();
+                    var nz = point.Attribute("nz").Value.ParseDouble();
+                    VertexInfo vi = new VertexInfo();
+                    vi.Position = new Vector3d(x, y, z);
+                    vi.Normal = new Vector3d(nx, ny, nz);
+                    pnts.Add(vi);
                 }
-                Mesh.Triangles.Add(new TriangleInfo() { Vertices = pnts.Select(z => new VertexInfo() { Position = z }).ToArray() });
+                Mesh.Triangles.Add(new TriangleInfo() { Vertices = pnts.ToArray() });
             }
         }
         public override void AppendToXml(StringBuilder sb)
@@ -43,7 +51,7 @@ namespace GeomPad.Helpers3D
                 sb.AppendLine($"<triangle>");
                 foreach (var vv in item.Vertices)
                 {
-                    sb.AppendLine($"<vertex x=\"{vv.Position.X}\" y=\"{vv.Position.Y}\" z=\"{vv.Position.Z}\"/>");
+                    sb.AppendLine($"<vertex x=\"{vv.Position.X}\" y=\"{vv.Position.Y}\" z=\"{vv.Position.Z}\" nx=\"{vv.Normal.X}\" ny=\"{vv.Normal.Y}\" nz=\"{vv.Normal.Z}\" />");
                 }
                 sb.AppendLine($"</triangle>");
 
@@ -276,7 +284,7 @@ namespace GeomPad.Helpers3D
             foreach (var item in ar)
             {
                 tr.Mesh.Triangles.RemoveAt(item);
-            }            
+            }
         }
 
         public class SplitByPlaneCommand : ICommand
@@ -377,6 +385,11 @@ namespace GeomPad.Helpers3D
                     yield return vert.Position;
                 }
             }
+        }
+
+        public IEnumerable<TriangleInfo> GetTriangles()
+        {
+            return Mesh.Triangles;
         }
     }
 }
