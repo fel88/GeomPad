@@ -3,10 +3,11 @@
 
 Supported mesh formats: OBJ/STL/OFF
 
-![image](https://user-images.githubusercontent.com/15663687/222509167-f7e62583-ca14-42da-bbf6-44d5cb25016e.png)
-
+![image](https://user-images.githubusercontent.com/15663687/230466323-cac05ee1-48c6-423a-bb53-a9c6612a7372.png)
+<img width="50%" src="https://user-images.githubusercontent.com/15663687/222509167-f7e62583-ca14-42da-bbf6-44d5cb25016e.png"/><img width="50%" src="https://user-images.githubusercontent.com/15663687/230467301-46ebc00d-d364-465b-ade8-363b1d541b32.png"/>
 
 2D/3D modes:
+
 
 <img width="50%" src="imgs/1.png"/><img width="50%" src="imgs/2.png"/>
 
