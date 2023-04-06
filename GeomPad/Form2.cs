@@ -1070,5 +1070,10 @@ namespace GeomPad
             });
             UpdateHelpersList();
         }
+
+        private void updateToolStripMenuItem_Click(object sender, EventArgs e)
+        {            
+            updateHelpersList();
+        }
     }
 }

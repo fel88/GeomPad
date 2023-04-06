@@ -204,7 +204,9 @@ namespace GeomPad.Helpers3D
                 var pl = cc.Operands.First(t => t is PlaneHelper) as PlaneHelper;
 
                 var rr = tr.SliceByPlane(pl);
+                tr.dirty = true;
                 cc.Parent.AddHelpers(rr);
+                cc.Parent.UpdateHelpersList();
             };
         }
 
@@ -296,6 +298,8 @@ namespace GeomPad.Helpers3D
                 var tr = cc.Source as MeshHelper;
                 var pl = cc.Operands.First(t => t is PlaneHelper) as PlaneHelper;
                 tr.SplitByPlane(pl);
+                tr.dirty = true;
+                cc.Parent.UpdateHelpersList();
             };
         }
 
