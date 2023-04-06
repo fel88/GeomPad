@@ -9,7 +9,7 @@ namespace GeomPad
     public abstract class AbstractHelperItem : IHelperItem
     {
         public int ZIndex { get; set; }
-
+        public bool PickEnabled { get; set; } = true;
         public Action Changed { get; set; }
         public virtual void Shift(Vector2d vector) { }
 

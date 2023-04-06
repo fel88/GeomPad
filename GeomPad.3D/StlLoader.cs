@@ -14,17 +14,17 @@ namespace GeomPad
             MeshHelper mm = null;
             mm = new MeshHelper() { Name = Path.GetFileNameWithoutExtension(path) };
 
-            var txt = File.ReadAllLines(path);
-            if (txt[0].StartsWith("solid"))
+            var txt = File.ReadLines(path);
+            if (txt.First().StartsWith("solid"))
             {
                 //text format
                 TriangleInfo tr = null;
                 Vector3d normal = Vector3d.Zero;
 
                 List<VertexInfo> verts = new List<VertexInfo>();
-                for (int i = 1; i < txt.Length; i++)
+                foreach (var item in txt)
                 {
-                    var line = txt[i].Trim().ToLower();
+                    var line = item.Trim().ToLower();
                     if (line.StartsWith("facet"))
                     {
                         var spl = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
@@ -53,51 +53,50 @@ namespace GeomPad
             }
             else
             {
-                var bts = File.ReadAllBytes(path);
-                var cnt = BitConverter.ToInt32(bts, 80);
-
-
-
-
-                for (int i = 0; i < cnt; i++)
+                using (var rdr = File.OpenRead(path))
                 {
-                    TriangleInfo tr = new TriangleInfo();
-                    mm.Mesh.Triangles.Add(tr);
-
-                    tr.Vertices = new VertexInfo[3];
-                    Vector3d normal = new Vector3d();
-                    Vector3d v1 = new Vector3d();
-                    Vector3d v2 = new Vector3d();
-                    Vector3d v3 = new Vector3d();
-
-                    for (int j = 0; j < 3; j++)
+                    byte[] data = new byte[50];
+                    rdr.Seek(80, SeekOrigin.Begin);
+                    rdr.Read(data, 0, 4);
+                    var cnt = BitConverter.ToInt32(data, 0);
+                    for (int i = 0; i < cnt; i++)
                     {
-                        var fl = BitConverter.ToSingle(bts, 84 + j * 4 + i * 50);
-                        normal[j] = fl;
-                    }
-                    for (int j = 0; j < 3; j++)
-                    {
-                        var fl = BitConverter.ToSingle(bts, 84 + 12 + j * 4 + i * 50);
-                        v1[j] = fl;
-                    }
+                        TriangleInfo tr = new TriangleInfo();
+                        mm.Mesh.Triangles.Add(tr);
 
-                    for (int j = 0; j < 3; j++)
-                    {
-                        var fl = BitConverter.ToSingle(bts, 84 + 24 + j * 4 + i * 50);
-                        v2[j] = fl;
-                    }
-                    for (int j = 0; j < 3; j++)
-                    {
-                        var fl = BitConverter.ToSingle(bts, 84 + 36 + j * 4 + i * 50);
-                        v3[j] = fl;
-                    }
-                    tr.Vertices[0] = new VertexInfo() { Position = v1, Normal = normal };
-                    tr.Vertices[1] = new VertexInfo() { Position = v2, Normal = normal };
-                    tr.Vertices[2] = new VertexInfo() { Position = v3, Normal = normal };
+                        tr.Vertices = new VertexInfo[3];
+                        Vector3d normal = new Vector3d();
+                        Vector3d v1 = new Vector3d();
+                        Vector3d v2 = new Vector3d();
+                        Vector3d v3 = new Vector3d();
+                        rdr.Read(data, 0, 50);
 
+                        for (int j = 0; j < 3; j++)
+                        {                            
+                            normal[j] = BitConverter.ToSingle(data, j * 4);
+                        }
+                        for (int j = 0; j < 3; j++)
+                        {                            
+                            v1[j] = BitConverter.ToSingle(data, 12 + j * 4); 
+                        }
 
+                        for (int j = 0; j < 3; j++)
+                        {                            
+                            v2[j] = BitConverter.ToSingle(data, 24 + j * 4);
+                        }
+                        for (int j = 0; j < 3; j++)
+                        {                            
+                            v3[j] = BitConverter.ToSingle(data, 36 + j * 4);
+                        }
+                        tr.Vertices[0] = new VertexInfo() { Position = v1, Normal = normal };
+                        tr.Vertices[1] = new VertexInfo() { Position = v2, Normal = normal };
+                        tr.Vertices[2] = new VertexInfo() { Position = v3, Normal = normal };
+                    }
                 }
             }
+            mm.FlatShading = false;
+            mm.DrawWireframe = false;
+            mm.PickEnabled = false;
             return mm;
 
         }

@@ -326,6 +326,12 @@ namespace GeomPad.Helpers3D
         public bool DrawWireframe { get; set; } = true;
 
         public Color Color { get; set; } = Color.Orange;
+
+        static int NextGlList = 1;
+        int GlList;
+        bool dirty;
+        bool first = true;
+
         public override void Draw(IDrawingContext ctx)
         {
             if (!Visible) return;
@@ -355,26 +361,47 @@ namespace GeomPad.Helpers3D
                 if (!FlatShading)
                     GL.Enable(EnableCap.Lighting);
 
-                GL.Begin(PrimitiveType.Triangles);
+                if (first)
+                    GlList = NextGlList++;
 
-                foreach (var item in Mesh.Triangles)
+                if (dirty || first)
                 {
-                    foreach (var vv in item.Vertices)
-                    {
-                        if (!FlatShading)
-                            GL.Normal3(vv.Normal);
+                    GL.NewList(GlList, ListMode.Compile);
+                    GL.Begin(PrimitiveType.Triangles);
 
-                        GL.Vertex3(vv.Position);
+                    foreach (var item in Mesh.Triangles)
+                    {
+                        foreach (var vv in item.Vertices)
+                        {
+                            if (!FlatShading)
+                                GL.Normal3(vv.Normal);
+
+                            GL.Vertex3(vv.Position);
+                        }
                     }
+                    GL.End();
+                    GL.EndList();
+                    first = false;
+                    dirty = false;
                 }
-                GL.End();
+                else
+                    GL.CallList(GlList);
 
                 if (!FlatShading)
                     GL.Disable(EnableCap.Lighting);
             }
         }
 
-        public bool FlatShading { get; set; } = true;
+        bool flatShading = true;
+        public bool FlatShading
+        {
+            get => flatShading; set
+            {
+                if (flatShading != value)
+                    dirty = true;
+                flatShading = value;
+            }
+        }
 
         public IEnumerable<Vector3d> GetPoints()
         {

@@ -97,6 +97,9 @@ namespace GeomPad
             pickedTriangle = null;
             foreach (var item in Helpers.OfType<IPointsProvider>())
             {
+                if (item is IHelperItem hi && !hi.PickEnabled)
+                    continue;
+
                 if (!item.Visible)
                     continue;
 
@@ -116,6 +119,9 @@ namespace GeomPad
 
             foreach (var item in Helpers.OfType<ITrianglesProvider>())
             {
+                if (item is IHelperItem hi && !hi.PickEnabled)
+                    continue;
+
                 if (!item.Visible)
                     continue;
 

@@ -8,6 +8,7 @@ namespace GeomPad.Common
     public interface IHelperItem
     {
         string Name { get; set; }
+        bool PickEnabled { get; set; }
         int ZIndex { get; set; }
 
         bool Selected { get; set; }

@@ -19,28 +19,26 @@ namespace GeomPad.Helpers3D
             this.Material = item;
             //tcount = md.getVertices().Count() / 3;
 
-            List<float> vres = new List<float>();
+            float[] vres = new float[faceItem2.Length * 3 * 11];
             tcount = 0;
 
 
+            long index = 0;
             foreach (var objVolumeFace in faceItem2)
             {
-
                 for (int i = 0; i < 3; i++)
                 {
                     var pos = objVolumeFace.Vertexes[i].Position;
                     var txt = objVolumeFace.Vertexes[i].TextureCoord;
                     var nrm = objVolumeFace.Vertexes[i].Normal;
                     var clr = objVolumeFace.Material.DiffuseColor;
-                    vres.Add(pos.X); vres.Add(pos.Y); vres.Add(pos.Z);
-                    vres.Add(txt.X); vres.Add(txt.Y);
-                    vres.Add(nrm.X); vres.Add(nrm.Y); vres.Add(nrm.Z);
-                    vres.Add(clr.X); vres.Add(clr.Y); vres.Add(clr.Z);
+                    vres[index++] = pos.X; vres[index++] = pos.Y; vres[index++] = pos.Z;
+                    vres[index++] = txt.X; vres[index++] = txt.Y;
+                    vres[index++] = nrm.X; vres[index++] = nrm.Y; vres[index++] = nrm.Z;
+                    vres[index++] = clr.X; vres[index++] = clr.Y; vres[index++] = clr.Z;
                     tcount++;
                 }
-
             }
-
 
             VAO = GL.GenVertexArray();
             VBO = GL.GenBuffer();
@@ -48,7 +46,7 @@ namespace GeomPad.Helpers3D
             GL.BindVertexArray(VAO);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, VBO);
-            GL.BufferData(BufferTarget.ArrayBuffer, sizeof(float) * vres.Count(), vres.ToArray(), BufferUsageHint.StaticDraw);
+            GL.BufferData(BufferTarget.ArrayBuffer, sizeof(float) * vres.Length, vres, BufferUsageHint.StaticDraw);
 
             int cnt = 11;
             GL.VertexAttribPointer(
