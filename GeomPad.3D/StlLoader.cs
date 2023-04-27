@@ -9,10 +9,11 @@ namespace GeomPad
 {
     public class StlLoader : IMeshLoader
     {
-        public MeshHelper Load(string path)
+        public MeshHelper[] Load(string path)
         {
-            MeshHelper mm = null;
-            mm = new MeshHelper() { Name = Path.GetFileNameWithoutExtension(path) };
+            List<MeshHelper> ret = new List<MeshHelper>();
+            MeshHelper mm = new MeshHelper() { Name = Path.GetFileNameWithoutExtension(path) };
+            ret.Add(mm);
 
             var txt = File.ReadLines(path);
             if (txt.First().StartsWith("solid"))
@@ -72,20 +73,20 @@ namespace GeomPad
                         rdr.Read(data, 0, 50);
 
                         for (int j = 0; j < 3; j++)
-                        {                            
+                        {
                             normal[j] = BitConverter.ToSingle(data, j * 4);
                         }
                         for (int j = 0; j < 3; j++)
-                        {                            
-                            v1[j] = BitConverter.ToSingle(data, 12 + j * 4); 
+                        {
+                            v1[j] = BitConverter.ToSingle(data, 12 + j * 4);
                         }
 
                         for (int j = 0; j < 3; j++)
-                        {                            
+                        {
                             v2[j] = BitConverter.ToSingle(data, 24 + j * 4);
                         }
                         for (int j = 0; j < 3; j++)
-                        {                            
+                        {
                             v3[j] = BitConverter.ToSingle(data, 36 + j * 4);
                         }
                         tr.Vertices[0] = new VertexInfo() { Position = v1, Normal = normal };
@@ -97,8 +98,7 @@ namespace GeomPad
             mm.FlatShading = false;
             mm.DrawWireframe = false;
             mm.PickEnabled = false;
-            return mm;
-
+            return ret.ToArray();
         }
     }
 }

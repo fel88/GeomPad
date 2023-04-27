@@ -944,7 +944,7 @@ namespace GeomPad
         private void impoertMeshToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "All mesh formats|*.obj;*.off;*.stl";
+            ofd.Filter = "All mesh formats|*.obj;*.off;*.stl|Obj models (*.obj)|*.obj|Stl models (*.stl)|*.stl";
             if (ofd.ShowDialog() != DialogResult.OK)
                 return;
 
@@ -963,7 +963,7 @@ namespace GeomPad
                 loader = new ObjLoader();
             }
 
-            AddHelper(loader.Load(ofd.FileName));
+            AddHelpers(loader.Load(ofd.FileName));
             updateHelpersList();
         }
 
@@ -1044,10 +1044,13 @@ namespace GeomPad
             {
                 loader = new ObjLoader();
             }
-            var model = loader.Load(ofd.FileName);
-            var g = new MeshGpuHelper(model);
-            g.Camera = camera1;
-            AddHelper(g);
+            var models = loader.Load(ofd.FileName);
+            foreach (var model in models)
+            {
+                var g = new MeshGpuHelper(model);
+                g.Camera = camera1;
+                AddHelper(g);
+            }
             updateHelpersList();
         }
 
@@ -1072,7 +1075,7 @@ namespace GeomPad
         }
 
         private void updateToolStripMenuItem_Click(object sender, EventArgs e)
-        {            
+        {
             updateHelpersList();
         }
     }

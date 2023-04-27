@@ -4,6 +4,6 @@ namespace GeomPad
 {
     public interface IMeshLoader
     {
-        MeshHelper Load(string path);
+        MeshHelper[] Load(string path);
     }
 }
