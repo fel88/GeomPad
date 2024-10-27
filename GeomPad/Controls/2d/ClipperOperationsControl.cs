@@ -6,7 +6,6 @@ using System.Windows.Forms;
 using GeomPad.Helpers;
 using System.Globalization;
 using ClipperLib;
-using OpenTK;
 using GeomPad.Common;
 
 namespace GeomPad.Controls._2d

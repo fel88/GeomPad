@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("https://github.com/fel88")]
 [assembly: AssemblyProduct("GeomPad")]
-[assembly: AssemblyCopyright("Copyleft ©  2021-2023")]
+[assembly: AssemblyCopyright("Copyleft ©  2021-2024")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
