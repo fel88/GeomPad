@@ -135,155 +135,9 @@ namespace GeomPad.Controls._2d
             dataModel.UpdateList();
         }
 
-        HelperItem loadPolyline(XElement el)
-        {
-            PolylineHelper lsh = new PolylineHelper();            
-            
-            foreach (var point in el.Descendants("point"))
-            {
-                var x = point.Attribute("x").Value.ParseDouble();
-                var y = point.Attribute("y").Value.ParseDouble();
-                lsh.Points.Add(new Vector2d(x, y));
-            }
-            
-            return lsh;
-        }
-        HelperItem loadLineSet(XElement el)
-        {
-            LinesSetHelper lsh = new LinesSetHelper();
-            foreach (var item in el.Elements("line"))
-            {
-                List<Vector2d> pnts = new List<Vector2d>();
-                foreach (var point in item.Descendants("point"))
-                {
-                    var x = point.Attribute("x").Value.ParseDouble();
-                    var y = point.Attribute("y").Value.ParseDouble();
-                    pnts.Add(new Vector2d(x, y));
-                }
-                lsh.Lines.Add(new Line2D() { Start = pnts[0], End = pnts[1] });
-            }
-            return lsh;
-        }
-        HelperItem loadLine(XElement el)
-        {
-            SegmentHelper lsh = new SegmentHelper();
-
-            List<Vector2d> pnts = new List<Vector2d>();
-            foreach (var point in el.Descendants("point"))
-            {
-                var x = point.Attribute("x").Value.ParseDouble();
-                var y = point.Attribute("y").Value.ParseDouble();
-                pnts.Add(new Vector2d(x, y));
-            }
-            lsh.Point = pnts[0];
-            lsh.Point2 = pnts[1];
-            return lsh;
-        }
-        HelperItem[] loadXml(string content)
-        {
-            List<HelperItem> ret = new List<HelperItem>();
-
-            var doc = XDocument.Parse(content);
-            var root = doc.Element("root");
-
-            //todo: make recursive here
-            foreach (var pitem in root.Elements("group"))
-            {
-                Group gr = new Group();
-                foreach (var el in pitem.Elements())
-                {
-                    if (el.Name == "polyline")
-                        gr.Items.Add(loadPolyline(el));
-                    if (el.Name == "lineSet")
-                        gr.Items.Add(loadLineSet(el));
-                    if (el.Name == "line")
-                        gr.Items.Add(loadLine(el));
-                }
-                ret.Add(gr);
-            }
-            foreach (var pitem in root.Elements("polyline"))
-            {
-                ret.Add(loadPolyline(pitem));
-            }
-            foreach (var pitem in root.Elements("lineSet"))
-            {
-                ret.Add(loadLineSet(pitem));
-            }
-            foreach (var pitem in root.Elements("line"))
-            {
-                ret.Add(loadLine(pitem));
-            }
-            foreach (var pitem in root.Elements("polygon"))
-            {
-                List<NFP> nfps = new List<NFP>();
-                foreach (var item in pitem.Elements("region"))
-                {
-                    List<SvgPoint> pnts = new List<SvgPoint>();
-                    foreach (var point in item.Descendants("point"))
-                    {
-                        var x = point.Attribute("x").Value.ParseDouble();
-                        var y = point.Attribute("y").Value.ParseDouble();
-                        pnts.Add(new SvgPoint(x, y));
-                    }
-                    nfps.Add(new NFP() { Points = pnts.Select(y => new SvgPoint(y.X, y.Y)).ToArray() });
-                }
-
-
-                for (int i = 0; i < nfps.Count; i++)
-                {
-                    for (int j = 0; j < nfps.Count; j++)
-                    {
-                        if (i != j)
-                        {
-                            var d2 = nfps[i];
-                            var d3 = nfps[j];
-                            var f0 = d3.Points[0];
-                            if (StaticHelpers.pnpoly(d2.Points.ToArray(), f0.X, f0.Y))
-                            {
-                                d3.Parent = d2;
-                                if (!d2.Childrens.Contains(d3))
-                                {
-                                    d2.Childrens.Add(d3);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                foreach (var item in nfps)
-                {
-                    if (item.Parent != null) continue;
-                    PolygonHelper phh = new PolygonHelper();
-                    ret.Add(phh);
-                    phh.Polygon = item;
-                }
-            }
-            return ret.ToArray();
-        }
-
         private void fileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "xml files|*.xml";
-            if (ofd.ShowDialog() != DialogResult.OK) return;
-
-            try
-            {
-                var ret = loadXml(File.ReadAllText(ofd.FileName));
-                dataModel.AddItems(ret);
-                var fin = new FileInfo(ofd.FileName);
-                foreach (var item in ret)
-                {
-                    item.Name = fin.Name;
-                }
-                UpdateList();
-                dataModel.ParentForm.StatusMessage("succesfully loaded.", StatusMessageType.Info);
-
-            }
-            catch (Exception ex)
-            {
-                dataModel.ParentForm.StatusMessage(ex.Message, StatusMessageType.Error);
-            }
+            
         }
 
         private void updateToolStripMenuItem_Click(object sender, EventArgs e)
@@ -401,18 +255,7 @@ namespace GeomPad.Controls._2d
 
         private void clipboardToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            try
-            {
-                var hh = loadXml(Clipboard.GetText());
-                dataModel.AddItems(hh.ToArray());
-                UpdateList();
-                dataModel.ParentForm.StatusMessage("succesfully loaded.", StatusMessageType.Info);
-
-            }
-            catch (Exception ex)
-            {
-                dataModel.ParentForm.StatusMessage(ex.Message, StatusMessageType.Error);
-            }
+           
         }
 
         private void cloneToolStripMenuItem_Click(object sender, EventArgs e)

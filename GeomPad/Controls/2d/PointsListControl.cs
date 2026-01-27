@@ -100,5 +100,10 @@ namespace GeomPad.Controls._2d
         {
             
         }
+
+        private void importToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+        }
     }
 }

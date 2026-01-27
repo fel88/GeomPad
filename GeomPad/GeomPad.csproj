@@ -278,6 +278,14 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="019.ico" />
+    <None Include="Resources\broom.png" />
+    <None Include="Resources\cross.png" />
+    <None Include="Resources\plus.png" />
+    <None Include="Resources\script.png" />
+    <None Include="Resources\arrow-out.png" />
+    <None Include="Resources\magnet-blue.png" />
+    <None Include="Resources\magnet.png" />
+    <None Include="Resources\pencil.png" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="DockPanelSuite.ThemeVS2015">

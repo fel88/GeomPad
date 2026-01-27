@@ -594,5 +594,30 @@ namespace GeomPad.Controls._2d
                 dataModel.SelectedItems[i].ZIndex = minz - 1;
             }
         }
+
+        private void fileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "xml files|*.xml";
+            if (ofd.ShowDialog() != DialogResult.OK) return;
+
+            try
+            {
+                var ret = loadXml(File.ReadAllText(ofd.FileName));
+                dataModel.AddItems(ret);
+                var fin = new FileInfo(ofd.FileName);
+                foreach (var item in ret)
+                {
+                    item.Name = fin.Name;
+                }
+                UpdateList();
+                dataModel.ParentForm.StatusMessage("succesfully loaded.", StatusMessageType.Info);
+
+            }
+            catch (Exception ex)
+            {
+                dataModel.ParentForm.StatusMessage(ex.Message, StatusMessageType.Error);
+            }
+        }
     }
 }

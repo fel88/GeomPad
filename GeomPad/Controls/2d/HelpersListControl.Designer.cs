@@ -129,6 +129,7 @@
             this.toolStripSeparator1,
             this.fromXmlToolStripMenuItem,
             this.dxfFromFileToolStripMenuItem});
+            this.addToolStripMenuItem.Image = global::GeomPad.Properties.Resources.plus;
             this.addToolStripMenuItem.Name = "addToolStripMenuItem";
             this.addToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.addToolStripMenuItem.Text = "add helper";
@@ -219,6 +220,7 @@
             // 
             // deleteToolStripMenuItem
             // 
+            this.deleteToolStripMenuItem.Image = global::GeomPad.Properties.Resources.cross;
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
             this.deleteToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.deleteToolStripMenuItem.Text = "delete";
@@ -233,6 +235,7 @@
             // 
             // clearToolStripMenuItem
             // 
+            this.clearToolStripMenuItem.Image = global::GeomPad.Properties.Resources.broom;
             this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
             this.clearToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.clearToolStripMenuItem.Text = "clear";
