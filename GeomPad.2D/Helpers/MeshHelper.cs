@@ -1,6 +1,7 @@
 ﻿using GeomPad.Common;
 using GeomPad.Dialogs;
 using OpenTK;
+using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.Data;

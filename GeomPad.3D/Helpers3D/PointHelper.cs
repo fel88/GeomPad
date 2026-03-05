@@ -7,6 +7,7 @@ using System.Linq;
 using System.Globalization;
 using GeomPad.Common;
 using System.Collections.Generic;
+using OpenTK.Mathematics;
 
 namespace GeomPad.Helpers3D
 {

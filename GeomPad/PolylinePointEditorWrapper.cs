@@ -1,4 +1,5 @@
 ﻿using GeomPad.Helpers;
+using OpenTK.Mathematics;
 using System.Drawing;
 
 namespace GeomPad
@@ -11,8 +12,8 @@ namespace GeomPad
             _target = ph;
         }
         public PointF Point;
-        public double X { get => _target.Points[_index].X; set => _target.Points[_index] = new OpenTK.Vector2d(value, _target.Points[_index].Y); }
-        public double Y { get => _target.Points[_index].Y; set => _target.Points[_index] = new OpenTK.Vector2d(_target.Points[_index].X, value); }
+        public double X { get => _target.Points[_index].X; set => _target.Points[_index] = new Vector2d(value, _target.Points[_index].Y); }
+        public double Y { get => _target.Points[_index].Y; set => _target.Points[_index] = new Vector2d(_target.Points[_index].X, value); }
         int _index;
         PolylineHelper _target;
     }

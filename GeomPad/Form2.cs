@@ -2,7 +2,9 @@
 using GeomPad.Helpers3D;
 using GeomPad.Helpers3D.BRep;
 using OpenTK;
+using OpenTK.GLControl;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -21,15 +23,21 @@ namespace GeomPad
         public Form2()
         {
             InitializeComponent();
-            glControl = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(32, 24, 0, 8));
+            //glControl = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(32, 24, 0, 8));
+            glControl = new GLControl(new GLControlSettings()
+            {
+                Profile = OpenTK.Windowing.Common.ContextProfile.Compatability,
+                Flags = OpenTK.Windowing.Common.ContextFlags.ForwardCompatible,
+                NumberOfSamples = 8
+            });
 
             DebugHelper.Error = (x) => { infoPanel.AddError(x); };
 
 
-            if (glControl.Context.GraphicsMode.Samples == 0)
-            {
-                glControl = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(32, 24, 0, 8));
-            }
+            //if (glControl.Context.GraphicsMode.Samples == 0)
+            //{
+            //    glControl = new OpenTK.GLControl(new OpenTK.Graphics.GraphicsMode(32, 24, 0, 8));
+            //}
             evwrapper = new EventWrapperGlControl(glControl);
 
             glControl.Paint += Gl_Paint;

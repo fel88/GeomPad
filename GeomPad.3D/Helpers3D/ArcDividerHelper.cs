@@ -1,6 +1,7 @@
 ﻿using GeomPad.Common;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -39,7 +40,7 @@ namespace GeomPad.Helpers3D
                 var ang = SweepAng * Math.PI / 180f;
                 var mtr = Matrix4d.CreateFromAxisAngle(Axis.Normalized(), ang);
                 var d = (Start - Center);
-                var trn = Vector3d.Transform(d, mtr);
+                var trn = Vector3d.TransformVector(d, mtr);
                 return trn + Center;
             }
         }
@@ -50,7 +51,7 @@ namespace GeomPad.Helpers3D
                 var ang = (SweepAng / 2) * Math.PI / 180f;
                 var mtr = Matrix4d.CreateFromAxisAngle(Axis.Normalized(), ang);
                 var d = (Start - Center);
-                var trn = Vector3d.Transform(d, mtr);
+                var trn = Vector3d.TransformVector(d, mtr);
                 return trn + Center;
             }
         }

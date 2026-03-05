@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
 using System.Drawing;
 
 namespace GeomPad
@@ -76,7 +77,7 @@ namespace GeomPad
             int y = 0;
 
             Matrix4d matrix = Matrix4d.Mult(Matrix4d.Mult(world, view), projection);
-            Vector4d vector = Vector4d.Transform(source, matrix);
+            Vector4d vector = source * matrix;
             var a = (((source.X * matrix.M14) + (source.Y * matrix.M24)) + (source.Z * matrix.M34)) + matrix.M44;
             if (!WithinEpsilon(a, 1f))
             {
@@ -144,8 +145,10 @@ namespace GeomPad
             Matrix4d viewInv = Matrix4d.Invert(view);
             Matrix4d projInv = Matrix4d.Invert(projection);
 
-            Vector4d.Transform(ref vec, ref projInv, out vec);
-            Vector4d.Transform(ref vec, ref viewInv, out vec);
+            vec = vec * projInv;
+            vec = vec * viewInv;
+            //Vector4d.Transform(ref vec, ref projInv, out vec);
+            //Vector4d.Transform(ref vec, ref viewInv, out vec);
 
             if (vec.W > 0.000001f || vec.W < -0.000001f)
             {

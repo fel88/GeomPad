@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using OpenTK.GLControl;
 
 namespace GeomPad
 {

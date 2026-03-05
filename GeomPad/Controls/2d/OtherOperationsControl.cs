@@ -9,6 +9,7 @@ using TriangleNet.Geometry;
 using TriangleNet.Meshing;
 using OpenTK;
 using GeomPad.Common;
+using OpenTK.Mathematics;
 
 namespace GeomPad.Controls._2d
 {

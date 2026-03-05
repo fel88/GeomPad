@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using OpenTK.Mathematics;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -75,7 +76,7 @@ namespace GeomPad.Helpers3D
                     {
                         for (int i = 0; i < vv.Length; i++)
                         {
-                            vv[i] = Vector3d.Transform(vv[i], mtr.Value);
+                            vv[i] = Vector3d.TransformVector(vv[i], mtr.Value);
                         }
                     }
                     var res = CheckIntersect(ray, vv);
@@ -119,7 +120,7 @@ namespace GeomPad.Helpers3D
         }
 
 
-        public static OpenTK.Vector3d? CheckIntersect(MouseRay ray, OpenTK.Vector3d[] triangle)
+        public static Vector3d? CheckIntersect(MouseRay ray, Vector3d[] triangle)
         {            
             var dir = ray.End - ray.Start;
             dir.Normalize();

@@ -9,6 +9,7 @@ using System.IO;
 using System.Xml.Linq;
 using OpenTK;
 using GeomPad.Common;
+using OpenTK.Mathematics;
 
 namespace GeomPad.Controls._2d
 {

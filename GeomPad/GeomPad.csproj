@@ -1,305 +1,64 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3C92F4CC-CDD6-4AD7-B30C-3563264D75A2}</ProjectGuid>
+    <TargetFramework>net9.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>GeomPad</RootNamespace>
-    <AssemblyName>GeomPad</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Deterministic>true</Deterministic>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
     <ApplicationIcon>019.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
+    <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.1.0" />
+    <PackageReference Include="IxMilia.Dxf" Version="0.8.0" />
+    <PackageReference Include="ObjectListView.Repack.NET6Plus" Version="2.9.5" />
+    <PackageReference Include="OpenTK.GLControl" Version="4.0.2" />
+    <PackageReference Include="OpenTK.Mathematics" Version="4.9.4" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AboutBox1.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="AboutBox1.Designer.cs">
-      <DependentUpon>AboutBox1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="CommandContext.cs" />
-    <Compile Include="Controls\2d\HelpersTreeControl.cs">
+    <Compile Update="Controls\2d\HelpersTreeControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\2d\HelpersTreeControl.Designer.cs">
-      <DependentUpon>HelpersTreeControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\2d\Viewer2DDockPanel.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Controls\2d\ClipperOperationsControl.cs">
+    <Compile Update="Controls\2d\ClipperOperationsControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\2d\ClipperOperationsControl.Designer.cs">
-      <DependentUpon>ClipperOperationsControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\2d\DebugControl.cs">
+    <Compile Update="Controls\2d\DebugControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\2d\DebugControl.Designer.cs">
-      <DependentUpon>DebugControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\2d\HelpersListControl.cs">
+    <Compile Update="Controls\2d\HelpersListControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\2d\HelpersListControl.Designer.cs">
-      <DependentUpon>HelpersListControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\2d\NFPOperationsControl.cs">
+    <Compile Update="Controls\2d\NFPOperationsControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\2d\NFPOperationsControl.Designer.cs">
-      <DependentUpon>NFPOperationsControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\2d\OtherOperationsControl.cs">
+    <Compile Update="Controls\2d\OtherOperationsControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\2d\OtherOperationsControl.Designer.cs">
-      <DependentUpon>OtherOperationsControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\2d\PointsListControl.cs">
+    <Compile Update="Controls\2d\PointsListControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\2d\PointsListControl.Designer.cs">
-      <DependentUpon>PointsListControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\2d\PolyBoolOperationsControl.cs">
+    <Compile Update="Controls\2d\PolyBoolOperationsControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\2d\PolyBoolOperationsControl.Designer.cs">
-      <DependentUpon>PolyBoolOperationsControl.cs</DependentUpon>
-    </Compile>
-    <Compile Include="CsharpCompiler.cs" />
-    <Compile Include="DialogHelpers.cs" />
-    <Compile Include="GeomExtensions.cs" />
-    <Compile Include="GuiHelpers.cs" />
-    <Compile Include="CameraViewManager.cs" />
-    <Compile Include="ComboBoxItem.cs" />
-    <Compile Include="DefaultCameraViewManager.cs" />
-    <Compile Include="DxfParser.cs" />
-    <Compile Include="Form2.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form2.Designer.cs">
-      <DependentUpon>Form2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Form1.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="InfoPanel.cs">
+    <Compile Update="InfoPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="InfoPanel.Designer.cs">
-      <DependentUpon>InfoPanel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="IPoint.cs" />
-    <Compile Include="LineElement.cs" />
-    <Compile Include="LocalContour.cs" />
-    <Compile Include="mdi.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="mdi.Designer.cs">
-      <DependentUpon>mdi.cs</DependentUpon>
-    </Compile>
-    <Compile Include="MinkowskiWrapper.cs" />
-    <Compile Include="Controls\2d\Pad2DDataModel.cs" />
-    <Compile Include="Controls\2d\Pad2DMainPanel.cs">
+    <Compile Update="Controls\2d\Pad2DMainPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="PointEditorToolPanel.cs">
+    <Compile Update="PointEditorToolPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="PointEditorToolPanel.Designer.cs">
-      <DependentUpon>PointEditorToolPanel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="PolygonPointEditorWrapper.cs" />
-    <Compile Include="PolylinePointEditorWrapper.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ScriptEditor2D.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="ScriptEditor2D.Designer.cs">
-      <DependentUpon>ScriptEditor2D.cs</DependentUpon>
-    </Compile>
-    <Compile Include="ScriptRunInfo.cs" />
-    <Compile Include="StatusTypeEnum.cs" />
-    <Compile Include="Stuff.cs" />
-    <Compile Include="TextBoxCaption.cs">
+    <Compile Update="TextBoxCaption.cs">
       <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="TextBoxCaption.Designer.cs">
-      <DependentUpon>TextBoxCaption.cs</DependentUpon>
-    </Compile>
-    <Compile Include="VectorSetValuesDialog.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="VectorSetValuesDialog.Designer.cs">
-      <DependentUpon>VectorSetValuesDialog.cs</DependentUpon>
-    </Compile>
-    <EmbeddedResource Include="AboutBox1.resx">
-      <DependentUpon>AboutBox1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\2d\ClipperOperationsControl.resx">
-      <DependentUpon>ClipperOperationsControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\2d\DebugControl.resx">
-      <DependentUpon>DebugControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\2d\HelpersListControl.resx">
-      <DependentUpon>HelpersListControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\2d\HelpersTreeControl.resx">
-      <DependentUpon>HelpersTreeControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\2d\NFPOperationsControl.resx">
-      <DependentUpon>NFPOperationsControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\2d\OtherOperationsControl.resx">
-      <DependentUpon>OtherOperationsControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\2d\PointsListControl.resx">
-      <DependentUpon>PointsListControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Controls\2d\PolyBoolOperationsControl.resx">
-      <DependentUpon>PolyBoolOperationsControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Form2.resx">
-      <DependentUpon>Form2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="InfoPanel.resx">
-      <DependentUpon>InfoPanel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="mdi.resx">
-      <DependentUpon>mdi.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="PointEditorToolPanel.resx">
-      <DependentUpon>PointEditorToolPanel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <EmbeddedResource Include="ScriptEditor2D.resx">
-      <DependentUpon>ScriptEditor2D.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="TextBoxCaption.resx">
-      <DependentUpon>TextBoxCaption.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="VectorSetValuesDialog.resx">
-      <DependentUpon>VectorSetValuesDialog.cs</DependentUpon>
-    </EmbeddedResource>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\clipper\clipperLib.csproj">
-      <Project>{9b062971-a88e-4a3d-b3c9-12b78d15fa66}</Project>
-      <Name>clipperLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GeomPad.2D\GeomPad.2D.csproj">
-      <Project>{c6eac625-be9d-4eea-9764-17feebb52260}</Project>
-      <Name>GeomPad.2D</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GeomPad.3D\GeomPad.3D.csproj">
-      <Project>{ec24ca38-5a94-48bd-ad73-f6b5c4a17b1b}</Project>
-      <Name>GeomPad.3D</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GeomPad.Common\GeomPad.Common.csproj">
-      <Project>{4ce2103c-8a84-495c-a2da-5b523825c6ea}</Project>
-      <Name>GeomPad.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Triangle\Triangle.csproj">
-      <Project>{5a12c4a1-bc07-4f18-82b5-b08e150025df}</Project>
-      <Name>Triangle</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\clipper\clipperLib.csproj" />
+    <ProjectReference Include="..\GeomPad.2D\GeomPad.2D.csproj" />
+    <ProjectReference Include="..\GeomPad.3D\GeomPad.3D.csproj" />
+    <ProjectReference Include="..\GeomPad.Common\GeomPad.Common.csproj" />
+    <ProjectReference Include="..\Triangle\Triangle.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="019.ico" />
-    <None Include="Resources\broom.png" />
-    <None Include="Resources\cross.png" />
-    <None Include="Resources\plus.png" />
-    <None Include="Resources\script.png" />
-    <None Include="Resources\arrow-out.png" />
-    <None Include="Resources\magnet-blue.png" />
-    <None Include="Resources\magnet.png" />
-    <None Include="Resources\pencil.png" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="DockPanelSuite.ThemeVS2015">
-      <Version>3.1.0</Version>
-    </PackageReference>
-    <PackageReference Include="IxMilia.Dxf">
-      <Version>0.8.0</Version>
-    </PackageReference>
-    <PackageReference Include="ObjectListView.Official">
-      <Version>2.9.1</Version>
-    </PackageReference>
-    <PackageReference Include="OpenTK.GLControl">
-      <Version>3.3.3</Version>
-    </PackageReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

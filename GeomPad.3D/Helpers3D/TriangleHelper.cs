@@ -9,6 +9,7 @@ using System.Globalization;
 using System;
 using GeomPad.Common;
 using System.Runtime.InteropServices;
+using OpenTK.Mathematics;
 
 namespace GeomPad.Helpers3D
 {

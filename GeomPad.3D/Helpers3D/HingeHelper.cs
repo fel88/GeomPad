@@ -2,6 +2,7 @@
 using GeomPad.Helpers3D;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -144,9 +145,9 @@ namespace GeomPad.Helpers3D
             }
             var mtr = Matrix4d.CreateFromAxisAngle(axis, ang2);
             var mtr2 = Matrix4d.CreateFromAxisAngle(axis, -ang2);
-            var trans = Vector3d.Transform(neg, mtr2);
-            var check = Vector3d.Transform(prj0.Normalized(), mtr);
-            var check2 = Vector3d.Transform(prj1.Normalized(), mtr);
+            var trans = Vector3d.TransformVector(neg, mtr2);
+            var check = Vector3d.TransformVector(prj0.Normalized(), mtr);
+            var check2 = Vector3d.TransformVector(prj1.Normalized(), mtr);
             
             if (!(Vector3d.Cross(tring2.GetPlane().Normal, trans).Length < 1e-8 || Vector3d.Cross(tring2.GetPlane().Normal, -trans).Length < 1e-8))
             {

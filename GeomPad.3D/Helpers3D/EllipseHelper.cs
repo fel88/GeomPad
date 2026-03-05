@@ -1,6 +1,7 @@
 ﻿using GeomPad.Common;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -101,9 +102,9 @@ namespace GeomPad.Helpers3D
             var minr = Math.Min(MajorRadius, MinorRadius);
             MajorRadius = maxr;
             MinorRadius = minr;
-            
+
             var mtr4 = Matrix4d.CreateFromAxisAngle(Normal, ang);
-            var res = Vector4d.Transform(new Vector4d(norm), mtr4);
+            var res = new Vector4d(norm) * mtr4;
             var realAng = Vector3d.CalculateAngle(res.Xyz, RefDir);
             var rad = MajorRadius * MinorRadius / (Math.Sqrt(Math.Pow(MajorRadius * Math.Sin(realAng), 2) + Math.Pow(MinorRadius * Math.Cos(realAng), 2)));
             res *= rad;

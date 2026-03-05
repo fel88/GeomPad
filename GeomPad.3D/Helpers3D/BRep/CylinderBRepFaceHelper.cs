@@ -2,6 +2,7 @@
 using GeomPad.Helpers3D.BRep;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -12,7 +13,7 @@ namespace GeomPad.Helpers3D.BRep
     public class CylinderBRepFaceHelper : AbstractBRepFaceHelper, ICommandsContainer
     {
 
-     
+
         [EditField]
         public double Radius = 10;
 
@@ -22,7 +23,7 @@ namespace GeomPad.Helpers3D.BRep
         public Vector3d Axis = Vector3d.UnitZ;
 
         public double Lenght { get; set; } = 100;
-     
+
 
         public ICommand[] Commands => new ICommand[] { new CylinderBRepHelperSwitchNormal(), new CylinderBRepHelperEditProjectionMap() };
 
@@ -128,7 +129,7 @@ namespace GeomPad.Helpers3D.BRep
                     {
                         var ang = cutPoints[j].X;
                         var mtr = Matrix4d.CreateFromAxisAngle(Axis, -ang);
-                        var rot0 = Vector3d.Transform(vec0 + Axis * cutPoints[j].Y * Lenght, mtr);
+                        var rot0 = Vector3d.TransformVector(vec0 + Axis * cutPoints[j].Y * Lenght, mtr);
                         cc.Points.Add(Location + rot0);
                     }
                 }
@@ -210,7 +211,7 @@ namespace GeomPad.Helpers3D.BRep
                     var ang = d.X;
                     var mtr = Matrix4d.CreateFromAxisAngle(Axis, -ang);
 
-                    var rot0 = Vector3d.Transform(vec0 + Axis * d.Y * Lenght, mtr);
+                    var rot0 = Vector3d.TransformVector(vec0 + Axis * d.Y * Lenght, mtr);
                     v.Add(new VertexInfo() { Position = Location + rot0 });
                 }
                 var v01 = v[1].Position - v[0].Position;
@@ -236,7 +237,7 @@ namespace GeomPad.Helpers3D.BRep
                 GL.Color3(Color.Red);
             if (ShowGismos)
             {
-                
+
                 DrawHelpers.DrawCross(Location, DrawSize);
                 PlaneSurface ps = new PlaneSurface() { Position = Location, Normal = Axis };
                 var bs = ps.GetBasis();
@@ -246,7 +247,7 @@ namespace GeomPad.Helpers3D.BRep
                 for (double i = 0; i <= Math.PI * 2; i += step)
                 {
                     var mtr4 = Matrix4d.CreateFromAxisAngle(Axis, i);
-                    var res = Vector4d.Transform(new Vector4d(dir), mtr4);
+                    var res = new Vector4d(dir) * mtr4;
                     pnts.Add(Location + res.Xyz);
                 }
 
@@ -261,7 +262,7 @@ namespace GeomPad.Helpers3D.BRep
                 for (double i = 0; i <= Math.PI * 2; i += step)
                 {
                     var mtr4 = Matrix4d.CreateFromAxisAngle(Axis, i);
-                    var res = Vector4d.Transform(new Vector4d(dir), mtr4);
+                    var res = new Vector4d(dir) * mtr4;
                     pnts.Add(Location + res.Xyz + Axis * Lenght);
                 }
 

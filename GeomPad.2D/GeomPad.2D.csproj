@@ -1,86 +1,22 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C6EAC625-BE9D-4EEA-9764-17FEEBB52260}</ProjectGuid>
+    <TargetFramework>net9.0-windows</TargetFramework>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GeomPad._2D</RootNamespace>
-    <AssemblyName>GeomPad.2D</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xml" />
+    <PackageReference Include="OpenTK.GLControl" Version="4.0.2" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ClipperHelper.cs" />
-    <Compile Include="DeepNest.cs" />
-    <Compile Include="GeometryUtil.cs" />
-    <Compile Include="HelperItem.cs" />
-    <Compile Include="Helpers\CircleGenerator.cs" />
-    <Compile Include="Helpers\Extensions.cs" />
-    <Compile Include="Helpers\Geometry.cs" />
-    <Compile Include="Helpers\Group.cs" />
-    <Compile Include="Helpers\Line2D.cs" />
-    <Compile Include="Helpers\LinesSetHelper.cs" />
-    <Compile Include="Helpers\MeshHelper.cs" />
-    <Compile Include="Helpers\OrthogonalDist2Segments.cs" />
-    <Compile Include="Helpers\PointHelper.cs" />
-    <Compile Include="Helpers\PolygonHelper.cs" />
-    <Compile Include="Helpers\PolylineHelper.cs" />
-    <Compile Include="Helpers\RectangleGenerator.cs" />
-    <Compile Include="Helpers\SegmentHelper.cs" />
-    <Compile Include="Helpers\XmlParseAttribute.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <ProjectReference Include="..\clipper\clipperLib.csproj" />
+    <ProjectReference Include="..\GeomPad.Common\GeomPad.Common.csproj" />
+    <ProjectReference Include="..\Triangle\Triangle.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\clipper\clipperLib.csproj">
-      <Project>{9b062971-a88e-4a3d-b3c9-12b78d15fa66}</Project>
-      <Name>clipperLib</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GeomPad.Common\GeomPad.Common.csproj">
-      <Project>{4ce2103c-8a84-495c-a2da-5b523825c6ea}</Project>
-      <Name>GeomPad.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Triangle\Triangle.csproj">
-      <Project>{5a12c4a1-bc07-4f18-82b5-b08e150025df}</Project>
-      <Name>Triangle</Name>
-    </ProjectReference>
+    <Folder Include="Properties\" />
   </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="OpenTK.GLControl">
-      <Version>3.3.3</Version>
-    </PackageReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
