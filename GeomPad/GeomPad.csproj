@@ -7,6 +7,11 @@
     <ApplicationIcon>019.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Resources\arrow-circle-225-left.png" />
+    <None Remove="Resources\compile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AutoDialog" Version="1.0.0.9" />
     <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.1.0" />
     <PackageReference Include="IxMilia.Dxf" Version="0.8.0" />
     <PackageReference Include="ObjectListView.Repack.NET6Plus" Version="2.9.5" />
@@ -47,6 +52,11 @@
     <Compile Update="PointEditorToolPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Update="TextBoxCaption.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -60,5 +70,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="019.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\arrow-circle-225-left.png" />
+    <Resource Include="Resources\compile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

@@ -47,11 +47,12 @@ namespace GeomPad
                 else if (l.StartsWith("f "))
                 {
                     TriangleInfo t = new TriangleInfo();
-                    if (l.Contains("//"))// vert//normal
+                    //if (l.Contains("//") || l.Contains("/"))// vert//normal
                     {
 
                     }
-                    else if (l.Contains("/"))//vert/vtext/normal
+                    //else
+                    if (l.Contains("/"))//vert/vtext/normal
                     {
                         mh.DrawWireframe = false;
                         mh.FlatShading = false;

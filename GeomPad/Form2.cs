@@ -32,7 +32,7 @@ namespace GeomPad
             });
 
             DebugHelper.Error = (x) => { infoPanel.AddError(x); };
-
+            toolStripStatusLabel3.Click += ToolStripStatusLabel3_Click;
 
             //if (glControl.Context.GraphicsMode.Samples == 0)
             //{
@@ -55,11 +55,17 @@ namespace GeomPad
             updatePickColorButton();
         }
 
+        private void ToolStripStatusLabel3_Click(object sender, EventArgs e)
+        {
+            
+        }
+
         private void GlControl_MouseUp(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
                 selectedTriangle = pickedTriangle;
+                selectedPoint = pickedPoint;
             }
         }
 
@@ -88,10 +94,14 @@ namespace GeomPad
             Redraw();
         }
 
+        bool drawPickedTriangle = true;
+        bool drawSelectedTriangle = true;
         TriangleInfo pickedTriangle = null;
         TriangleInfo selectedTriangle = null;
+        Vector3d? selectedPoint = null;
         IHelperItem pickedHelper = null;
         Vector3d? pickedPoint = null;
+
         void PickUpdate()
         {
             var pos = glControl.PointToClient(Cursor.Position);
@@ -154,7 +164,7 @@ namespace GeomPad
             pickedPoint = p;
             GL.Disable(EnableCap.DepthTest);
 
-            if (selectedTriangle != null)
+            if (drawSelectedTriangle && selectedTriangle != null)
             {
                 GL.Color3(Color.LightBlue);
                 GL.Begin(PrimitiveType.Triangles);
@@ -164,11 +174,24 @@ namespace GeomPad
                 }
                 GL.End();
             }
+
+            toolStripStatusLabel4.Text = selectedPoint != null ? $"selected point: {Vector3dToStr(selectedPoint.Value)}" : string.Empty;
+
+            if (selectedPoint != null)
+            {
+                GL.Color3(Color.Red);
+                GL.PointSize(10);
+                GL.Begin(PrimitiveType.Points);
+                GL.Vertex3(selectedPoint.Value);
+                GL.End();
+            }
+
             if (minDist != null)
             {
-                toolStripStatusLabel3.Text = $"picked point: {p.Value.X} {p.Value.Y} {p.Value.Z}";
+                if (p != null)
+                    toolStripStatusLabel3.Text = p != null ? $"picked point: {Vector3dToStr(p.Value)}" : string.Empty;
 
-                if (pickedTriangle != null)
+                if (drawPickedTriangle && pickedTriangle != null)
                 {
                     GL.Color3(Color.Red);
                     GL.Begin(PrimitiveType.Triangles);
@@ -186,6 +209,17 @@ namespace GeomPad
             }
             GL.Enable(EnableCap.DepthTest);
         }
+
+        private string Vector3dToStr(Vector3d value)
+        {
+            if (!statusBarRoundingEnabled)
+                return $"{value.X} {value.Y} {value.Z}";
+
+            return $"{Math.Round(value.X, statusBarRoundValuesDigits)} {Math.Round(value.Y, statusBarRoundValuesDigits)} {Math.Round(value.Z, statusBarRoundValuesDigits)}";
+        }
+
+        int statusBarRoundValuesDigits = 4;
+        bool statusBarRoundingEnabled = true;
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
@@ -1085,6 +1119,22 @@ namespace GeomPad
         private void updateToolStripMenuItem_Click(object sender, EventArgs e)
         {
             updateHelpersList();
+        }
+
+        private void toolStripButton5_Click(object sender, EventArgs e)
+        {
+            var d = AutoDialog.DialogHelpers.StartDialog();
+            d.AddBoolField("drawPickedTriangle", "Draw picked triangle", drawPickedTriangle);
+            d.AddBoolField("drawSelectedTriangle", "Draw selected triangle", drawSelectedTriangle);
+            d.AddInt("statusBarRoundValuesDigits", "Round digits", statusBarRoundValuesDigits);
+            d.AddBoolField("statusBarRoundingEnabled", "Rounding enabled", statusBarRoundingEnabled);
+            if (!d.ShowDialog())
+                return;
+
+            drawPickedTriangle = d.GetBoolField("drawPickedTriangle");
+            drawSelectedTriangle = d.GetBoolField("drawSelectedTriangle");
+            statusBarRoundValuesDigits = d.GetInt("statusBarRoundValuesDigits");
+            statusBarRoundingEnabled = d.GetBoolField("statusBarRoundingEnabled");
         }
     }
 }
